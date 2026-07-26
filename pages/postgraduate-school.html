@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <meta name="theme-color" content="#111827">
+  <meta http-equiv="Content-Security-Policy"content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>YAJIB - Postgraduate Coordinator Console</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           CSS VARIABLES & RESET
+           ============================================================ */
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #c9a800;
+            --gold-light: #ffed4a;
+            --red: #DC143C;
+            --red-dark: #a0102e;
+            --red-light: #ff4d6d;
+            --silver: #C0C0C0;
+            --silver-dark: #8a8a8a;
+            --silver-light: #e8e8e8;
+            --white: #ffffff;
+            --black: #0a0a0a;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --radius-sm: 6px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --header-height: 72px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --gray-50: #0a0a0a;
+            --gray-100: #1a1a1a;
+            --gray-200: #2a2a2a;
+            --gray-300: #3a3a3a;
+            --gray-400: #6b7280;
+            --gray-500: #9ca3af;
+            --gray-600: #d1d5db;
+            --gray-700: #e5e7eb;
+            --gray-800: #f3f4f6;
+            --gray-900: #f9fafb;
+            --white: #0a0a0a;
+            --black: #f9fafb;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.3);
+            --shadow: 0 1px 3px 0 rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+        a { color: var(--primary); text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; }
+        input, select, textarea { font-family: inherit; font-size: 0.875rem; }
+
+        /* ============================================================
+           UTILITY
+           ============================================================ */
+        .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+        .hidden { display: none !important; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .gap-3 { gap: 1.5rem; }
+        .gap-4 { gap: 2rem; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+        .text-gold { color: var(--gold); }
+        .text-red { color: var(--red); }
+        .text-silver { color: var(--silver); }
+        .text-muted { color: var(--gray-500); }
+        .fw-600 { font-weight: 600; }
+        .fw-700 { font-weight: 700; }
+        .fw-800 { font-weight: 800; }
+        .fs-small { font-size: 0.75rem; }
+        .fs-normal { font-size: 0.875rem; }
+        .fs-large { font-size: 1.125rem; }
+        .fs-xl { font-size: 1.5rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+        .badge-gold { background: var(--gold); color: var(--black); }
+        .badge-silver { background: var(--silver); color: var(--black); }
+        .badge-red { background: var(--red); color: white; }
+        .badge-primary { background: var(--primary); color: white; }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--gray-900);
+            color: var(--gray-300);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+            border-right: 1px solid var(--gray-700);
+        }
+        [data-theme="dark"] .sidebar {
+            background: var(--gray-100);
+            border-right-color: var(--gray-300);
+            color: var(--gray-600);
+        }
+        .sidebar-brand {
+            padding: 1.5rem 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--gray-700);
+        }
+        [data-theme="dark"] .sidebar-brand { border-bottom-color: var(--gray-300); }
+        .sidebar-brand .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        .sidebar-brand .logo-sub {
+            font-size: 0.65rem;
+            color: var(--silver);
+            letter-spacing: 0.1em;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0.75rem;
+            overflow-y: auto;
+        }
+        .sidebar-nav .nav-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray-500);
+            padding: 0.75rem 1rem 0.25rem;
+        }
+        .sidebar-nav a, .sidebar-nav button {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
+            color: var(--gray-400);
+            transition: var(--transition);
+            width: 100%;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+        .sidebar-nav a:hover, .sidebar-nav button:hover,
+        .sidebar-nav a.active, .sidebar-nav button.active {
+            background: var(--gray-800);
+            color: var(--gold);
+        }
+        [data-theme="dark"] .sidebar-nav a:hover,
+        [data-theme="dark"] .sidebar-nav button:hover,
+        [data-theme="dark"] .sidebar-nav a.active,
+        [data-theme="dark"] .sidebar-nav button.active {
+            background: var(--gray-200);
+            color: var(--gold-dark);
+        }
+        .sidebar-nav a i, .sidebar-nav button i { width: 1.25rem; text-align: center; }
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-700);
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        [data-theme="dark"] .sidebar-footer { border-top-color: var(--gray-300); }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0 2rem;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .header {
+            background: rgba(10,10,10,0.85);
+            border-bottom-color: var(--gray-700);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+        .header-left .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+        .header-left .menu-toggle:hover { background: var(--gray-100); }
+        [data-theme="dark"] .header-left .menu-toggle:hover { background: var(--gray-700); }
+        .header-left .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .header-left .breadcrumb .current {
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        [data-theme="dark"] .header-left .breadcrumb .current { color: var(--gray-100); }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+        .header-right .command-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .header-right .command-btn {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: var(--gray-400);
+        }
+        .header-right .command-btn:hover {
+            background: var(--gray-200);
+            border-color: var(--gray-300);
+        }
+        [data-theme="dark"] .header-right .command-btn:hover {
+            background: var(--gray-600);
+            border-color: var(--gray-500);
+        }
+        .header-right .command-btn kbd {
+            background: var(--gray-200);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-family: inherit;
+            color: var(--gray-600);
+        }
+        [data-theme="dark"] .header-right .command-btn kbd {
+            background: var(--gray-600);
+            color: var(--gray-300);
+        }
+        .header-btn {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-btn:hover { background: var(--gray-100); }
+        [data-theme="dark"] .header-btn:hover { background: var(--gray-700); }
+        .header-btn .badge-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+        }
+        [data-theme="dark"] .header-btn .badge-dot { border-color: var(--gray-100); }
+        .header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .header-avatar:hover { transform: scale(1.05); }
+
+        /* ============================================================
+           PAGE CONTENT
+           ============================================================ */
+        .page-content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* ============================================================
+           CARDS / GRID
+           ============================================================ */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .card {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        [data-theme="dark"] .card-header h3 { color: var(--gray-100); }
+        .card-header .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+        /* ============================================================
+           KPI CARDS
+           ============================================================ */
+        .kpi-card {
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .kpi-card { background: var(--gray-100); border-color: var(--gray-300); }
+        .kpi-card .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+        .kpi-card .kpi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin: 0.25rem 0 0.5rem;
+        }
+        [data-theme="dark"] .kpi-card .kpi-value { color: var(--gray-100); }
+        .kpi-card .kpi-change {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .kpi-card .kpi-change.up { color: var(--success); }
+        .kpi-card .kpi-change.down { color: var(--danger); }
+        .kpi-card .kpi-icon {
+            font-size: 1.5rem;
+            opacity: 0.3;
+            float: right;
+        }
+
+        /* ============================================================
+           TABLES
+           ============================================================ */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            border-bottom: 2px solid var(--gray-200);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+        [data-theme="dark"] table th { border-bottom-color: var(--gray-300); }
+        table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+        [data-theme="dark"] table td { border-bottom-color: var(--gray-300); color: var(--gray-300); }
+        table tr:hover td { background: var(--gray-50); }
+        [data-theme="dark"] table tr:hover td { background: var(--gray-200); }
+
+        /* ============================================================
+           FORMS
+           ============================================================ */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin-bottom: 0.375rem;
+        }
+        [data-theme="dark"] .form-group label { color: var(--gray-300); }
+        .form-group .input-wrapper { position: relative; }
+        .form-group .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--gray-50);
+            color: var(--gray-800);
+        }
+        [data-theme="dark"] .form-group input,
+        [data-theme="dark"] .form-group select,
+        [data-theme="dark"] .form-group textarea {
+            background: var(--gray-700);
+            border-color: var(--gray-600);
+            color: var(--gray-100);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
+        }
+        .form-group input.error, .form-group select.error, .form-group textarea.error {
+            border-color: var(--danger);
+        }
+        .form-group .validation-message {
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .form-group .validation-message.visible { display: block; }
+
+        .btn {
+            padding: 0.6rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--gold); color: var(--black); }
+        .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
+        .btn-secondary:hover { background: var(--gray-300); }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-danger:hover { background: var(--red-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #047857; }
+        .btn-outline { background: transparent; border: 2px solid var(--gray-300); color: var(--gray-600); }
+        .btn-outline:hover { background: var(--gray-100); border-color: var(--gray-400); }
+        .btn-sm { padding: 0.3rem 0.75rem; font-size: 0.75rem; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        /* ============================================================
+           DIALOG / MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            padding: 1.5rem;
+            animation: modalFadeIn 0.25s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            max-width: 680px;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        [data-theme="dark"] .modal { background: var(--gray-100); }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover { background: var(--gray-100); }
+        [data-theme="dark"] .modal-close:hover { background: var(--gray-700); }
+        .modal-header { margin-bottom: 1.5rem; }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); }
+        [data-theme="dark"] .modal-header h2 { color: var(--gray-100); }
+        .modal-header p { color: var(--gray-500); font-size: 0.875rem; }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-width: 420px;
+            width: 100%;
+        }
+        .toast {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.4s ease;
+        }
+        [data-theme="dark"] .toast { background: var(--gray-100); }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        .toast .toast-icon { font-size: 1.25rem; flex-shrink: 0; }
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error .toast-icon { color: var(--danger); }
+        .toast.warning .toast-icon { color: var(--warning); }
+        .toast .toast-message { font-size: 0.875rem; color: var(--gray-700); flex: 1; }
+        [data-theme="dark"] .toast .toast-message { color: var(--gray-300); }
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* ============================================================
+           SKELETON
+           ============================================================ */
+        .skeleton {
+            background: var(--gray-200);
+            border-radius: var(--radius-sm);
+            animation: pulse 1.5s ease-in-out infinite;
+            min-height: 1rem;
+        }
+        [data-theme="dark"] .skeleton { background: var(--gray-300); }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+           EMPTY / LOADING STATES
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+        .empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; }
+        .empty-state h4 { color: var(--gray-700); margin-bottom: 0.5rem; }
+        [data-theme="dark"] .empty-state h4 { color: var(--gray-300); }
+
+        /* ============================================================
+           COMMAND PALETTE
+           ============================================================ */
+        .command-palette {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6000;
+            width: 560px;
+            max-width: 90vw;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--gray-200);
+            display: none;
+            padding: 1rem;
+        }
+        [data-theme="dark"] .command-palette { background: var(--gray-100); border-color: var(--gray-300); }
+        .command-palette.open { display: block; animation: modalFadeIn 0.2s ease; }
+        .command-palette input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 1rem;
+            background: transparent;
+            color: var(--gray-800);
+            outline: none;
+        }
+        [data-theme="dark"] .command-palette input { color: var(--gray-100); border-bottom-color: var(--gray-300); }
+        .command-palette .results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+        .command-palette .results .result-item {
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray-700);
+        }
+        [data-theme="dark"] .command-palette .results .result-item { color: var(--gray-300); }
+        .command-palette .results .result-item:hover,
+        .command-palette .results .result-item.active {
+            background: var(--gray-100);
+        }
+        [data-theme="dark"] .command-palette .results .result-item:hover,
+        [data-theme="dark"] .command-palette .results .result-item.active {
+            background: var(--gray-200);
+        }
+        .command-palette .results .result-item i { width: 1.25rem; color: var(--gold); }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 992px) {
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 0px; }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .header-left .menu-toggle { display: block; }
+            .header-left .breadcrumb .crumb:not(.current) { display: none; }
+            .header-right .command-btn span { display: none; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .page-content { padding: 1rem; }
+            .command-palette { width: 95vw; top: 10%; }
+            .modal { padding: 1.25rem; margin: 0.5rem; }
+        }
+        @media (max-width: 480px) {
+            .grid-4 { grid-template-columns: 1fr; }
+            .header { padding: 0 1rem; }
+            .header-right .header-btn:not(.avatar-btn) { display: none; }
+            .header-right .command-btn { padding: 0.3rem 0.6rem; }
+        }
+
+        /* ============================================================
+           RTL
+           ============================================================ */
+        [dir="rtl"] .sidebar { left: auto; right: 0; }
+        [dir="rtl"] .main-content { margin-left: 0; margin-right: var(--sidebar-width); }
+        [dir="rtl"] .form-group .input-wrapper i { left: auto; right: 1rem; }
+        [dir="rtl"] .form-group input, [dir="rtl"] .form-group select, [dir="rtl"] .form-group textarea {
+            padding: 0.6rem 2.75rem 0.6rem 1rem;
+        }
+        [dir="rtl"] .toast { border-left: none; border-right: 4px solid var(--primary); }
+        [dir="rtl"] .toast.success { border-right-color: var(--success); }
+        [dir="rtl"] .toast.error { border-right-color: var(--danger); }
+        [dir="rtl"] .toast.warning { border-right-color: var(--warning); }
+        [dir="rtl"] .modal-close { right: auto; left: 1rem; }
+        [dir="rtl"] .command-palette .results .result-item i { margin-left: 0.75rem; margin-right: 0; }
+        @media (max-width: 768px) {
+            [dir="rtl"] .sidebar { transform: translateX(100%); }
+            [dir="rtl"] .sidebar.open { transform: translateX(0); }
+            [dir="rtl"] .main-content { margin-right: 0; }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            .sidebar, .header, .no-print { display: none !important; }
+            .main-content { margin: 0 !important; }
+            .page-content { padding: 0.5in !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+            body { background: white !important; color: black !important; }
+        }
+
+        /* ============================================================
+           ACCESSIBILITY / FOCUS
+           ============================================================ */
+        :focus-visible {
+            outline: 3px solid var(--gold);
+            outline-offset: 2px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--gray-100); }
+        ::-webkit-scrollbar-thumb { background: var(--gray-400); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gray-500); }
+        [data-theme="dark"] ::-webkit-scrollbar-track { background: var(--gray-200); }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--gray-600); }
+
+        /* ============================================================
+           PREVIEW MODE LABEL
+           ============================================================ */
+        .preview-badge {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            background: var(--red);
+            color: white;
+            padding: 0.25rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: var(--shadow-lg);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        [data-theme="dark"] .preview-badge { opacity: 0.9; }
+
+        /* ============================================================
+           PROGRESS BAR
+           ============================================================ */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 9999px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        [data-theme="dark"] .progress-bar { background: var(--gray-300); }
+        .progress-bar .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+            background: var(--gold);
+        }
+        .progress-bar .progress-fill.red { background: var(--red); }
+        .progress-bar .progress-fill.green { background: var(--success); }
+        .progress-bar .progress-fill.silver { background: var(--silver); }
+    </style>
+</head>
+<body>
+    <!-- ============================================================
+    PREVIEW BADGE
+    ============================================================ -->
+    <div class="preview-badge">🔬 Preview Mode</div>
+
+    <!-- ============================================================
+    SIDEBAR
+    ============================================================ -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-brand">
+            <span class="logo">YAJIB</span>
+            <span class="logo-sub">PG Coordinator</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Overview</div>
+            <a href="#" class="active" data-section="dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="#" data-section="cohorts"><i class="fas fa-users"></i> Cohorts</a>
+            <a href="#" data-section="candidates"><i class="fas fa-user-graduate"></i> Candidates</a>
+            <a href="#" data-section="supervisors"><i class="fas fa-chalkboard-teacher"></i> Supervisors</a>
+
+            <div class="nav-label">Research</div>
+            <a href="#" data-section="proposals"><i class="fas fa-file-alt"></i> Proposals</a>
+            <a href="#" data-section="ethics"><i class="fas fa-balance-scale"></i> Ethics</a>
+            <a href="#" data-section="milestones"><i class="fas fa-flag-checkered"></i> Milestones</a>
+            <a href="#" data-section="seminars"><i class="fas fa-users"></i> Seminars</a>
+
+            <div class="nav-label">Examination</div>
+            <a href="#" data-section="thesis"><i class="fas fa-book-open"></i> Thesis</a>
+            <a href="#" data-section="viva"><i class="fas fa-gavel"></i> Viva</a>
+            <a href="#" data-section="completion"><i class="fas fa-award"></i> Completion</a>
+
+            <div class="nav-label">System</div>
+            <a href="#" data-section="communications"><i class="fas fa-envelope"></i> Communications</a>
+            <a href="#" data-section="analytics"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="#" data-section="notices"><i class="fas fa-bullhorn"></i> Notices</a>
+        </nav>
+        <div class="sidebar-footer">
+            <span id="sessionInfo">Session: PG Coordinator</span>
+        </div>
+    </aside>
+
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
+    <div class="main-content" id="mainContent">
+        <!-- HEADER -->
+        <header class="header" role="banner">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <span class="crumb">PG Coordinator</span>
+                    <i class="fas fa-chevron-right" style="font-size:0.6rem;color:var(--gray-400);"></i>
+                    <span class="crumb current" id="breadcrumbCurrent">Dashboard</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button class="command-btn" id="commandToggle" aria-label="Open command palette">
+                    <i class="fas fa-search"></i>
+                    <span>Search...</span>
+                    <kbd>⌘K</kbd>
+                </button>
+                <button class="header-btn" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="langToggle" aria-label="Toggle language">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <button class="header-btn" id="notifToggle" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+                <button class="header-avatar avatar-btn" id="profileToggle" aria-label="Profile">PC</button>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content" id="pageContent">
+            <!-- Dashboard Section -->
+            <section id="section-dashboard" class="section-content">
+                <div class="grid-4" id="kpiGrid">
+                    <div class="kpi-card"><div class="kpi-label">Total Cohorts</div><div class="kpi-value" id="kpiCohorts">0</div><div class="kpi-change up"><i class="fas fa-arrow-up"></i> 2</div><div class="kpi-icon">👥</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Active Candidates</div><div class="kpi-value" id="kpiCandidates">0</div><div class="kpi-change up"><i class="fas fa-arrow-up"></i> 8%</div><div class="kpi-icon">🧑‍🎓</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Supervisors</div><div class="kpi-value" id="kpiSupervisors">0</div><div class="kpi-change"><i class="fas fa-minus"></i> 0</div><div class="kpi-icon">👨‍🏫</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Overdue / Risk</div><div class="kpi-value" id="kpiRisk">0</div><div class="kpi-change down"><i class="fas fa-arrow-down"></i> 3</div><div class="kpi-icon">⚠️</div></div>
+                </div>
+
+                <div class="grid-2 mt-3">
+                    <div class="card">
+                        <div class="card-header"><h3>Research Milestones</h3><button class="btn btn-sm btn-secondary" onclick="navigateTo('milestones')">View All</button></div>
+                        <div id="milestoneSummary"><p class="text-muted">Loading milestones...</p></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Upcoming Seminars</h3><button class="btn btn-sm btn-primary" onclick="openModal('seminarModal')">+ Schedule</button></div>
+                        <div id="seminarSummary"><p class="text-muted">No upcoming seminars</p></div>
+                    </div>
+                </div>
+
+                <div class="grid-2 mt-2">
+                    <div class="card">
+                        <div class="card-header"><h3>Risk / Overdue Cases</h3><button class="btn btn-sm btn-danger" onclick="navigateTo('candidates')">Review</button></div>
+                        <div id="riskSummary"><p class="text-muted">No high-risk cases</p></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Completion Readiness</h3><button class="btn btn-sm btn-success" onclick="navigateTo('completion')">View</button></div>
+                        <div id="completionSummary"><p class="text-muted">4 candidates nearing completion</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dynamic content sections -->
+            <div id="dynamicContent"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    COMMAND PALETTE
+    ============================================================ -->
+    <div class="command-palette" id="commandPalette" role="dialog" aria-label="Command palette">
+        <input type="text" id="commandInput" placeholder="Type a command..." autofocus />
+        <div class="results" id="commandResults"></div>
+    </div>
+
+    <!-- ============================================================
+    MODALS
+    ============================================================ -->
+    <!-- Seminar Modal -->
+    <div class="modal-overlay" id="seminarModal" role="dialog" aria-modal="true">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('seminarModal')">✕</button>
+            <div class="modal-header"><h2>Schedule Seminar</h2><p>Organize a research seminar presentation</p></div>
+            <form id="seminarForm">
+                <div class="form-group"><label>Candidate</label><div class="input-wrapper"><i class="fas fa-user-graduate"></i><select id="seminarCandidate"><option value="">Select candidate...</option><option value="1">John Smith - PhD</option><option value="2">Sarah Johnson - MSc</option></select></div></div>
+                <div class="form-group"><label>Title</label><div class="input-wrapper"><i class="fas fa-heading"></i><input type="text" id="seminarTitle" placeholder="Seminar title" /></div></div>
+                <div class="form-group"><label>Date &amp; Time</label><div class="input-wrapper"><i class="fas fa-calendar"></i><input type="datetime-local" id="seminarDateTime" /></div></div>
+                <div class="form-group"><label>Venue</label><div class="input-wrapper"><i class="fas fa-map-pin"></i><input type="text" id="seminarVenue" placeholder="Room / Zoom link" /></div></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Schedule Seminar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supervisor Assignment Modal -->
+    <div class="modal-overlay" id="supervisorModal" role="dialog" aria-modal="true">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('supervisorModal')">✕</button>
+            <div class="modal-header"><h2>Assign Supervisor</h2><p>Assign a supervisor to a candidate</p></div>
+            <form id="supervisorForm">
+                <div class="form-group"><label>Candidate</label><div class="input-wrapper"><i class="fas fa-user-graduate"></i><select id="supCandidate"><option value="">Select candidate...</option></select></div></div>
+                <div class="form-group"><label>Primary Supervisor</label><div class="input-wrapper"><i class="fas fa-chalkboard-teacher"></i><select id="supPrimary"><option value="">Select supervisor...</option></select></div></div>
+                <div class="form-group"><label>Co-Supervisor (optional)</label><div class="input-wrapper"><i class="fas fa-chalkboard-teacher"></i><select id="supCo"><option value="">Select co-supervisor...</option></select></div></div>
+                <div class="form-group"><label>Reason for assignment</label><div class="input-wrapper"><i class="fas fa-pen"></i><input type="text" id="supReason" placeholder="Justification" /></div></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Submit Assignment Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width:480px;">
+            <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+            <div class="modal-header"><h2 id="confirmTitle">Confirm Action</h2><p id="confirmDesc">Please confirm this action</p></div>
+            <div class="form-group"><label>Reason *</label><div class="input-wrapper"><i class="fas fa-pen"></i><input type="text" id="confirmReason" placeholder="Reason..." required /></div></div>
+            <div style="display:flex;gap:1rem;margin-top:1rem;">
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-danger" style="flex:1;" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidate Profile Modal -->
+    <div class="modal-overlay" id="profileModal" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width:720px;">
+            <button class="modal-close" onclick="closeModal('profileModal')">✕</button>
+            <div class="modal-header"><h2 id="profileName">Candidate Profile</h2><p id="profileSub">Research candidate details</p></div>
+            <div id="profileContent"><p class="text-muted">Select a candidate to view details</p></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    TOAST CONTAINER
+    ============================================================ -->
+    <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // CONFIGURATION
+            // ============================================================
+            const CONFIG = window.YAJIB_CONFIG || {
+                supabaseUrl: 'https://your-project.supabase.co',
+                supabaseAnonKey: 'your-anon-key'
+            };
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            const state = {
+                currentSection: 'dashboard',
+                theme: localStorage.getItem('yajib-theme') || 'light',
+                language: localStorage.getItem('yajib-language') || 'en',
+                user: null,
+                roles: [],
+                isLoading: false,
+                commandOpen: false,
+                sidebarOpen: false,
+                confirmCallback: null
+            };
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            // ============================================================
+            // TOAST SYSTEM
+            // ============================================================
+            function showToast(message, type = 'info', duration = 5000) {
+                const container = $('#toastContainer');
+                const toast = document.createElement('div');
+                const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <span class="toast-icon">${icons[type] || icons.info}</span>
+                    <span class="toast-message">${message}</span>
+                    <button class="toast-close" aria-label="Close">✕</button>
+                `;
+                toast.querySelector('.toast-close').addEventListener('click', () => toast.remove());
+                container.appendChild(toast);
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, duration);
+                return toast;
+            }
+
+            // ============================================================
+            // LANGUAGE
+            // ============================================================
+            const STRINGS = {
+                en: {
+                    dashboard: 'Dashboard',
+                    cohorts: 'Cohorts',
+                    candidates: 'Candidates',
+                    supervisors: 'Supervisors',
+                    proposals: 'Proposals',
+                    ethics: 'Ethics',
+                    milestones: 'Milestones',
+                    seminars: 'Seminars',
+                    thesis: 'Thesis',
+                    viva: 'Viva',
+                    completion: 'Completion',
+                    communications: 'Communications',
+                    analytics: 'Analytics',
+                    notices: 'Notices',
+                    schedule: 'Schedule',
+                    assign: 'Assign',
+                    review: 'Review',
+                    confirm: 'Confirm',
+                    cancel: 'Cancel',
+                    save: 'Save',
+                    search: 'Search...',
+                    noResults: 'No results found',
+                    loading: 'Loading...',
+                    error: 'An error occurred',
+                    success: 'Success',
+                    welcome: 'Welcome, Postgraduate Coordinator'
+                },
+                ar: {
+                    dashboard: 'لوحة التحكم',
+                    cohorts: 'المجموعات',
+                    candidates: 'المرشحين',
+                    supervisors: 'المشرفين',
+                    proposals: 'المقترحات',
+                    ethics: 'الأخلاقيات',
+                    milestones: 'المعالم',
+                    seminars: 'الندوات',
+                    thesis: 'الأطروحة',
+                    viva: 'المناقشة',
+                    completion: 'الإكمال',
+                    communications: 'الاتصالات',
+                    analytics: 'التحليلات',
+                    notices: 'الإشعارات',
+                    schedule: 'جدولة',
+                    assign: 'تعيين',
+                    review: 'مراجعة',
+                    confirm: 'تأكيد',
+                    cancel: 'إلغاء',
+                    save: 'حفظ',
+                    search: 'بحث...',
+                    noResults: 'لا توجد نتائج',
+                    loading: 'جاري التحميل...',
+                    error: 'حدث خطأ',
+                    success: 'نجاح',
+                    welcome: 'مرحباً، منسق الدراسات العليا'
+                },
+                fr: {
+                    dashboard: 'Tableau de bord',
+                    cohorts: 'Cohortes',
+                    candidates: 'Candidats',
+                    supervisors: 'Superviseurs',
+                    proposals: 'Propositions',
+                    ethics: 'Éthique',
+                    milestones: 'Étapes',
+                    seminars: 'Séminaires',
+                    thesis: 'Thèse',
+                    viva: 'Soutenance',
+                    completion: 'Achèvement',
+                    communications: 'Communications',
+                    analytics: 'Analyses',
+                    notices: 'Annonces',
+                    schedule: 'Planifier',
+                    assign: 'Assigner',
+                    review: 'Réviser',
+                    confirm: 'Confirmer',
+                    cancel: 'Annuler',
+                    save: 'Enregistrer',
+                    search: 'Rechercher...',
+                    noResults: 'Aucun résultat',
+                    loading: 'Chargement...',
+                    error: 'Une erreur est survenue',
+                    success: 'Succès',
+                    welcome: 'Bienvenue, Coordinateur des études supérieures'
+                }
+            };
+
+            function t(key) {
+                const lang = state.language;
+                return STRINGS[lang]?.[key] || STRINGS.en[key] || key;
+            }
+
+            function applyLanguage(lang) {
+                state.language = lang;
+                const isRtl = lang === 'ar';
+                document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+                document.documentElement.lang = lang;
+                localStorage.setItem('yajib-language', lang);
+                $$('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    el.textContent = t(key);
+                });
+                $('#breadcrumbCurrent').textContent = t(state.currentSection);
+                $$('.sidebar-nav a').forEach(el => {
+                    const key = el.dataset.section;
+                    if (key && STRINGS[lang]?.[key]) {
+                        const textNode = el.childNodes[el.childNodes.length - 1];
+                        if (textNode && textNode.nodeType === 3) {
+                            textNode.textContent = ' ' + t(key);
+                        }
+                    }
+                });
+            }
+
+            // ============================================================
+            // THEME
+            // ============================================================
+            function applyTheme(theme) {
+                state.theme = theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                const icon = $('#themeToggle i');
+                icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                localStorage.setItem('yajib-theme', theme);
+            }
+
+            function toggleTheme() {
+                applyTheme(state.theme === 'light' ? 'dark' : 'light');
+            }
+
+            // ============================================================
+            // NAVIGATION
+            // ============================================================
+            function navigateTo(section) {
+                state.currentSection = section;
+                $$('.sidebar-nav a').forEach(el => {
+                    el.classList.toggle('active', el.dataset.section === section);
+                });
+                $('#breadcrumbCurrent').textContent = t(section);
+                $$('.section-content').forEach(el => el.style.display = 'none');
+                const target = $(`#section-${section}`);
+                if (target) {
+                    target.style.display = 'block';
+                    renderSection(section);
+                } else {
+                    renderDynamicSection(section);
+                }
+                closeSidebar();
+            }
+
+            function renderSection(section) {
+                if (section === 'dashboard') {
+                    updateDashboard();
+                }
+            }
+
+            function renderDynamicSection(section) {
+                const container = $('#dynamicContent');
+                $$('.section-content').forEach(el => el.style.display = 'none');
+                container.style.display = 'block';
+
+                const templates = {
+                    cohorts: renderCohorts,
+                    candidates: renderCandidates,
+                    supervisors: renderSupervisors,
+                    proposals: renderProposals,
+                    ethics: renderEthics,
+                    milestones: renderMilestones,
+                    seminars: renderSeminars,
+                    thesis: renderThesis,
+                    viva: renderViva,
+                    completion: renderCompletion,
+                    communications: renderCommunications,
+                    analytics: renderAnalytics,
+                    notices: renderNotices
+                };
+
+                const renderFn = templates[section];
+                if (renderFn) {
+                    container.innerHTML = renderFn();
+                } else {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-construction"></i><h4>${t('section')}</h4><p>Content coming soon</p></div>`;
+                }
+            }
+
+            // ============================================================
+            // RENDER FUNCTIONS
+            // ============================================================
+            function renderCohorts() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Cohorts</h3><button class="btn btn-sm btn-primary" onclick="showToast('Cohort creation requires RPC call','info')">+ New</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Programme</th><th>Students</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>2025 PhD Batch</td><td>PhD Computer Science</td><td>12</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                        <tr><td>2025 MSc Batch</td><td>MSc Data Science</td><td>24</td><td><span class="badge badge-gold">In Progress</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                        <tr><td>2024 PhD Batch</td><td>PhD Mathematics</td><td>8</td><td><span class="badge badge-warning">Finalising</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderCandidates() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Candidates Directory</h3><div><input type="text" placeholder="Search candidates..." style="padding:0.4rem 0.8rem;border:1px solid var(--gray-200);border-radius:var(--radius-sm);" /></div></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Programme</th><th>Supervisor</th><th>Stage</th><th>Risk</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>John Smith</td><td>PhD CS</td><td>Dr. Adebayo</td><td>Thesis</td><td><span class="badge badge-success">Low</span></td><td><button class="btn btn-sm btn-primary" onclick="showProfile('John Smith')">Profile</button></td></tr>
+                        <tr><td>Sarah Johnson</td><td>MSc DS</td><td>Dr. Okafor</td><td>Proposal</td><td><span class="badge badge-warning">Medium</span></td><td><button class="btn btn-sm btn-primary" onclick="showProfile('Sarah Johnson')">Profile</button></td></tr>
+                        <tr><td>Michael Chen</td><td>PhD Math</td><td>Prof. Williams</td><td>Viva</td><td><span class="badge badge-danger">High</span></td><td><button class="btn btn-sm btn-primary" onclick="showProfile('Michael Chen')">Profile</button></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderSupervisors() {
+                return `
+                    <div class="grid-2">
+                        <div class="card"><div class="card-header"><h3>Supervisor Workload</h3><button class="btn btn-sm btn-primary" onclick="openModal('supervisorModal')">Assign</button></div>
+                        <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Students</th><th>Capacity</th></tr></thead>
+                        <tbody>
+                            <tr><td>Dr. Adebayo</td><td>4</td><td><div class="progress-bar"><div class="progress-fill" style="width:80%;"></div></div></td></tr>
+                            <tr><td>Dr. Okafor</td><td>3</td><td><div class="progress-bar"><div class="progress-fill" style="width:60%;"></div></div></td></tr>
+                            <tr><td>Prof. Williams</td><td>5</td><td><div class="progress-bar"><div class="progress-fill red" style="width:100%;"></div></div></td></tr>
+                        </tbody></table></div></div>
+                        <div class="card"><div class="card-header"><h3>Eligibility & Conflict Check</h3></div>
+                            <p class="text-muted">2 potential conflicts detected</p>
+                            <ul style="margin-top:0.5rem;">
+                                <li>• Dr. Adebayo - John Smith (previous relation)</li>
+                                <li>• Prof. Williams - Michael Chen (department conflict)</li>
+                            </ul>
+                            <button class="btn btn-sm btn-secondary mt-2">Run Check</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderProposals() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Research Proposals</h3><button class="btn btn-sm btn-primary">+ New</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Title</th><th>Candidate</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>AI in Healthcare</td><td>Sarah Johnson</td><td><span class="badge badge-gold">Under Review</span></td><td>2025-01-10</td><td><button class="btn btn-sm btn-secondary">Review</button></td></tr>
+                        <tr><td>Quantum Computing</td><td>John Smith</td><td><span class="badge badge-success">Approved</span></td><td>2024-12-15</td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderEthics() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Ethics Approvals</h3><button class="btn btn-sm btn-primary">+ New</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Project</th><th>Candidate</th><th>Status</th><th>Approval Date</th></tr></thead>
+                    <tbody>
+                        <tr><td>Healthcare AI Study</td><td>Sarah Johnson</td><td><span class="badge badge-success">Approved</span></td><td>2025-01-05</td></tr>
+                        <tr><td>Quantum Algorithms</td><td>John Smith</td><td><span class="badge badge-warning">Pending</span></td><td>—</td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderMilestones() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Research Milestones</h3><button class="btn btn-sm btn-secondary">Filter</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Candidate</th><th>Milestone</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>John Smith</td><td>Literature Review</td><td>2025-02-01</td><td><span class="badge badge-warning">In Progress</span></td><td><button class="btn btn-sm btn-secondary">Update</button></td></tr>
+                        <tr><td>Sarah Johnson</td><td>Data Collection</td><td>2025-01-20</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn btn-sm btn-danger">Escalate</button></td></tr>
+                        <tr><td>Michael Chen</td><td>Final Analysis</td><td>2025-02-15</td><td><span class="badge badge-gold">On Track</span></td><td><button class="btn btn-sm btn-secondary">Update</button></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderSeminars() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Seminars</h3><button class="btn btn-sm btn-primary" onclick="openModal('seminarModal')">+ Schedule</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Title</th><th>Presenter</th><th>Date</th><th>Venue</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>AI Ethics in Healthcare</td><td>Sarah Johnson</td><td>2025-02-10 14:00</td><td>Room 301</td><td><span class="badge badge-gold">Upcoming</span></td></tr>
+                        <tr><td>Quantum Algorithms</td><td>John Smith</td><td>2025-01-25</td><td>Zoom</td><td><span class="badge badge-success">Completed</span></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderThesis() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Thesis Submission Readiness</h3></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Candidate</th><th>Title</th><th>Readiness</th><th>Submission</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr><td>John Smith</td><td>Quantum Computing</td><td><span class="badge badge-success">Ready</span></td><td>2025-02-28</td><td><button class="btn btn-sm btn-primary">Submit</button></td></tr>
+                        <tr><td>Michael Chen</td><td>Mathematical Models</td><td><span class="badge badge-warning">In Progress</span></td><td>2025-03-15</td><td><button class="btn btn-sm btn-secondary">Review</button></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderViva() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Viva / Examination</h3><button class="btn btn-sm btn-primary">Schedule</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>Candidate</th><th>Panel</th><th>Date</th><th>Decision</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>Michael Chen</td><td>Dr. Adebayo, Dr. Okafor</td><td>2025-03-01</td><td>—</td><td><span class="badge badge-gold">Scheduled</span></td></tr>
+                        <tr><td>Sarah Johnson</td><td>Prof. Williams, Dr. Adebayo</td><td>2025-02-15</td><td>Minor Corrections</td><td><span class="badge badge-warning">Pending</span></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderCompletion() {
+                return `
+                    <div class="grid-2">
+                        <div class="card"><div class="card-header"><h3>Completion Clearance</h3></div>
+                            <div class="table-wrapper"><table><thead><tr><th>Candidate</th><th>Clearance</th><th>Award</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td>John Smith</td><td>✅ All Clear</td><td>PhD</td><td><span class="badge badge-success">Ready</span></td></tr>
+                                <tr><td>Sarah Johnson</td><td>⚠️ Pending Corrections</td><td>MSc</td><td><span class="badge badge-warning">Reviewing</span></td></tr>
+                            </tbody></table></div>
+                        </div>
+                        <div class="card"><div class="card-header"><h3>Immutable History</h3></div>
+                            <div class="empty-state"><i class="fas fa-history"></i><h4>No finalised awards</h4><p>Completed records appear here</p></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderCommunications() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Communications</h3><button class="btn btn-sm btn-primary">+ Send</button></div>
+                    <div class="table-wrapper"><table><thead><tr><th>To</th><th>Subject</th><th>Sent</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>All Supervisors</td><td>Viva Schedule Update</td><td>2025-01-18</td><td><span class="badge badge-success">Sent</span></td></tr>
+                        <tr><td>Sarah Johnson</td><td>Ethics Approval</td><td>2025-01-05</td><td><span class="badge badge-success">Sent</span></td></tr>
+                    </tbody></table></div></div>
+                `;
+            }
+
+            function renderAnalytics() {
+                return `
+                    <div class="grid-2">
+                        <div class="card"><div class="card-header"><h3>Programme Progress</h3></div>
+                            <div style="padding:1rem 0;">
+                                <p>PhD Completion Rate: <strong>78%</strong></p>
+                                <div class="progress-bar"><div class="progress-fill" style="width:78%;"></div></div>
+                                <p class="mt-1">MSc Completion Rate: <strong>85%</strong></p>
+                                <div class="progress-bar"><div class="progress-fill green" style="width:85%;"></div></div>
+                            </div>
+                        </div>
+                        <div class="card"><div class="card-header"><h3>Risk Distribution</h3></div>
+                            <div style="padding:1rem 0;">
+                                <p>Low: 18 <span class="badge badge-success">●</span></p>
+                                <p>Medium: 6 <span class="badge badge-warning">●</span></p>
+                                <p>High: 2 <span class="badge badge-danger">●</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-2"><div class="card-header"><h3>Export & Print</h3><button class="btn btn-sm btn-secondary" onclick="window.print()">Print Report</button></div>
+                        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                            <button class="btn btn-sm btn-outline">Export PDF</button>
+                            <button class="btn btn-sm btn-outline">Export CSV</button>
+                            <button class="btn btn-sm btn-outline">Export Excel</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderNotices() {
+                return `
+                    <div class="card"><div class="card-header"><h3>Notices & Announcements</h3><button class="btn btn-sm btn-primary">+ Create</button></div>
+                    <div style="padding:0.5rem 0;">
+                        <div style="padding:0.75rem;border-left:4px solid var(--gold);margin-bottom:0.75rem;background:var(--gray-50);border-radius:var(--radius-sm);">
+                            <h4>📢 Viva Schedule Published</h4>
+                            <p class="text-muted fs-small">2025-01-20</p>
+                        </div>
+                        <div style="padding:0.75rem;border-left:4px solid var(--red);margin-bottom:0.75rem;background:var(--gray-50);border-radius:var(--radius-sm);">
+                            <h4>⚠️ Ethics Deadline Reminder</h4>
+                            <p class="text-muted fs-small">2025-01-15</p>
+                        </div>
+                        <div style="padding:0.75rem;border-left:4px solid var(--silver);background:var(--gray-50);border-radius:var(--radius-sm);">
+                            <h4>📅 Research Seminar Series</h4>
+                            <p class="text-muted fs-small">2025-01-10</p>
+                        </div>
+                    </div></div>
+                `;
+            }
+
+            // ============================================================
+            // DASHBOARD UPDATE
+            // ============================================================
+            function updateDashboard() {
+                const data = {
+                    cohorts: 12,
+                    candidates: 48,
+                    supervisors: 16,
+                    risk: 6
+                };
+                $('#kpiCohorts').textContent = data.cohorts;
+                $('#kpiCandidates').textContent = data.candidates;
+                $('#kpiSupervisors').textContent = data.supervisors;
+                $('#kpiRisk').textContent = data.risk;
+
+                // Milestones summary
+                const milestoneData = [
+                    { candidate: 'John Smith', milestone: 'Literature Review', status: 'In Progress' },
+                    { candidate: 'Sarah Johnson', milestone: 'Data Collection', status: 'Overdue' },
+                    { candidate: 'Michael Chen', milestone: 'Final Analysis', status: 'On Track' }
+                ];
+                const msEl = $('#milestoneSummary');
+                if (milestoneData.length) {
+                    msEl.innerHTML = `<div style="display:grid;gap:0.5rem;">${milestoneData.map(m => 
+                        `<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--gray-100);">
+                            <span>${m.candidate}: ${m.milestone}</span>
+                            <span class="badge ${m.status === 'Overdue' ? 'badge-danger' : m.status === 'In Progress' ? 'badge-warning' : 'badge-gold'}">${m.status}</span>
+                        </div>`
+                    ).join('')}</div>`;
+                }
+
+                // Risk summary
+                const riskData = [
+                    { candidate: 'Sarah Johnson', issue: 'Overdue milestone' },
+                    { candidate: 'Michael Chen', issue: 'Supervisor conflict' }
+                ];
+                const riskEl = $('#riskSummary');
+                if (riskData.length) {
+                    riskEl.innerHTML = `<div style="display:grid;gap:0.5rem;">${riskData.map(r => 
+                        `<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--gray-100);color:var(--red);">
+                            <span>⚠️ ${r.candidate}</span>
+                            <span class="fs-small">${r.issue}</span>
+                        </div>`
+                    ).join('')}</div>`;
+                }
+            }
+
+            // ============================================================
+            // PROFILE MODAL
+            // ============================================================
+            function showProfile(name) {
+                $('#profileName').textContent = name;
+                $('#profileSub').textContent = 'Research Candidate Profile';
+                $('#profileContent').innerHTML = `
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div><strong>Programme:</strong> PhD Computer Science</div>
+                        <div><strong>Supervisor:</strong> Dr. Adebayo</div>
+                        <div><strong>Stage:</strong> Thesis</div>
+                        <div><strong>Status:</strong> <span class="badge badge-gold">Active</span></div>
+                        <div><strong>Ethics:</strong> <span class="badge badge-success">Approved</span></div>
+                        <div><strong>Milestones:</strong> 4/6 Completed</div>
+                    </div>
+                    <div class="mt-2" style="border-top:1px solid var(--gray-200);padding-top:1rem;">
+                        <h4>Research Details</h4>
+                        <p class="text-muted">Title: Quantum Computing Applications in Healthcare</p>
+                        <p class="text-muted">Started: 2024-09-01 | Expected: 2025-08-31</p>
+                    </div>
+                `;
+                openModal('profileModal');
+            }
+
+            // ============================================================
+            // MODAL CONTROLS
+            // ============================================================
+            function openModal(id) {
+                const modal = $(`#${id}`);
+                if (modal) modal.classList.add('active');
+            }
+
+            function closeModal(id) {
+                const modal = $(`#${id}`);
+                if (modal) modal.classList.remove('active');
+            }
+
+            // ============================================================
+            // CONFIRMATION DIALOG
+            // ============================================================
+            function confirmAction(message, callback) {
+                $('#confirmTitle').textContent = message || 'Confirm Action';
+                $('#confirmDesc').textContent = 'Please provide a reason for this action.';
+                $('#confirmReason').value = '';
+                state.confirmCallback = callback || null;
+                openModal('confirmModal');
+                $('#confirmActionBtn').onclick = function() {
+                    const reason = $('#confirmReason').value.trim();
+                    if (!reason) {
+                        showToast('Please provide a reason', 'warning');
+                        return;
+                    }
+                    closeModal('confirmModal');
+                    if (state.confirmCallback) {
+                        state.confirmCallback(reason);
+                    } else {
+                        showToast('Action confirmed: ' + reason, 'success');
+                    }
+                };
+            }
+
+            // ============================================================
+            // SIDEBAR
+            // ============================================================
+            function toggleSidebar() {
+                state.sidebarOpen = !state.sidebarOpen;
+                $('#sidebar').classList.toggle('open', state.sidebarOpen);
+            }
+
+            function closeSidebar() {
+                state.sidebarOpen = false;
+                $('#sidebar').classList.remove('open');
+            }
+
+            // ============================================================
+            // COMMAND PALETTE
+            // ============================================================
+            function toggleCommand() {
+                state.commandOpen = !state.commandOpen;
+                const palette = $('#commandPalette');
+                palette.classList.toggle('open', state.commandOpen);
+                if (state.commandOpen) {
+                    $('#commandInput').value = '';
+                    $('#commandInput').focus();
+                    updateCommandResults('');
+                }
+            }
+
+            function updateCommandResults(query) {
+                const results = $('#commandResults');
+                const commands = [
+                    { icon: 'fa-th-large', label: 'Dashboard', section: 'dashboard' },
+                    { icon: 'fa-users', label: 'Cohorts', section: 'cohorts' },
+                    { icon: 'fa-user-graduate', label: 'Candidates', section: 'candidates' },
+                    { icon: 'fa-chalkboard-teacher', label: 'Supervisors', section: 'supervisors' },
+                    { icon: 'fa-file-alt', label: 'Proposals', section: 'proposals' },
+                    { icon: 'fa-balance-scale', label: 'Ethics', section: 'ethics' },
+                    { icon: 'fa-flag-checkered', label: 'Milestones', section: 'milestones' },
+                    { icon: 'fa-users', label: 'Seminars', section: 'seminars' },
+                    { icon: 'fa-book-open', label: 'Thesis', section: 'thesis' },
+                    { icon: 'fa-gavel', label: 'Viva', section: 'viva' },
+                    { icon: 'fa-award', label: 'Completion', section: 'completion' },
+                    { icon: 'fa-envelope', label: 'Communications', section: 'communications' },
+                    { icon: 'fa-chart-line', label: 'Analytics', section: 'analytics' },
+                    { icon: 'fa-bullhorn', label: 'Notices', section: 'notices' }
+                ];
+
+                const filtered = query ? commands.filter(c => 
+                    c.label.toLowerCase().includes(query.toLowerCase())
+                ) : commands;
+
+                if (filtered.length === 0) {
+                    results.innerHTML = `<div class="result-item">${t('noResults')}</div>`;
+                    return;
+                }
+
+                results.innerHTML = filtered.map((cmd, i) => `
+                    <div class="result-item ${i === 0 ? 'active' : ''}" data-section="${cmd.section}">
+                        <i class="fas ${cmd.icon}"></i>
+                        <span>${cmd.label}</span>
+                    </div>
+                `).join('');
+
+                results.querySelectorAll('.result-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        navigateTo(el.dataset.section);
+                        toggleCommand();
+                    });
+                });
+            }
+
+            // ============================================================
+            // FORM HANDLERS
+            // ============================================================
+            document.addEventListener('DOMContentLoaded', function() {
+                // Seminar form
+                const seminarForm = $('#seminarForm');
+                if (seminarForm) {
+                    seminarForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const candidate = $('#seminarCandidate').value;
+                        const title = $('#seminarTitle').value.trim();
+                        if (!candidate || !title) {
+                            showToast('Please fill in all required fields', 'warning');
+                            return;
+                        }
+                        showToast(`Seminar "${title}" scheduled successfully`, 'success');
+                        closeModal('seminarModal');
+                        seminarForm.reset();
+                    });
+                }
+
+                // Supervisor form
+                const supForm = $('#supervisorForm');
+                if (supForm) {
+                    supForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const candidate = $('#supCandidate').value;
+                        const primary = $('#supPrimary').value;
+                        if (!candidate || !primary) {
+                            showToast('Please select candidate and primary supervisor', 'warning');
+                            return;
+                        }
+                        // Simulate protected assignment request
+                        confirmAction('Assign supervisor to candidate?', (reason) => {
+                            showToast(`Supervisor assigned with reason: ${reason}`, 'success');
+                            closeModal('supervisorModal');
+                            supForm.reset();
+                        });
+                        e.preventDefault();
+                    });
+                }
+
+                // ============================================================
+                // EVENT LISTENERS
+                // ============================================================
+                $$('.sidebar-nav a').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = el.dataset.section;
+                        if (section) navigateTo(section);
+                    });
+                });
+
+                $('#themeToggle').addEventListener('click', toggleTheme);
+
+                $('#langToggle').addEventListener('click', () => {
+                    const langs = ['en', 'ar', 'fr'];
+                    const currentIndex = langs.indexOf(state.language);
+                    const next = langs[(currentIndex + 1) % langs.length];
+                    applyLanguage(next);
+                    showToast(`Language switched to ${next}`, 'info');
+                });
+
+                $('#menuToggle').addEventListener('click', toggleSidebar);
+
+                $('#commandToggle').addEventListener('click', toggleCommand);
+                document.addEventListener('keydown', (e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        toggleCommand();
+                    }
+                    if (e.key === 'Escape') {
+                        if (state.commandOpen) toggleCommand();
+                        closeModal('seminarModal');
+                        closeModal('supervisorModal');
+                        closeModal('confirmModal');
+                        closeModal('profileModal');
+                    }
+                });
+
+                $('#commandInput').addEventListener('input', (e) => {
+                    updateCommandResults(e.target.value);
+                });
+
+                $('#commandInput').addEventListener('keydown', (e) => {
+                    const items = $$('#commandResults .result-item');
+                    if (items.length === 0) return;
+                    let current = Array.from(items).findIndex(el => el.classList.contains('active'));
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (current < items.length - 1) {
+                            items[current]?.classList.remove('active');
+                            items[current + 1]?.classList.add('active');
+                            items[current + 1]?.scrollIntoView({ block: 'nearest' });
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (current > 0) {
+                            items[current]?.classList.remove('active');
+                            items[current - 1]?.classList.add('active');
+                            items[current - 1]?.scrollIntoView({ block: 'nearest' });
+                        }
+                    } else if (e.key === 'Enter') {
+                        const active = document.querySelector('#commandResults .result-item.active');
+                        if (active) {
+                            navigateTo(active.dataset.section);
+                            toggleCommand();
+                        }
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (state.commandOpen && !e.target.closest('#commandPalette') && !e.target.closest('#commandToggle')) {
+                        toggleCommand();
+                    }
+                    if (window.innerWidth <= 768 && state.sidebarOpen) {
+                        if (!e.target.closest('#sidebar') && !e.target.closest('#menuToggle')) {
+                            closeSidebar();
+                        }
+                    }
+                });
+
+                // ============================================================
+                // INITIALIZATION
+                // ============================================================
+                applyTheme(state.theme);
+                applyLanguage(state.language);
+                navigateTo('dashboard');
+
+                const sessionInfo = $('#sessionInfo');
+                if (sessionInfo) {
+                    sessionInfo.textContent = '🎓 PG Coordinator | ' + new Date().toLocaleDateString();
+                }
+
+                // Populate supervisor dropdowns
+                ['#supCandidate', '#supPrimary', '#supCo'].forEach(sel => {
+                    const el = $(sel);
+                    if (el && sel !== '#supCo') {
+                        const options = ['John Smith (PhD)', 'Sarah Johnson (MSc)', 'Michael Chen (PhD)'];
+                        options.forEach(opt => {
+                            const optEl = document.createElement('option');
+                            optEl.value = opt;
+                            optEl.textContent = opt;
+                            el.appendChild(optEl);
+                        });
+                    }
+                    if (el && sel.includes('sup')) {
+                        const options = ['Dr. Adebayo', 'Dr. Okafor', 'Prof. Williams'];
+                        options.forEach(opt => {
+                            const optEl = document.createElement('option');
+                            optEl.value = opt;
+                            optEl.textContent = opt;
+                            el.appendChild(optEl);
+                        });
+                    }
+                });
+
+                console.log('🎓 YAJIB Postgraduate Coordinator Console loaded');
+                console.log('🔬 Preview Mode: All actions are simulated');
+                console.log('🔒 No secrets exposed; all privileged operations require RPC/Edge Functions');
+
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768 && state.sidebarOpen) {
+                        closeSidebar();
+                    }
+                });
+
+                // ============================================================
+                // EXPOSE TO GLOBAL
+                // ============================================================
+                window.navigateTo = navigateTo;
+                window.showToast = showToast;
+                window.openModal = openModal;
+                window.closeModal = closeModal;
+                window.confirmAction = confirmAction;
+                window.toggleTheme = toggleTheme;
+                window.toggleCommand = toggleCommand;
+                window.applyLanguage = applyLanguage;
+                window.showProfile = showProfile;
+                window.t = t;
+
+                console.log('✅ YAJIB Postgraduate Coordinator ready');
+            });
+
+        })();
+    </script>
+</body>
+</html>

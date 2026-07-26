@@ -1,0 +1,19 @@
+{
+  "name": "yajib-nexus-university-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Enterprise university examinations, records, research and learning platform built with vanilla JavaScript and Supabase.",
+  "scripts": {
+    "dev": "http-server . -p 4173 -c-1",
+    "test": "node --test tests/*.test.js",
+    "check": "node scripts/validate-project.js",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

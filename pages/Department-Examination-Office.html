@@ -1,0 +1,6692 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+   <meta http-equiv="Content-Security-Policy"content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#091426">
+
+  <title>Department Exam Officer | YAJIB University</title>
+
+  <!--
+    SECURITY NOTES
+    ==============
+    This standalone revision uses isolated local sample data.
+
+    For live deployment:
+    - Keep the Department Exam Officer role verified on the server.
+    - Enforce institution_id and department_id through database RLS.
+    - Do not trust browser role checks as authorization.
+    - Use audited RPCs or authenticated Edge Functions for protected actions.
+    - Never place service-role keys, database passwords, or private secrets here.
+    - Do not allow this role to directly approve institution-level protected states.
+  -->
+
+  <style>
+    :root {
+      --gold: #ffd700;
+      --gold-soft: #fff4a8;
+      --gold-dark: #8f7300;
+      --red: #dc143c;
+      --red-dark: #a30d2c;
+      --silver: #c0c0c0;
+
+      --navy-950: #050b15;
+      --navy-900: #091426;
+      --navy-850: #10213a;
+      --navy-800: #172d4c;
+      --navy-700: #29476f;
+
+      --bg: #f1f4f8;
+      --surface: #ffffff;
+      --surface-soft: #f7f9fc;
+      --surface-strong: #e8edf4;
+      --surface-glass: rgb(255 255 255 / 88%);
+
+      --text: #141a24;
+      --text-soft: #596577;
+      --text-muted: #7c8798;
+      --border: #d7dee8;
+
+      --success: #087443;
+      --warning: #8a5100;
+      --danger: #b20e31;
+      --info: #0763ad;
+      --focus: #0064c8;
+
+      --sidebar-width: 18.4rem;
+      --header-height: 4.85rem;
+      --content-width: 108rem;
+
+      --radius-sm: .62rem;
+      --radius-md: .92rem;
+      --radius-lg: 1.25rem;
+      --radius-xl: 1.7rem;
+
+      --shadow-xs: 0 1px 4px rgb(15 23 42 / 8%);
+      --shadow-sm: 0 8px 24px rgb(15 23 42 / 9%);
+      --shadow-md: 0 20px 52px rgb(15 23 42 / 16%);
+      --shadow-lg: 0 30px 90px rgb(0 0 0 / 36%);
+
+      --transition: 180ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    html[data-theme="dark"] {
+      --bg: #070b12;
+      --surface: #111923;
+      --surface-soft: #18212e;
+      --surface-strong: #263243;
+      --surface-glass: rgb(17 25 35 / 89%);
+
+      --text: #f7f8fb;
+      --text-soft: #c2cad6;
+      --text-muted: #929dae;
+      --border: #303c4d;
+
+      --success: #62dda5;
+      --warning: #ffd080;
+      --danger: #ff809c;
+      --info: #82c8ff;
+      --focus: #8bc7ff;
+
+      --shadow-xs: 0 1px 4px rgb(0 0 0 / 35%);
+      --shadow-sm: 0 8px 24px rgb(0 0 0 / 38%);
+      --shadow-md: 0 20px 52px rgb(0 0 0 / 52%);
+      --shadow-lg: 0 30px 90px rgb(0 0 0 / 70%);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 20rem;
+      min-height: 100%;
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 98% 0, rgb(255 215 0 / 14%), transparent 28rem),
+        radial-gradient(circle at 0 100%, rgb(220 20 60 / 8%), transparent 25rem),
+        var(--bg);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        "Noto Sans Arabic",
+        sans-serif;
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body[data-scroll-lock="true"] {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+    }
+
+    button,
+    select,
+    input[type="checkbox"],
+    input[type="file"] {
+      cursor: pointer;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    a {
+      color: var(--info);
+      text-underline-offset: .18em;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    ::selection {
+      color: #111;
+      background: var(--gold);
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 5000;
+      inset-block-start: .7rem;
+      inset-inline-start: .7rem;
+      padding: .7rem 1rem;
+      color: #111;
+      background: var(--gold);
+      border: 2px solid #111;
+      border-radius: var(--radius-sm);
+      font-weight: 900;
+      transform: translateY(-160%);
+      transition: transform var(--transition);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .app-shell {
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      z-index: 900;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      color: #fff;
+      background:
+        radial-gradient(circle at 12% 0, rgb(255 215 0 / 15%), transparent 17rem),
+        linear-gradient(180deg, var(--navy-950), var(--navy-900) 58%, #10192a);
+      border-inline-end: 1px solid rgb(255 255 255 / 9%);
+      box-shadow: 18px 0 48px rgb(3 7 18 / 14%);
+      transition: transform var(--transition);
+    }
+
+    .brand {
+      display: flex;
+      min-height: var(--header-height);
+      align-items: center;
+      gap: .85rem;
+      padding: .9rem 1rem;
+      border-block-end: 1px solid rgb(255 255 255 / 10%);
+    }
+
+    .brand-mark {
+      position: relative;
+      display: grid;
+      width: 3rem;
+      height: 3rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #111;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: .92rem;
+      box-shadow:
+        inset 0 -4px 0 rgb(0 0 0 / 13%),
+        0 11px 30px rgb(255 215 0 / 22%);
+      font-size: 1.25rem;
+      font-weight: 950;
+    }
+
+    .brand-mark::after {
+      position: absolute;
+      width: .62rem;
+      height: .62rem;
+      inset-block-start: -.14rem;
+      inset-inline-end: -.14rem;
+      content: "";
+      background: var(--red);
+      border: 2px solid var(--navy-950);
+      border-radius: 50%;
+    }
+
+    .brand-copy strong,
+    .brand-copy span {
+      display: block;
+    }
+
+    .brand-copy strong {
+      font-size: 1.08rem;
+      letter-spacing: -.025em;
+    }
+
+    .brand-copy span {
+      color: #bec8d8;
+      font-size: .75rem;
+    }
+
+    .sidebar-label {
+      padding: 1rem 1.05rem .35rem;
+      color: #8491a7;
+      font-size: .67rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      display: grid;
+      gap: .18rem;
+      padding: .2rem .7rem .9rem;
+    }
+
+    .sidebar-nav button {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-height: 2.8rem;
+      align-items: center;
+      gap: .72rem;
+      padding: .62rem .75rem;
+      overflow: hidden;
+      color: #b9c3d3;
+      text-align: start;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: .72rem;
+      transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+    }
+
+    .sidebar-nav button::before {
+      position: absolute;
+      width: 3px;
+      inset-block: .55rem;
+      inset-inline-start: 0;
+      content: "";
+      background: var(--gold);
+      border-radius: 999px;
+      opacity: 0;
+      transform: scaleY(.2);
+      transition: var(--transition);
+    }
+
+    .sidebar-nav button:hover {
+      color: #fff;
+      background: rgb(255 255 255 / 7%);
+      transform: translateX(2px);
+    }
+
+    [dir="rtl"] .sidebar-nav button:hover {
+      transform: translateX(-2px);
+    }
+
+    .sidebar-nav button[aria-current="page"] {
+      color: #fff;
+      background:
+        linear-gradient(
+          90deg,
+          rgb(255 215 0 / 15%),
+          rgb(255 255 255 / 5%)
+        );
+      border-color: rgb(255 215 0 / 18%);
+    }
+
+    .sidebar-nav button[aria-current="page"]::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      display: grid;
+      width: 1.68rem;
+      height: 1.68rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--gold);
+      background: rgb(255 255 255 / 6%);
+      border-radius: .46rem;
+      font-size: .9rem;
+    }
+
+    .sidebar-footer {
+      margin-block-start: auto;
+      padding: 1rem;
+      color: #9ca8ba;
+      border-block-start: 1px solid rgb(255 255 255 / 9%);
+      font-size: .74rem;
+    }
+
+    .sidebar-footer strong,
+    .sidebar-footer span {
+      display: block;
+    }
+
+    .sidebar-footer strong {
+      color: #e9edf4;
+    }
+
+    .workspace {
+      min-height: 100vh;
+      margin-inline-start: var(--sidebar-width);
+    }
+
+    .preview-banner {
+      display: flex;
+      min-height: 2.7rem;
+      align-items: center;
+      justify-content: center;
+      gap: .65rem;
+      padding: .55rem 1rem;
+      color: #1c1700;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          var(--gold),
+          var(--gold) 11px,
+          #ffe75b 11px,
+          #ffe75b 22px
+        );
+      border-block-end: 2px solid #735d00;
+      font-size: .8rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 700;
+      inset-block-start: 0;
+      display: grid;
+      grid-template-columns: minmax(12rem, 1fr) minmax(17rem, 33rem) auto;
+      align-items: center;
+      gap: .85rem;
+      min-height: var(--header-height);
+      padding: .65rem clamp(.75rem, 2vw, 1.45rem);
+      background: var(--surface-glass);
+      border-block-end: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+      backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .topbar-start,
+    .topbar-actions,
+    .breadcrumbs,
+    .inline,
+    .toolbar,
+    .status-line,
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+
+    .topbar-start {
+      min-width: 0;
+    }
+
+    .breadcrumbs {
+      min-width: 0;
+      flex-wrap: wrap;
+      color: var(--text-soft);
+      font-size: .8rem;
+    }
+
+    .breadcrumbs button {
+      max-width: 16rem;
+      padding: .15rem;
+      overflow: hidden;
+      color: inherit;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background: transparent;
+      border: 0;
+    }
+
+    .breadcrumbs button:hover {
+      color: var(--text);
+      text-decoration: underline;
+    }
+
+    .global-search {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .global-search-symbol {
+      position: absolute;
+      inset-inline-start: .86rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .global-search input {
+      width: 100%;
+      min-height: 2.78rem;
+      padding: .62rem 3rem .62rem 2.45rem;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+    }
+
+    [dir="rtl"] .global-search input {
+      padding: .62rem 2.45rem .62rem 3rem;
+    }
+
+    .global-search kbd {
+      position: absolute;
+      inset-inline-end: .75rem;
+      padding: .1rem .36rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .34rem;
+      font-size: .66rem;
+    }
+
+    .search-results {
+      position: absolute;
+      z-index: 1300;
+      inset-block-start: calc(100% + .45rem);
+      inset-inline: 0;
+      max-height: 25rem;
+      overflow: auto;
+      padding: .45rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .82rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .search-results button {
+      display: grid;
+      width: 100%;
+      gap: .1rem;
+      padding: .66rem;
+      color: var(--text);
+      text-align: start;
+      background: transparent;
+      border: 0;
+      border-radius: .55rem;
+    }
+
+    .search-results button:hover {
+      background: var(--surface-soft);
+    }
+
+    .search-results small {
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      justify-content: flex-end;
+    }
+
+    .icon-button,
+    .profile-button {
+      display: inline-grid;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      place-items: center;
+      padding: .46rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition);
+    }
+
+    .icon-button:hover,
+    .profile-button:hover {
+      background: var(--surface-strong);
+      border-color: var(--gold-dark);
+      transform: translateY(-1px);
+    }
+
+    .profile-button {
+      grid-auto-flow: column;
+      gap: .45rem;
+      padding-inline: .42rem .72rem;
+    }
+
+    .avatar {
+      display: grid;
+      width: 2.1rem;
+      height: 2.1rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #111;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: 50%;
+      box-shadow: inset 0 -2px 0 rgb(0 0 0 / 12%);
+      font-size: .7rem;
+      font-weight: 950;
+    }
+
+    .notification-button {
+      position: relative;
+    }
+
+    .notification-count {
+      position: absolute;
+      display: grid;
+      min-width: 1.18rem;
+      height: 1.18rem;
+      place-items: center;
+      inset-block-start: -.27rem;
+      inset-inline-end: -.27rem;
+      padding-inline: .2rem;
+      color: #fff;
+      background: var(--red);
+      border: 2px solid var(--surface);
+      border-radius: 999px;
+      font-size: .58rem;
+      font-weight: 950;
+    }
+
+    .compact-select {
+      min-height: 2.75rem;
+      max-width: 15rem;
+      padding: .5rem .7rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .language-switcher {
+      display: flex;
+      padding: .2rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .language-switcher button {
+      min-width: 2.45rem;
+      min-height: 2.25rem;
+      padding: .3rem .45rem;
+      color: var(--text-soft);
+      background: transparent;
+      border: 0;
+      border-radius: .5rem;
+      font-size: .72rem;
+      font-weight: 900;
+    }
+
+    .language-switcher button:hover {
+      color: var(--text);
+      background: var(--surface-strong);
+    }
+
+    .language-switcher button[aria-pressed="true"] {
+      color: #111;
+      background: var(--gold);
+      box-shadow: inset 0 -2px 0 rgb(0 0 0 / 10%);
+    }
+
+    .content {
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding: clamp(1rem, 2vw, 1.75rem);
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-block-end: 1rem;
+    }
+
+    .page-heading h1,
+    .page-heading p {
+      margin: 0;
+    }
+
+    .page-heading h1 {
+      font-size: clamp(1.65rem, 3vw, 2.45rem);
+      line-height: 1.15;
+      letter-spacing: -.04em;
+    }
+
+    .page-heading p {
+      max-width: 57rem;
+      margin-block-start: .4rem;
+      color: var(--text-soft);
+    }
+
+    .eyebrow {
+      display: block;
+      margin-block-end: .25rem;
+      color: var(--red);
+      font-size: .72rem;
+      font-weight: 950;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .page-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: .55rem;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(14rem, .55fr);
+      gap: 1rem;
+      overflow: hidden;
+      padding: clamp(1.35rem, 3vw, 2.2rem);
+      color: #fff;
+      background:
+        linear-gradient(120deg, rgb(220 20 60 / 76%), transparent 48%),
+        radial-gradient(circle at 90% 8%, rgb(255 215 0 / 22%), transparent 17rem),
+        linear-gradient(145deg, #060d18, #1b3152);
+      border: 1px solid rgb(255 255 255 / 8%);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero::before {
+      position: absolute;
+      width: 24rem;
+      height: 24rem;
+      inset-block-end: -17rem;
+      inset-inline-start: 22%;
+      content: "";
+      background: rgb(255 255 255 / 5%);
+      border-radius: 50%;
+    }
+
+    .hero h2,
+    .hero p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      line-height: 1.17;
+    }
+
+    .hero p {
+      max-width: 50rem;
+      margin-block-start: .55rem;
+      color: #e5eaf2;
+    }
+
+    .hero-card {
+      position: relative;
+      z-index: 1;
+      align-self: center;
+      padding: 1rem;
+      color: #161300;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: var(--radius-md);
+      box-shadow:
+        inset 0 -4px 0 rgb(0 0 0 / 12%),
+        0 14px 32px rgb(0 0 0 / 20%);
+    }
+
+    .hero-card strong,
+    .hero-card span {
+      display: block;
+    }
+
+    .hero-card span {
+      margin-block-start: .2rem;
+      font-size: .78rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin-block: 1rem;
+    }
+
+    .card,
+    .panel,
+    .kpi,
+    .empty-state,
+    .error-state {
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel,
+    .card {
+      padding: 1rem;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      margin-block-end: .85rem;
+    }
+
+    .panel-header h2,
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .kpi {
+      position: relative;
+      min-height: 8.45rem;
+      overflow: hidden;
+      padding: 1rem;
+      transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
+    }
+
+    .kpi:hover {
+      border-color: color-mix(in srgb, var(--gold-dark) 55%, var(--border));
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .kpi::before {
+      position: absolute;
+      height: 3px;
+      inset-block-start: 0;
+      inset-inline: 0;
+      content: "";
+      background: linear-gradient(90deg, var(--gold), var(--red));
+    }
+
+    .kpi::after {
+      position: absolute;
+      width: 5.5rem;
+      height: 5.5rem;
+      inset-inline-end: -2.2rem;
+      inset-block-end: -2.9rem;
+      content: "";
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: .15;
+    }
+
+    .kpi[data-tone="danger"]::after {
+      background: var(--red);
+    }
+
+    .kpi[data-tone="silver"]::after {
+      background: var(--silver);
+    }
+
+    .kpi-label,
+    .kpi-value,
+    .kpi-note {
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .kpi-label {
+      min-height: 2.5rem;
+      color: var(--text-soft);
+      font-size: .8rem;
+      font-weight: 850;
+    }
+
+    .kpi-value {
+      margin-block-start: .35rem;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      font-variant-numeric: tabular-nums;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .kpi-note {
+      margin-block-start: .5rem;
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+    }
+
+    .quick-action {
+      position: relative;
+      min-height: 6.6rem;
+      padding: .9rem;
+      overflow: hidden;
+      color: var(--text);
+      text-align: start;
+      background: linear-gradient(145deg, var(--surface-soft), var(--surface));
+      border: 1px solid var(--border);
+      border-radius: .8rem;
+      transition: var(--transition);
+    }
+
+    .quick-action::after {
+      position: absolute;
+      width: 3.5rem;
+      height: 3.5rem;
+      inset-block-end: -2rem;
+      inset-inline-end: -1.2rem;
+      content: "";
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: .12;
+    }
+
+    .quick-action:hover {
+      border-color: var(--gold-dark);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .quick-action strong,
+    .quick-action span {
+      display: block;
+    }
+
+    .quick-action span {
+      margin-block-start: .32rem;
+      color: var(--text-soft);
+      font-size: .78rem;
+    }
+
+    .toolbar {
+      flex-wrap: wrap;
+      align-items: end;
+      margin-block-end: 1rem;
+      padding: .85rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .field {
+      display: grid;
+      gap: .34rem;
+      min-width: 0;
+    }
+
+    .field.grow {
+      min-width: min(100%, 18rem);
+      flex: 1 1 18rem;
+    }
+
+    .field label,
+    .field-label {
+      color: var(--text-soft);
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field select,
+    .field textarea,
+    .table-select,
+    .score-input {
+      width: 100%;
+      min-height: 2.72rem;
+      padding: .62rem .72rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .6rem;
+    }
+
+    .field textarea {
+      min-height: 7.5rem;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .table-select:focus,
+    .score-input:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      outline: none;
+    }
+
+    .field input[aria-invalid="true"],
+    .field select[aria-invalid="true"],
+    .field textarea[aria-invalid="true"],
+    .score-input[aria-invalid="true"] {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 17%, transparent);
+    }
+
+    .field-help {
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .check-field {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+      padding: .65rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .6rem;
+    }
+
+    .check-field input {
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-block-start: .12rem;
+      accent-color: var(--red);
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 2.65rem;
+      align-items: center;
+      justify-content: center;
+      gap: .42rem;
+      padding: .58rem .88rem;
+      color: #181300;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border: 1px solid var(--gold-dark);
+      border-radius: .64rem;
+      box-shadow:
+        inset 0 -2px 0 rgb(0 0 0 / 10%),
+        0 3px 9px rgb(255 215 0 / 12%);
+      font-weight: 880;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      box-shadow:
+        inset 0 -2px 0 rgb(0 0 0 / 12%),
+        0 7px 18px rgb(255 215 0 / 19%);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn.secondary:hover {
+      background: var(--surface-strong);
+      border-color: var(--gold-dark);
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: linear-gradient(145deg, #ef3158, var(--red));
+      border-color: var(--red-dark);
+      box-shadow: inset 0 -2px 0 rgb(0 0 0 / 12%);
+    }
+
+    .btn.success {
+      color: #fff;
+      background: #087443;
+      border-color: #075e37;
+    }
+
+    .btn.small {
+      min-height: 2.15rem;
+      padding: .37rem .58rem;
+      font-size: .77rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      min-height: 1.65rem;
+      align-items: center;
+      justify-content: center;
+      padding: .18rem .5rem;
+      color: var(--text);
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 880;
+      line-height: 1.15;
+    }
+
+    .badge.success {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--success) 34%, var(--border));
+    }
+
+    .badge.warning {
+      color: var(--warning);
+      background: color-mix(in srgb, var(--warning) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--warning) 34%, var(--border));
+    }
+
+    .badge.danger {
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--danger) 34%, var(--border));
+    }
+
+    .badge.info {
+      color: var(--info);
+      background: color-mix(in srgb, var(--info) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--info) 34%, var(--border));
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: .78rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: .83rem;
+    }
+
+    caption {
+      padding: .78rem;
+      color: var(--text-soft);
+      text-align: start;
+      font-weight: 780;
+    }
+
+    th,
+    td {
+      padding: .7rem;
+      text-align: start;
+      vertical-align: middle;
+      border-block-end: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text);
+      background: var(--surface-soft);
+      font-size: .7rem;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: color-mix(in srgb, var(--gold) 6%, var(--surface));
+    }
+
+    tbody tr:last-child td {
+      border-block-end: 0;
+    }
+
+    .person-cell {
+      display: flex;
+      min-width: 13rem;
+      align-items: center;
+      gap: .65rem;
+    }
+
+    .person-cell strong,
+    .person-cell span {
+      display: block;
+    }
+
+    .person-cell span {
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .score-input {
+      min-width: 5rem;
+      max-width: 6.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score-input.missing {
+      background: color-mix(in srgb, var(--warning) 10%, var(--surface));
+    }
+
+    .score-input.invalid {
+      background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+    }
+
+    .list {
+      display: grid;
+      gap: .65rem;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .list-item {
+      padding: .78rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .66rem;
+    }
+
+    .list-item strong,
+    .list-item span,
+    .list-item p,
+    .list-item time {
+      display: block;
+    }
+
+    .list-item span,
+    .list-item p,
+    .list-item time {
+      margin: .22rem 0 0;
+      color: var(--text-soft);
+      font-size: .77rem;
+    }
+
+    .validation-summary {
+      padding: .75rem;
+      margin-block-end: .8rem;
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+      border-radius: .66rem;
+      font-size: .82rem;
+      font-weight: 780;
+    }
+
+    .validation-summary.success {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 8%, var(--surface));
+      border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+    }
+
+    .chart {
+      display: grid;
+      gap: .65rem;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: minmax(6rem, .8fr) minmax(8rem, 3fr) auto;
+      align-items: center;
+      gap: .62rem;
+    }
+
+    .chart-track {
+      height: 1.08rem;
+      overflow: hidden;
+      background: var(--surface-strong);
+      border-radius: 999px;
+    }
+
+    .chart-bar {
+      height: 100%;
+      min-width: 2px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      border-radius: 999px;
+    }
+
+    .chart-label,
+    .chart-value {
+      font-size: .76rem;
+    }
+
+    .chart-value {
+      font-variant-numeric: tabular-nums;
+      font-weight: 880;
+    }
+
+    .empty-state,
+    .error-state {
+      display: grid;
+      min-height: 13rem;
+      place-items: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .empty-state > div,
+    .error-state > div {
+      max-width: 40rem;
+    }
+
+    .empty-state h2,
+    .empty-state p,
+    .error-state h2,
+    .error-state p {
+      margin: .42rem 0 0;
+    }
+
+    .empty-state p,
+    .error-state p {
+      color: var(--text-soft);
+    }
+
+    .state-icon {
+      font-size: 2.15rem;
+    }
+
+    .backdrop {
+      position: fixed;
+      z-index: 1080;
+      inset: 0;
+      background: rgb(2 6 15 / 68%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+      backdrop-filter: blur(3px);
+    }
+
+    .backdrop[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      z-index: 1100;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: min(94vw, 29rem);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      color: var(--text);
+      background: var(--surface);
+      border-inline-start: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transform: translateX(105%);
+      transition: transform var(--transition);
+    }
+
+    [dir="rtl"] .drawer {
+      transform: translateX(-105%);
+    }
+
+    .drawer[data-open="true"] {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      padding-block-end: .8rem;
+      border-block-end: 1px solid var(--border);
+    }
+
+    .drawer-header h2 {
+      margin: 0;
+      font-size: 1.18rem;
+    }
+
+    .drawer-body {
+      overflow: auto;
+      padding-block: .85rem;
+    }
+
+    .profile-menu {
+      position: fixed;
+      z-index: 1050;
+      inset-block-start: calc(var(--header-height) - .05rem);
+      inset-inline-end: 1rem;
+      width: min(92vw, 21rem);
+      padding: .55rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .82rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .profile-summary {
+      padding: .7rem;
+      border-block-end: 1px solid var(--border);
+    }
+
+    .profile-summary strong,
+    .profile-summary span {
+      display: block;
+    }
+
+    .profile-summary span {
+      color: var(--text-soft);
+      font-size: .76rem;
+    }
+
+    .profile-menu button {
+      width: 100%;
+      min-height: 2.5rem;
+      padding: .52rem .65rem;
+      color: var(--text);
+      text-align: start;
+      background: transparent;
+      border: 0;
+      border-radius: .52rem;
+    }
+
+    .profile-menu button:hover {
+      background: var(--surface-soft);
+    }
+
+    dialog {
+      width: min(calc(100% - 1.5rem), 52rem);
+      max-height: min(93vh, 60rem);
+      padding: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    dialog::backdrop {
+      background: rgb(2 6 15 / 70%);
+      backdrop-filter: blur(5px);
+    }
+
+    .dialog-shell {
+      display: flex;
+      max-height: min(93vh, 60rem);
+      flex-direction: column;
+    }
+
+    .dialog-header,
+    .dialog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      padding: 1rem;
+    }
+
+    .dialog-header {
+      color: #fff;
+      background:
+        linear-gradient(120deg, rgb(220 20 60 / 67%), transparent 55%),
+        linear-gradient(145deg, #080e19, #1a2f50);
+      border-block-end: 1px solid var(--border);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 1.17rem;
+    }
+
+    .dialog-header .icon-button {
+      color: #fff;
+      background: rgb(255 255 255 / 8%);
+      border-color: rgb(255 255 255 / 17%);
+    }
+
+    .dialog-body {
+      overflow: auto;
+      padding: 1rem;
+    }
+
+    .dialog-footer {
+      justify-content: flex-end;
+      background: var(--surface-soft);
+      border-block-start: 1px solid var(--border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .toast-region {
+      position: fixed;
+      z-index: 2500;
+      inset-block-end: max(1rem, env(safe-area-inset-bottom));
+      inset-inline-end: max(1rem, env(safe-area-inset-right));
+      display: grid;
+      width: min(calc(100% - 2rem), 25rem);
+      gap: .62rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: start;
+      gap: .65rem;
+      padding: .82rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-inline-start: .36rem solid var(--info);
+      border-radius: .75rem;
+      box-shadow: var(--shadow-md);
+      pointer-events: auto;
+    }
+
+    .toast[data-tone="success"] {
+      border-inline-start-color: var(--success);
+    }
+
+    .toast[data-tone="warning"] {
+      border-inline-start-color: var(--warning);
+    }
+
+    .toast[data-tone="danger"] {
+      border-inline-start-color: var(--danger);
+    }
+
+    .toast strong,
+    .toast span {
+      display: block;
+    }
+
+    .toast span {
+      margin-block-start: .1rem;
+      color: var(--text-soft);
+      font-size: .76rem;
+    }
+
+    .toast button {
+      padding: .1rem;
+      color: var(--text-soft);
+      background: transparent;
+      border: 0;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    @media (max-width: 84rem) {
+      .kpi-grid,
+      .grid.four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profile-name {
+        display: none;
+      }
+    }
+
+    @media (max-width: 68rem) {
+      :root {
+        --header-height: 7.9rem;
+      }
+
+      .sidebar {
+        transform: translateX(-105%);
+        box-shadow: var(--shadow-lg);
+      }
+
+      [dir="rtl"] .sidebar {
+        transform: translateX(105%);
+      }
+
+      .sidebar[data-open="true"] {
+        transform: translateX(0);
+      }
+
+      .workspace {
+        margin-inline-start: 0;
+      }
+
+      .topbar {
+        grid-template-columns: minmax(10rem, 1fr) auto;
+      }
+
+      .global-search {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .mobile-only {
+        display: inline-grid;
+      }
+
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 50rem) {
+      .content {
+        padding: .85rem;
+      }
+
+      .page-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .page-actions {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .kpi-grid,
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .quick-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar > * {
+        width: 100%;
+      }
+
+      .toolbar .btn {
+        width: auto;
+        flex: 1 1 9rem;
+      }
+
+      #course-switch {
+        display: none;
+      }
+
+      .topbar-actions {
+        gap: .28rem;
+      }
+
+      .language-switcher button {
+        min-width: 2.1rem;
+      }
+    }
+
+    @media (max-width: 29rem) {
+      .language-switcher {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 1.2cm;
+      }
+
+      :root {
+        color-scheme: light;
+        --bg: #fff;
+        --surface: #fff;
+        --surface-soft: #fff;
+        --surface-strong: #eee;
+        --text: #000;
+        --text-soft: #333;
+        --text-muted: #444;
+        --border: #999;
+      }
+
+      body {
+        background: #fff;
+        font-size: 10pt;
+      }
+
+      .sidebar,
+      .topbar,
+      .preview-banner,
+      .backdrop,
+      .drawer,
+      .profile-menu,
+      .toast-region,
+      .page-actions,
+      .toolbar,
+      .btn,
+      .icon-button,
+      .profile-button {
+        display: none !important;
+      }
+
+      .workspace {
+        margin: 0;
+      }
+
+      .content {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+      }
+
+      .panel,
+      .card,
+      .kpi,
+      .table-wrap {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .hero {
+        color: #000;
+        background: #fff;
+        border: 2px solid #000;
+      }
+
+      .hero p {
+        color: #222;
+      }
+
+      table {
+        font-size: 8.5pt;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="skip">
+    Skip to main content
+  </a>
+
+  <div id="sidebar-backdrop" class="backdrop" data-open="false" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar" data-open="false" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">Y</div>
+
+        <div class="brand-copy">
+          <strong>YAJIB University</strong>
+          <span data-i18n="portalName">Department Examination Office</span>
+        </div>
+      </div>
+
+      <div class="sidebar-label" data-i18n="workspace">Workspace</div>
+
+      <nav id="sidebar-nav" class="sidebar-nav"></nav>
+
+      <div class="sidebar-footer">
+        <strong data-i18n="secureWorkspace">Secure departmental workspace</strong>
+        <span id="sidebar-scope"></span>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <div class="preview-banner" role="status">
+        <span aria-hidden="true">⚠</span>
+        <span data-i18n="previewNotice">
+          SAMPLE WORKSPACE — Data is isolated in this browser and is not connected to a university database.
+        </span>
+      </div>
+
+      <header class="topbar">
+        <div class="topbar-start">
+          <button
+            id="sidebar-toggle"
+            class="icon-button mobile-only"
+            type="button"
+            aria-controls="sidebar"
+            aria-expanded="false"
+            aria-label="Open navigation"
+          >
+            ☰
+          </button>
+
+          <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
+        </div>
+
+        <div class="global-search">
+          <span class="global-search-symbol" aria-hidden="true">⌕</span>
+
+          <label class="sr-only" for="global-search-input" data-i18n="search">
+            Search
+          </label>
+
+          <input
+            id="global-search-input"
+            type="search"
+            autocomplete="off"
+            data-i18n-placeholder="searchPlaceholder"
+            placeholder="Search examinations, candidates, venues, or invigilators"
+          >
+
+          <kbd aria-hidden="true">/</kbd>
+
+          <div id="search-results" class="search-results" hidden></div>
+        </div>
+
+        <div class="topbar-actions">
+          <label class="sr-only" for="course-switch" data-i18n="activeCourse">
+            Active course
+          </label>
+
+          <select id="course-switch" class="compact-select"></select>
+
+          <div id="language-switcher" class="language-switcher" aria-label="Language">
+            <button type="button" data-language="en" aria-pressed="true" aria-label="English">
+              EN
+            </button>
+
+            <button type="button" data-language="fr" aria-pressed="false" aria-label="Français">
+              FR
+            </button>
+
+            <button type="button" data-language="ar" aria-pressed="false" aria-label="العربية">
+              AR
+            </button>
+          </div>
+
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">
+            <span id="theme-icon" aria-hidden="true">◐</span>
+          </button>
+
+          <button
+            id="notification-toggle"
+            class="icon-button notification-button"
+            type="button"
+            aria-controls="notification-drawer"
+            aria-expanded="false"
+            aria-label="Notifications"
+          >
+            <span aria-hidden="true">♢</span>
+            <span id="notification-count" class="notification-count" aria-hidden="true">0</span>
+          </button>
+
+          <button
+            id="profile-toggle"
+            class="profile-button"
+            type="button"
+            aria-controls="profile-menu"
+            aria-expanded="false"
+          >
+            <span id="header-avatar" class="avatar" aria-hidden="true">EO</span>
+            <span id="header-name" class="profile-name">Exam Officer</span>
+            <span aria-hidden="true">▾</span>
+          </button>
+        </div>
+      </header>
+
+      <div id="profile-menu" class="profile-menu" role="menu" hidden>
+        <div class="profile-summary">
+          <strong id="profile-name">Exam Officer</strong>
+          <span id="profile-role">Department Exam Officer</span>
+          <span id="profile-department">Department</span>
+        </div>
+
+        <button type="button" role="menuitem" data-profile-action="print" data-i18n="print">
+          Print
+        </button>
+
+        <button type="button" role="menuitem" data-profile-action="help" data-i18n="help">
+          Help
+        </button>
+
+        <button type="button" role="menuitem" data-profile-action="reset" data-i18n="resetSample">
+          Reset sample data
+        </button>
+
+        <button type="button" role="menuitem" data-profile-action="signout" data-i18n="signOut">
+          Sign out
+        </button>
+      </div>
+
+      <main id="main-content" class="content" tabindex="-1">
+        <header class="page-heading">
+          <div>
+            <span id="page-eyebrow" class="eyebrow">Department Exam Officer</span>
+            <h1 id="page-title">Dashboard</h1>
+            <p id="page-subtitle"></p>
+          </div>
+
+          <div id="page-actions" class="page-actions"></div>
+        </header>
+
+        <section id="view" aria-live="polite"></section>
+      </main>
+    </div>
+  </div>
+
+  <div id="notification-backdrop" class="backdrop" data-open="false" aria-hidden="true"></div>
+
+  <aside
+    id="notification-drawer"
+    class="drawer"
+    data-open="false"
+    aria-hidden="true"
+    aria-labelledby="notification-title"
+  >
+    <div class="drawer-header">
+      <h2 id="notification-title" data-i18n="notifications">Notifications</h2>
+
+      <button
+        id="notification-close"
+        class="icon-button"
+        type="button"
+        aria-label="Close"
+        data-i18n-aria-label="close"
+      >
+        ×
+      </button>
+    </div>
+
+    <div id="notification-list" class="drawer-body"></div>
+  </aside>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <form id="modal-form" class="dialog-shell" novalidate>
+      <div class="dialog-header">
+        <h2 id="modal-title">Dialog</h2>
+
+        <button
+          id="modal-close"
+          class="icon-button"
+          type="button"
+          aria-label="Close"
+          data-i18n-aria-label="close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div id="modal-error" class="validation-summary" role="alert" hidden></div>
+
+      <div id="modal-body" class="dialog-body"></div>
+
+      <div class="dialog-footer">
+        <button id="modal-cancel" class="btn secondary" type="button" data-i18n="cancel">
+          Cancel
+        </button>
+
+        <button id="modal-submit" class="btn" type="submit">
+          Save
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+  <script type="module">
+    "use strict";
+
+    const STORAGE_KEY = "yajib-department-exam-officer-data-v3";
+    const LANGUAGE_KEY = "yajib-department-exam-officer-language";
+    const THEME_KEY = "yajib-department-exam-officer-theme";
+
+    const LOCALES = {
+      en: "en-GB",
+      fr: "fr-FR",
+      ar: "ar"
+    };
+
+    const ROUTES = [
+      ["dashboard", "⌂", "dashboard"],
+      ["exams", "◷", "examinations"],
+      ["timetable", "▦", "timetable"],
+      ["candidates", "♙", "candidates"],
+      ["venues", "⌑", "venues"],
+      ["invigilators", "♜", "invigilators"],
+      ["scripts", "▱", "scripts"],
+      ["results", "▤", "results"],
+      ["incidents", "!", "incidents"],
+      ["reports", "▥", "reports"],
+      ["help", "ⓘ", "help"]
+    ];
+
+    const ROUTE_META = {
+      dashboard: ["dashboard", "dashboardSubtitle"],
+      exams: ["examinations", "examsSubtitle"],
+      timetable: ["timetable", "timetableSubtitle"],
+      candidates: ["candidates", "candidatesSubtitle"],
+      venues: ["venues", "venuesSubtitle"],
+      invigilators: ["invigilators", "invigilatorsSubtitle"],
+      scripts: ["scripts", "scriptsSubtitle"],
+      results: ["results", "resultsSubtitle"],
+      incidents: ["incidents", "incidentsSubtitle"],
+      reports: ["reports", "reportsSubtitle"],
+      help: ["help", "helpSubtitle"]
+    };
+
+    const I18N = {
+      en: {
+        skip: "Skip to main content",
+        portalName: "Department Examination Office",
+        workspace: "Workspace",
+        secureWorkspace: "Secure departmental workspace",
+        previewNotice: "SAMPLE WORKSPACE — Data is isolated in this browser and is not connected to a university database.",
+        dashboard: "Dashboard",
+        examinations: "Examinations",
+        timetable: "Timetable",
+        candidates: "Candidates",
+        venues: "Venues",
+        invigilators: "Invigilators",
+        scripts: "Exam Scripts",
+        results: "Results",
+        incidents: "Incidents",
+        reports: "Reports",
+        help: "Help",
+        search: "Search",
+        searchPlaceholder: "Search examinations, candidates, venues, or invigilators",
+        activeCourse: "Active course",
+        notifications: "Notifications",
+        close: "Close",
+        cancel: "Cancel",
+        save: "Save",
+        edit: "Edit",
+        delete: "Delete",
+        archive: "Archive",
+        print: "Print",
+        signOut: "Sign out",
+        resetSample: "Reset sample data",
+        departmentExamOfficer: "Department Exam Officer",
+        dashboardSubtitle: "Coordinate departmental examinations, venues, invigilation, scripts, incidents, and secure result workflows.",
+        examsSubtitle: "Create, update, filter, and monitor departmental examination schedules.",
+        timetableSubtitle: "Review the consolidated examination timetable for the department.",
+        candidatesSubtitle: "Search registered candidates and review examination eligibility.",
+        venuesSubtitle: "Manage departmental examination venues and capacity.",
+        invigilatorsSubtitle: "Assign and manage approved examination invigilators.",
+        scriptsSubtitle: "Track script collection, counting, transfer, and return.",
+        resultsSubtitle: "Validate departmental scores and submit completed drafts for moderation.",
+        incidentsSubtitle: "Record and monitor examination incidents through an auditable workflow.",
+        reportsSubtitle: "Review readiness, candidate, result, venue, and incident summaries.",
+        helpSubtitle: "Guidance for secure Department Exam Officer workflows.",
+        welcome: "Welcome",
+        session: "Academic session",
+        semester: "Semester",
+        assignedCourses: "Department courses",
+        scheduledExams: "Scheduled examinations",
+        registeredCandidates: "Registered candidates",
+        availableVenues: "Available venues",
+        assignedInvigilators: "Assigned invigilators",
+        unreturnedScripts: "Unreturned scripts",
+        openIncidents: "Open incidents",
+        pendingResults: "Pending result submissions",
+        upcomingExams: "Upcoming examinations",
+        quickActions: "Quick actions",
+        recentActivity: "Recent activity",
+        createExam: "Create examination",
+        addVenue: "Add venue",
+        addInvigilator: "Add invigilator",
+        reportIncident: "Report incident",
+        openResults: "Open result grid",
+        searchExams: "Search examinations",
+        searchCandidates: "Search candidates",
+        searchVenues: "Search venues",
+        searchInvigilators: "Search invigilators",
+        allStatuses: "All statuses",
+        allLevels: "All levels",
+        status: "Status",
+        level: "Level",
+        course: "Course",
+        code: "Code",
+        title: "Title",
+        date: "Date",
+        time: "Time",
+        duration: "Duration",
+        minutes: "minutes",
+        venue: "Venue",
+        capacity: "Capacity",
+        actions: "Actions",
+        scheduled: "Scheduled",
+        draft: "Draft",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        pending: "Pending",
+        ready: "Ready",
+        active: "Active",
+        inactive: "Inactive",
+        available: "Available",
+        unavailable: "Unavailable",
+        full: "Full",
+        registrationNumber: "Registration number",
+        programme: "Programme",
+        eligibility: "Eligibility",
+        eligible: "Eligible",
+        ineligible: "Ineligible",
+        specialArrangement: "Special arrangement",
+        noSpecialArrangement: "None",
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        building: "Building",
+        seatCapacity: "Seat capacity",
+        accessibility: "Accessibility",
+        accessible: "Accessible",
+        notAccessible: "Not accessible",
+        assignmentCount: "Assignments",
+        department: "Department",
+        examination: "Examination",
+        chiefInvigilator: "Chief invigilator",
+        assign: "Assign",
+        scriptStatus: "Script status",
+        expectedScripts: "Expected scripts",
+        receivedScripts: "Received scripts",
+        collected: "Collected",
+        transferred: "Transferred",
+        returned: "Returned",
+        missing: "Missing",
+        score: "Score",
+        maximumScore: "Maximum score",
+        moderationStatus: "Moderation status",
+        saveDraft: "Save draft",
+        validateResults: "Validate results",
+        submitModeration: "Submit for moderation",
+        exportCsv: "Export CSV",
+        missingScoreError: "One or more required scores are missing.",
+        scoreRangeError: "One or more scores are outside the permitted range.",
+        resultsSaved: "Result draft saved",
+        resultsSubmitted: "Results submitted for departmental moderation",
+        protectedStateNotice: "This page submits results for moderation but does not directly approve or publish protected result states.",
+        incidentType: "Incident type",
+        misconduct: "Suspected misconduct",
+        medical: "Medical incident",
+        attendanceIssue: "Attendance issue",
+        venueIssue: "Venue issue",
+        scriptIssue: "Script issue",
+        other: "Other",
+        severity: "Severity",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        critical: "Critical",
+        description: "Description",
+        resolution: "Resolution",
+        open: "Open",
+        investigating: "Investigating",
+        resolved: "Resolved",
+        create: "Create",
+        update: "Update",
+        confirmDelete: "Delete this sample record?",
+        validationFailed: "Validation failed",
+        correctErrors: "Correct the highlighted fields and try again.",
+        sampleSaved: "The sample-data change was saved in this browser.",
+        sampleDeleted: "The sample record was removed.",
+        resetConfirm: "Reset all local sample data to the original version?",
+        resetComplete: "Sample data was reset.",
+        noData: "No data available",
+        noMatches: "No matching records",
+        noMatchesBody: "Change the search or filter values and try again.",
+        markRead: "Mark as read",
+        remove: "Remove",
+        noNotifications: "No notifications",
+        readiness: "Readiness",
+        examinationReadiness: "Examination readiness",
+        resultCompletion: "Result completion",
+        venueUtilization: "Venue utilization",
+        incidentSummary: "Incident summary",
+        candidateEligibility: "Candidate eligibility",
+        total: "Total",
+        passedValidation: "Validation passed",
+        resetFilters: "Reset filters",
+        helpSecurity: "Security and authorization",
+        helpSecurityBody: "The live implementation must verify the Department Exam Officer role on the server, restrict every query by institution and department, and keep RLS as the final authorization boundary.",
+        helpResults: "Protected results workflow",
+        helpResultsBody: "The officer may validate and submit departmental drafts for moderation. Direct institutional approval and publication remain protected server-side actions.",
+        helpIncidents: "Incident records",
+        helpIncidentsBody: "Incident creation, updates, and resolution changes should be audited and should preserve the original reporter and timestamps.",
+        helpLanguage: "Language and direction",
+        helpLanguageBody: "English, French, and Arabic switch instantly. Arabic automatically applies right-to-left direction to the whole interface.",
+        helpSample: "Sample data",
+        helpSampleBody: "This standalone file stores sample changes locally in the browser. Use Reset sample data to restore the original records."
+      },
+
+      fr: {
+        skip: "Aller au contenu principal",
+        portalName: "Bureau Départemental des Examens",
+        workspace: "Espace de travail",
+        secureWorkspace: "Espace départemental sécurisé",
+        previewNotice: "ESPACE DE DÉMONSTRATION — Les données sont isolées dans ce navigateur et ne sont pas connectées à la base universitaire.",
+        dashboard: "Tableau de bord",
+        examinations: "Examens",
+        timetable: "Emploi du temps",
+        candidates: "Candidats",
+        venues: "Salles",
+        invigilators: "Surveillants",
+        scripts: "Copies d’examen",
+        results: "Résultats",
+        incidents: "Incidents",
+        reports: "Rapports",
+        help: "Aide",
+        search: "Rechercher",
+        searchPlaceholder: "Rechercher examens, candidats, salles ou surveillants",
+        activeCourse: "Cours actif",
+        notifications: "Notifications",
+        close: "Fermer",
+        cancel: "Annuler",
+        save: "Enregistrer",
+        edit: "Modifier",
+        delete: "Supprimer",
+        archive: "Archiver",
+        print: "Imprimer",
+        signOut: "Se déconnecter",
+        resetSample: "Réinitialiser les données",
+        departmentExamOfficer: "Responsable Départemental des Examens",
+        dashboardSubtitle: "Coordonnez les examens, salles, surveillants, copies, incidents et flux sécurisés des résultats.",
+        examsSubtitle: "Créez, modifiez, filtrez et suivez les examens du département.",
+        timetableSubtitle: "Consultez l’emploi du temps consolidé des examens.",
+        candidatesSubtitle: "Recherchez les candidats inscrits et vérifiez leur admissibilité.",
+        venuesSubtitle: "Gérez les salles d’examen et leurs capacités.",
+        invigilatorsSubtitle: "Affectez et gérez les surveillants approuvés.",
+        scriptsSubtitle: "Suivez la collecte, le comptage, le transfert et le retour des copies.",
+        resultsSubtitle: "Validez les notes et soumettez les brouillons terminés à la modération.",
+        incidentsSubtitle: "Enregistrez et suivez les incidents d’examen.",
+        reportsSubtitle: "Analysez la préparation, les candidats, les résultats, les salles et les incidents.",
+        helpSubtitle: "Conseils pour les flux sécurisés du responsable des examens.",
+        welcome: "Bienvenue",
+        session: "Année universitaire",
+        semester: "Semestre",
+        assignedCourses: "Cours du département",
+        scheduledExams: "Examens planifiés",
+        registeredCandidates: "Candidats inscrits",
+        availableVenues: "Salles disponibles",
+        assignedInvigilators: "Surveillants affectés",
+        unreturnedScripts: "Copies non retournées",
+        openIncidents: "Incidents ouverts",
+        pendingResults: "Résultats en attente",
+        upcomingExams: "Examens à venir",
+        quickActions: "Actions rapides",
+        recentActivity: "Activité récente",
+        createExam: "Créer un examen",
+        addVenue: "Ajouter une salle",
+        addInvigilator: "Ajouter un surveillant",
+        reportIncident: "Signaler un incident",
+        openResults: "Ouvrir la grille des résultats",
+        searchExams: "Rechercher des examens",
+        searchCandidates: "Rechercher des candidats",
+        searchVenues: "Rechercher des salles",
+        searchInvigilators: "Rechercher des surveillants",
+        allStatuses: "Tous les statuts",
+        allLevels: "Tous les niveaux",
+        status: "Statut",
+        level: "Niveau",
+        course: "Cours",
+        code: "Code",
+        title: "Titre",
+        date: "Date",
+        time: "Heure",
+        duration: "Durée",
+        minutes: "minutes",
+        venue: "Salle",
+        capacity: "Capacité",
+        actions: "Actions",
+        scheduled: "Planifié",
+        draft: "Brouillon",
+        completed: "Terminé",
+        cancelled: "Annulé",
+        pending: "En attente",
+        ready: "Prêt",
+        active: "Actif",
+        inactive: "Inactif",
+        available: "Disponible",
+        unavailable: "Indisponible",
+        full: "Complet",
+        registrationNumber: "Numéro d’inscription",
+        programme: "Programme",
+        eligibility: "Admissibilité",
+        eligible: "Admissible",
+        ineligible: "Non admissible",
+        specialArrangement: "Aménagement spécial",
+        noSpecialArrangement: "Aucun",
+        name: "Nom",
+        email: "E-mail",
+        phone: "Téléphone",
+        building: "Bâtiment",
+        seatCapacity: "Nombre de places",
+        accessibility: "Accessibilité",
+        accessible: "Accessible",
+        notAccessible: "Non accessible",
+        assignmentCount: "Affectations",
+        department: "Département",
+        examination: "Examen",
+        chiefInvigilator: "Surveillant principal",
+        assign: "Affecter",
+        scriptStatus: "Statut des copies",
+        expectedScripts: "Copies attendues",
+        receivedScripts: "Copies reçues",
+        collected: "Collectées",
+        transferred: "Transférées",
+        returned: "Retournées",
+        missing: "Manquantes",
+        score: "Note",
+        maximumScore: "Note maximale",
+        moderationStatus: "Statut de modération",
+        saveDraft: "Enregistrer le brouillon",
+        validateResults: "Valider les résultats",
+        submitModeration: "Soumettre à la modération",
+        exportCsv: "Exporter CSV",
+        missingScoreError: "Une ou plusieurs notes obligatoires sont manquantes.",
+        scoreRangeError: "Une ou plusieurs notes dépassent la plage autorisée.",
+        resultsSaved: "Brouillon des résultats enregistré",
+        resultsSubmitted: "Résultats soumis à la modération départementale",
+        protectedStateNotice: "Cette page soumet les résultats à la modération sans approuver ni publier directement les états protégés.",
+        incidentType: "Type d’incident",
+        misconduct: "Suspicion de fraude",
+        medical: "Incident médical",
+        attendanceIssue: "Problème de présence",
+        venueIssue: "Problème de salle",
+        scriptIssue: "Problème de copies",
+        other: "Autre",
+        severity: "Gravité",
+        low: "Faible",
+        medium: "Moyenne",
+        high: "Élevée",
+        critical: "Critique",
+        description: "Description",
+        resolution: "Résolution",
+        open: "Ouvert",
+        investigating: "En cours d’enquête",
+        resolved: "Résolu",
+        create: "Créer",
+        update: "Mettre à jour",
+        confirmDelete: "Supprimer cet enregistrement de démonstration ?",
+        validationFailed: "Échec de la validation",
+        correctErrors: "Corrigez les champs signalés et réessayez.",
+        sampleSaved: "La modification a été enregistrée dans ce navigateur.",
+        sampleDeleted: "L’enregistrement a été supprimé.",
+        resetConfirm: "Réinitialiser toutes les données locales ?",
+        resetComplete: "Les données ont été réinitialisées.",
+        noData: "Aucune donnée",
+        noMatches: "Aucun résultat",
+        noMatchesBody: "Modifiez la recherche ou les filtres et réessayez.",
+        markRead: "Marquer comme lu",
+        remove: "Retirer",
+        noNotifications: "Aucune notification",
+        readiness: "Préparation",
+        examinationReadiness: "Préparation des examens",
+        resultCompletion: "Achèvement des résultats",
+        venueUtilization: "Utilisation des salles",
+        incidentSummary: "Résumé des incidents",
+        candidateEligibility: "Admissibilité des candidats",
+        total: "Total",
+        passedValidation: "Validation réussie",
+        resetFilters: "Réinitialiser les filtres",
+        helpSecurity: "Sécurité et autorisation",
+        helpSecurityBody: "La version directe doit vérifier le rôle côté serveur, limiter chaque requête par établissement et département, et conserver les RLS comme limite finale.",
+        helpResults: "Flux protégé des résultats",
+        helpResultsBody: "Le responsable peut valider et soumettre les brouillons à la modération. L’approbation institutionnelle et la publication restent protégées côté serveur.",
+        helpIncidents: "Registres d’incidents",
+        helpIncidentsBody: "La création, la modification et la résolution des incidents doivent être auditées.",
+        helpLanguage: "Langue et direction",
+        helpLanguageBody: "L’anglais, le français et l’arabe changent immédiatement. L’arabe active automatiquement le sens droite-à-gauche.",
+        helpSample: "Données de démonstration",
+        helpSampleBody: "Ce fichier stocke les changements localement. Utilisez la réinitialisation pour restaurer les données d’origine."
+      },
+
+      ar: {
+        skip: "الانتقال إلى المحتوى الرئيسي",
+        portalName: "مكتب اختبارات القسم",
+        workspace: "مساحة العمل",
+        secureWorkspace: "مساحة قسم آمنة",
+        previewNotice: "مساحة تجريبية — البيانات معزولة في هذا المتصفح وغير متصلة بقاعدة بيانات الجامعة.",
+        dashboard: "لوحة المعلومات",
+        examinations: "الاختبارات",
+        timetable: "الجدول",
+        candidates: "المرشحون",
+        venues: "القاعات",
+        invigilators: "المراقبون",
+        scripts: "أوراق الإجابة",
+        results: "النتائج",
+        incidents: "الحوادث",
+        reports: "التقارير",
+        help: "المساعدة",
+        search: "بحث",
+        searchPlaceholder: "ابحث في الاختبارات أو المرشحين أو القاعات أو المراقبين",
+        activeCourse: "المقرر النشط",
+        notifications: "الإشعارات",
+        close: "إغلاق",
+        cancel: "إلغاء",
+        save: "حفظ",
+        edit: "تعديل",
+        delete: "حذف",
+        archive: "أرشفة",
+        print: "طباعة",
+        signOut: "تسجيل الخروج",
+        resetSample: "إعادة ضبط البيانات",
+        departmentExamOfficer: "مسؤول اختبارات القسم",
+        dashboardSubtitle: "تنسيق اختبارات القسم والقاعات والمراقبة والأوراق والحوادث وسير عمل النتائج الآمن.",
+        examsSubtitle: "إنشاء وتحديث وتصفية ومتابعة جداول اختبارات القسم.",
+        timetableSubtitle: "مراجعة الجدول الموحد لاختبارات القسم.",
+        candidatesSubtitle: "البحث عن المرشحين والتحقق من أهليتهم للاختبار.",
+        venuesSubtitle: "إدارة قاعات الاختبار وسعتها.",
+        invigilatorsSubtitle: "تعيين وإدارة مراقبي الاختبارات المعتمدين.",
+        scriptsSubtitle: "متابعة استلام وعد وتحويل وإعادة أوراق الإجابة.",
+        resultsSubtitle: "التحقق من درجات القسم وإرسال المسودات المكتملة للمراجعة.",
+        incidentsSubtitle: "تسجيل ومتابعة حوادث الاختبارات عبر سير عمل قابل للتدقيق.",
+        reportsSubtitle: "مراجعة الجاهزية والمرشحين والنتائج والقاعات والحوادث.",
+        helpSubtitle: "إرشادات لسير عمل مسؤول اختبارات القسم الآمن.",
+        welcome: "مرحباً",
+        session: "السنة الأكاديمية",
+        semester: "الفصل الدراسي",
+        assignedCourses: "مقررات القسم",
+        scheduledExams: "الاختبارات المجدولة",
+        registeredCandidates: "المرشحون المسجلون",
+        availableVenues: "القاعات المتاحة",
+        assignedInvigilators: "المراقبون المعينون",
+        unreturnedScripts: "أوراق غير معادة",
+        openIncidents: "حوادث مفتوحة",
+        pendingResults: "نتائج بانتظار الإرسال",
+        upcomingExams: "اختبارات قادمة",
+        quickActions: "إجراءات سريعة",
+        recentActivity: "النشاط الأخير",
+        createExam: "إنشاء اختبار",
+        addVenue: "إضافة قاعة",
+        addInvigilator: "إضافة مراقب",
+        reportIncident: "تسجيل حادث",
+        openResults: "فتح شبكة النتائج",
+        searchExams: "بحث الاختبارات",
+        searchCandidates: "بحث المرشحين",
+        searchVenues: "بحث القاعات",
+        searchInvigilators: "بحث المراقبين",
+        allStatuses: "كل الحالات",
+        allLevels: "كل المستويات",
+        status: "الحالة",
+        level: "المستوى",
+        course: "المقرر",
+        code: "الرمز",
+        title: "العنوان",
+        date: "التاريخ",
+        time: "الوقت",
+        duration: "المدة",
+        minutes: "دقائق",
+        venue: "القاعة",
+        capacity: "السعة",
+        actions: "الإجراءات",
+        scheduled: "مجدول",
+        draft: "مسودة",
+        completed: "مكتمل",
+        cancelled: "ملغى",
+        pending: "قيد الانتظار",
+        ready: "جاهز",
+        active: "نشط",
+        inactive: "غير نشط",
+        available: "متاح",
+        unavailable: "غير متاح",
+        full: "ممتلئ",
+        registrationNumber: "رقم التسجيل",
+        programme: "البرنامج",
+        eligibility: "الأهلية",
+        eligible: "مؤهل",
+        ineligible: "غير مؤهل",
+        specialArrangement: "ترتيب خاص",
+        noSpecialArrangement: "لا يوجد",
+        name: "الاسم",
+        email: "البريد الإلكتروني",
+        phone: "الهاتف",
+        building: "المبنى",
+        seatCapacity: "عدد المقاعد",
+        accessibility: "إمكانية الوصول",
+        accessible: "متاح",
+        notAccessible: "غير متاح",
+        assignmentCount: "التكليفات",
+        department: "القسم",
+        examination: "الاختبار",
+        chiefInvigilator: "المراقب الرئيسي",
+        assign: "تعيين",
+        scriptStatus: "حالة الأوراق",
+        expectedScripts: "الأوراق المتوقعة",
+        receivedScripts: "الأوراق المستلمة",
+        collected: "مستلمة",
+        transferred: "محولة",
+        returned: "معادة",
+        missing: "مفقودة",
+        score: "الدرجة",
+        maximumScore: "الدرجة القصوى",
+        moderationStatus: "حالة المراجعة",
+        saveDraft: "حفظ المسودة",
+        validateResults: "التحقق من النتائج",
+        submitModeration: "إرسال للمراجعة",
+        exportCsv: "تصدير CSV",
+        missingScoreError: "توجد درجات مطلوبة مفقودة.",
+        scoreRangeError: "توجد درجات خارج النطاق المسموح.",
+        resultsSaved: "تم حفظ مسودة النتائج",
+        resultsSubmitted: "تم إرسال النتائج للمراجعة على مستوى القسم",
+        protectedStateNotice: "ترسل هذه الصفحة النتائج للمراجعة ولا تعتمد أو تنشر الحالات المحمية مباشرة.",
+        incidentType: "نوع الحادث",
+        misconduct: "اشتباه في مخالفة",
+        medical: "حادث طبي",
+        attendanceIssue: "مشكلة حضور",
+        venueIssue: "مشكلة قاعة",
+        scriptIssue: "مشكلة أوراق",
+        other: "أخرى",
+        severity: "الخطورة",
+        low: "منخفضة",
+        medium: "متوسطة",
+        high: "عالية",
+        critical: "حرجة",
+        description: "الوصف",
+        resolution: "الحل",
+        open: "مفتوح",
+        investigating: "قيد التحقيق",
+        resolved: "محلول",
+        create: "إنشاء",
+        update: "تحديث",
+        confirmDelete: "حذف هذا السجل التجريبي؟",
+        validationFailed: "فشل التحقق",
+        correctErrors: "صحح الحقول المحددة وحاول مرة أخرى.",
+        sampleSaved: "تم حفظ التغيير التجريبي في هذا المتصفح.",
+        sampleDeleted: "تم حذف السجل التجريبي.",
+        resetConfirm: "إعادة جميع البيانات المحلية إلى النسخة الأصلية؟",
+        resetComplete: "تمت إعادة ضبط البيانات.",
+        noData: "لا توجد بيانات",
+        noMatches: "لا توجد نتائج مطابقة",
+        noMatchesBody: "غيّر البحث أو التصفية وحاول مرة أخرى.",
+        markRead: "تحديد كمقروء",
+        remove: "إزالة",
+        noNotifications: "لا توجد إشعارات",
+        readiness: "الجاهزية",
+        examinationReadiness: "جاهزية الاختبارات",
+        resultCompletion: "اكتمال النتائج",
+        venueUtilization: "استخدام القاعات",
+        incidentSummary: "ملخص الحوادث",
+        candidateEligibility: "أهلية المرشحين",
+        total: "الإجمالي",
+        passedValidation: "نجح التحقق",
+        resetFilters: "إعادة ضبط التصفية",
+        helpSecurity: "الأمان والتفويض",
+        helpSecurityBody: "يجب أن تتحقق النسخة المباشرة من دور مسؤول اختبارات القسم على الخادم، وتقيّد كل استعلام بالمؤسسة والقسم، وتبقي RLS حاجز التفويض النهائي.",
+        helpResults: "سير عمل النتائج المحمي",
+        helpResultsBody: "يمكن للمسؤول التحقق من المسودات وإرسالها للمراجعة، بينما يبقى الاعتماد المؤسسي والنشر إجراءات محمية على الخادم.",
+        helpIncidents: "سجلات الحوادث",
+        helpIncidentsBody: "يجب تدقيق إنشاء الحوادث وتحديثها وتغيير حالتها مع الحفاظ على هوية المبلّغ والتوقيت.",
+        helpLanguage: "اللغة والاتجاه",
+        helpLanguageBody: "تتغير الإنجليزية والفرنسية والعربية فوراً، وتفعّل العربية الاتجاه من اليمين إلى اليسار تلقائياً.",
+        helpSample: "البيانات التجريبية",
+        helpSampleBody: "يخزن هذا الملف التغييرات محلياً في المتصفح. استخدم إعادة الضبط لاستعادة البيانات الأصلية."
+      }
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+    const state = {
+      language: "en",
+      theme: "light",
+      route: "dashboard",
+      activeCourseId: null,
+      data: null,
+      modalSubmit: null,
+      filters: {
+        examSearch: "",
+        examStatus: "",
+        candidateSearch: "",
+        candidateEligibility: "",
+        venueSearch: "",
+        invigilatorSearch: ""
+      },
+      resultsDirty: false
+    };
+
+    function t(key, replacements = {}) {
+      const dictionary = I18N[state.language] || I18N.en;
+      let value = dictionary[key] ?? I18N.en[key] ?? key;
+
+      for (const [name, replacement] of Object.entries(replacements)) {
+        value = value.replaceAll(`{${name}}`, String(replacement));
+      }
+
+      return value;
+    }
+
+    function localized(value) {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        return value[state.language] ?? value.en ?? Object.values(value)[0] ?? "";
+      }
+
+      return value == null ? "" : String(value);
+    }
+
+    function normalize(value) {
+      return String(value ?? "").trim();
+    }
+
+    function clone(value) {
+      return structuredClone(value);
+    }
+
+    function initials(name = "") {
+      return normalize(name)
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part[0]?.toUpperCase() || "")
+        .join("") || "EO";
+    }
+
+    function formatNumber(value, options = {}) {
+      const numeric = Number(value);
+
+      return Number.isFinite(numeric)
+        ? new Intl.NumberFormat(LOCALES[state.language], options).format(numeric)
+        : "—";
+    }
+
+    function formatDate(value, options = { dateStyle: "medium" }) {
+      const date = new Date(value);
+
+      return Number.isNaN(date.getTime())
+        ? "—"
+        : new Intl.DateTimeFormat(LOCALES[state.language], options).format(date);
+    }
+
+    function formatDateTime(value) {
+      return formatDate(value, {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    function statusKey(value) {
+      return normalize(value)
+        .toLowerCase()
+        .replaceAll("-", "_")
+        .replaceAll(" ", "_");
+    }
+
+    function formatStatus(value) {
+      const key = statusKey(value);
+
+      return I18N.en[key]
+        ? t(key)
+        : key
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, character => character.toUpperCase());
+    }
+
+    function toneForStatus(value) {
+      const key = statusKey(value);
+
+      if (
+        [
+          "active",
+          "available",
+          "eligible",
+          "ready",
+          "completed",
+          "returned",
+          "resolved",
+          "scheduled"
+        ].includes(key)
+      ) {
+        return "success";
+      }
+
+      if (
+        [
+          "critical",
+          "cancelled",
+          "ineligible",
+          "missing",
+          "unavailable"
+        ].includes(key)
+      ) {
+        return "danger";
+      }
+
+      if (
+        [
+          "pending",
+          "draft",
+          "open",
+          "investigating",
+          "transferred",
+          "collected",
+          "high"
+        ].includes(key)
+      ) {
+        return "warning";
+      }
+
+      return "info";
+    }
+
+    function el(tag, options = {}) {
+      const node = document.createElement(tag);
+
+      if (options.className) {
+        node.className = options.className;
+      }
+
+      if (options.text != null) {
+        node.textContent = String(options.text);
+      }
+
+      for (const [name, value] of Object.entries(options.attrs || {})) {
+        if (value == null || value === false) {
+          continue;
+        }
+
+        node.setAttribute(name, value === true ? "" : String(value));
+      }
+
+      for (const [name, value] of Object.entries(options.dataset || {})) {
+        node.dataset[name] = String(value);
+      }
+
+      for (const [name, handler] of Object.entries(options.events || {})) {
+        node.addEventListener(name, handler);
+      }
+
+      node.append(...(options.children || []).filter(Boolean));
+
+      return node;
+    }
+
+    function button(label, handler, className = "btn", attrs = {}) {
+      return el("button", {
+        className,
+        text: label,
+        attrs: {
+          type: "button",
+          ...attrs
+        },
+        events: {
+          click: handler
+        }
+      });
+    }
+
+    function badge(value, tone = toneForStatus(value)) {
+      return el("span", {
+        className: `badge ${tone}`,
+        text: formatStatus(value)
+      });
+    }
+
+    function field(labelKey, control, help = "", full = false) {
+      const wrapper = el("div", {
+        className: `field${full ? " full" : ""}`
+      });
+
+      wrapper.append(
+        el("label", {
+          text: t(labelKey),
+          attrs: {
+            for: control.id
+          }
+        }),
+        control
+      );
+
+      if (help) {
+        wrapper.append(
+          el("span", {
+            className: "field-help",
+            text: help
+          })
+        );
+      }
+
+      return wrapper;
+    }
+
+    function statCard(value, label, tone = "gold", note = "") {
+      return el("article", {
+        className: "kpi",
+        dataset: {
+          tone
+        },
+        children: [
+          el("span", {
+            className: "kpi-label",
+            text: label
+          }),
+          el("strong", {
+            className: "kpi-value",
+            text: value
+          }),
+          el("span", {
+            className: "kpi-note",
+            text: note
+          })
+        ]
+      });
+    }
+
+    function emptyState(title = t("noData"), body = t("noMatchesBody"), icon = "◇") {
+      return el("div", {
+        className: "empty-state",
+        children: [
+          el("div", {
+            children: [
+              el("span", {
+                className: "state-icon",
+                text: icon,
+                attrs: {
+                  "aria-hidden": "true"
+                }
+              }),
+              el("h2", {
+                text: title
+              }),
+              el("p", {
+                text: body
+              })
+            ]
+          })
+        ]
+      });
+    }
+
+    function showToast(title, message, tone = "info", duration = 4500) {
+      const toast = el("div", {
+        className: "toast",
+        dataset: {
+          tone
+        },
+        attrs: {
+          role: tone === "danger" ? "alert" : "status"
+        }
+      });
+
+      toast.append(
+        el("span", {
+          text:
+            tone === "success"
+              ? "✓"
+              : tone === "danger"
+                ? "!"
+                : tone === "warning"
+                  ? "⚠"
+                  : "ⓘ",
+          attrs: {
+            "aria-hidden": "true"
+          }
+        }),
+        el("div", {
+          children: [
+            el("strong", {
+              text: title
+            }),
+            el("span", {
+              text: message
+            })
+          ]
+        }),
+        button("×", () => toast.remove(), "", {
+          "aria-label": t("close")
+        })
+      );
+
+      $("#toast-region").append(toast);
+
+      setTimeout(() => toast.remove(), duration);
+    }
+
+    function debounce(callback, delay = 260) {
+      let timeout;
+
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => callback(...args), delay);
+      };
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function downloadCsv(filename, rows) {
+      const source = rows
+        .map(row => row.map(csvCell).join(","))
+        .join("\r\n");
+
+      const blob = new Blob([source], {
+        type: "text/csv;charset=utf-8"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = filename;
+
+      document.body.append(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function createInitialData() {
+      const now = new Date();
+
+      const future = days => {
+        const date = new Date(now);
+        date.setDate(date.getDate() + days);
+        return date.toISOString();
+      };
+
+      const past = days => {
+        const date = new Date(now);
+        date.setDate(date.getDate() - days);
+        return date.toISOString();
+      };
+
+      const courses = [
+        {
+          id: "csc401",
+          code: "CSC 401",
+          level: "400",
+          title: {
+            en: "Advanced Web Engineering",
+            fr: "Ingénierie Web Avancée",
+            ar: "هندسة الويب المتقدمة"
+          },
+          programme: {
+            en: "B.Sc. Computer Science",
+            fr: "Licence en Informatique",
+            ar: "بكالوريوس علوم الحاسب"
+          },
+          candidates: 48
+        },
+        {
+          id: "csc315",
+          code: "CSC 315",
+          level: "300",
+          title: {
+            en: "Database Systems",
+            fr: "Systèmes de Bases de Données",
+            ar: "نظم قواعد البيانات"
+          },
+          programme: {
+            en: "B.Sc. Computer Science",
+            fr: "Licence en Informatique",
+            ar: "بكالوريوس علوم الحاسب"
+          },
+          candidates: 72
+        },
+        {
+          id: "csc208",
+          code: "CSC 208",
+          level: "200",
+          title: {
+            en: "Human–Computer Interaction",
+            fr: "Interaction Humain–Machine",
+            ar: "التفاعل بين الإنسان والحاسوب"
+          },
+          programme: {
+            en: "B.Sc. Information Technology",
+            fr: "Licence en Technologies de l’Information",
+            ar: "بكالوريوس تقنية المعلومات"
+          },
+          candidates: 64
+        },
+        {
+          id: "csc220",
+          code: "CSC 220",
+          level: "200",
+          title: {
+            en: "Data Structures and Algorithms",
+            fr: "Structures de Données et Algorithmes",
+            ar: "هياكل البيانات والخوارزميات"
+          },
+          programme: {
+            en: "B.Sc. Computer Science",
+            fr: "Licence en Informatique",
+            ar: "بكالوريوس علوم الحاسب"
+          },
+          candidates: 81
+        }
+      ];
+
+      const venues = [
+        {
+          id: "venue-1",
+          name: "Engineering Hall A",
+          building: "Engineering Complex",
+          capacity: 120,
+          accessible: true,
+          status: "available"
+        },
+        {
+          id: "venue-2",
+          name: "ICT Auditorium",
+          building: "ICT Centre",
+          capacity: 90,
+          accessible: true,
+          status: "available"
+        },
+        {
+          id: "venue-3",
+          name: "Science Hall B",
+          building: "Science Complex",
+          capacity: 70,
+          accessible: false,
+          status: "available"
+        },
+        {
+          id: "venue-4",
+          name: "Computing Laboratory 2",
+          building: "ICT Centre",
+          capacity: 55,
+          accessible: true,
+          status: "unavailable"
+        }
+      ];
+
+      const invigilators = [
+        {
+          id: "inv-1",
+          name: "Dr. Halima Garba",
+          email: "halima.garba@example.edu",
+          phone: "+234 800 000 1101",
+          department: "Computer Science",
+          status: "active"
+        },
+        {
+          id: "inv-2",
+          name: "Mr. Samuel Mensah",
+          email: "samuel.mensah@example.edu",
+          phone: "+234 800 000 1102",
+          department: "Information Technology",
+          status: "active"
+        },
+        {
+          id: "inv-3",
+          name: "Mrs. Aïcha Touré",
+          email: "aicha.toure@example.edu",
+          phone: "+234 800 000 1103",
+          department: "Computer Science",
+          status: "active"
+        },
+        {
+          id: "inv-4",
+          name: "Mr. David Okafor",
+          email: "david.okafor@example.edu",
+          phone: "+234 800 000 1104",
+          department: "Software Engineering",
+          status: "inactive"
+        }
+      ];
+
+      const exams = [
+        {
+          id: "exam-1",
+          courseId: "csc401",
+          dateTime: future(6),
+          duration: 120,
+          venueId: "venue-1",
+          chiefInvigilatorId: "inv-1",
+          status: "scheduled"
+        },
+        {
+          id: "exam-2",
+          courseId: "csc315",
+          dateTime: future(9),
+          duration: 150,
+          venueId: "venue-2",
+          chiefInvigilatorId: "inv-2",
+          status: "scheduled"
+        },
+        {
+          id: "exam-3",
+          courseId: "csc208",
+          dateTime: future(12),
+          duration: 120,
+          venueId: "venue-3",
+          chiefInvigilatorId: "inv-3",
+          status: "draft"
+        },
+        {
+          id: "exam-4",
+          courseId: "csc220",
+          dateTime: past(3),
+          duration: 180,
+          venueId: "venue-1",
+          chiefInvigilatorId: "inv-1",
+          status: "completed"
+        }
+      ];
+
+      const candidateNames = [
+        "Fatima Bello",
+        "Jean-Pierre Diallo",
+        "Maryam Ibrahim",
+        "Samuel Okafor",
+        "Zainab Musa",
+        "Chinedu Nwosu",
+        "Aïcha Touré",
+        "David Mensah",
+        "Khadija Abdullahi",
+        "Emmanuel Adeyemi",
+        "Hauwa Sani",
+        "Ibrahim Garba",
+        "Grace Njeri",
+        "Ahmed Salisu",
+        "Esther Boateng",
+        "Mariam Traoré"
+      ];
+
+      const candidates = [];
+
+      courses.forEach((course, courseIndex) => {
+        candidateNames.forEach((name, index) => {
+          candidates.push({
+            id: `${course.id}-candidate-${index + 1}`,
+            courseId: course.id,
+            registrationNumber:
+              `YAJ/${course.level}/${String(courseIndex + 1).padStart(2, "0")}${String(index + 1).padStart(3, "0")}`,
+            name,
+            programme: course.programme,
+            eligibility: index % 9 === 0 ? "ineligible" : "eligible",
+            specialArrangement:
+              index % 7 === 0
+                ? {
+                    en: "Extra 30 minutes",
+                    fr: "30 minutes supplémentaires",
+                    ar: "30 دقيقة إضافية"
+                  }
+                : null
+          });
+        });
+      });
+
+      const scripts = exams.map(exam => {
+        const course = courses.find(item => item.id === exam.courseId);
+
+        return {
+          id: `script-${exam.id}`,
+          examId: exam.id,
+          courseId: exam.courseId,
+          expected: course.candidates,
+          received:
+            exam.status === "completed"
+              ? course.candidates - 1
+              : 0,
+          status:
+            exam.status === "completed"
+              ? "transferred"
+              : "pending"
+        };
+      });
+
+      const results = candidates.map((candidate, index) => ({
+        candidateId: candidate.id,
+        courseId: candidate.courseId,
+        score:
+          index % 11 === 0
+            ? null
+            : 42 + (index % 48),
+        maximumScore: 100,
+        moderationStatus: "draft"
+      }));
+
+      return {
+        context: {
+          institution: "YAJIB International University",
+          department: "Department of Computer Science",
+          officerName: "Mrs. Safiya Abdullahi",
+          role: "Department Exam Officer",
+          academicSession: "2026/2027",
+          semester: "First Semester"
+        },
+
+        courses,
+        venues,
+        invigilators,
+        exams,
+        candidates,
+        scripts,
+        results,
+
+        incidents: [
+          {
+            id: "incident-1",
+            examId: "exam-4",
+            type: "script_issue",
+            severity: "high",
+            description: {
+              en: "One answer booklet was missing during the first script count.",
+              fr: "Une copie manquait lors du premier comptage.",
+              ar: "كانت ورقة إجابة واحدة مفقودة أثناء العد الأول."
+            },
+            resolution: {
+              en: "The venue was rechecked and the booklet was recovered.",
+              fr: "La salle a été vérifiée et la copie a été retrouvée.",
+              ar: "تمت إعادة تفتيش القاعة والعثور على الورقة."
+            },
+            status: "resolved",
+            createdAt: past(3)
+          }
+        ],
+
+        notifications: [
+          {
+            id: "notice-1",
+            title: {
+              en: "Venue confirmation required",
+              fr: "Confirmation de salle requise",
+              ar: "مطلوب تأكيد القاعة"
+            },
+            body: {
+              en: "CSC 208 still requires final venue confirmation.",
+              fr: "CSC 208 nécessite encore la confirmation finale de la salle.",
+              ar: "لا يزال اختبار CSC 208 يحتاج إلى تأكيد القاعة النهائي."
+            },
+            readAt: null,
+            createdAt: past(1)
+          },
+          {
+            id: "notice-2",
+            title: {
+              en: "Script count discrepancy",
+              fr: "Écart dans le comptage des copies",
+              ar: "اختلاف في عدد أوراق الإجابة"
+            },
+            body: {
+              en: "CSC 220 recorded one fewer script than expected.",
+              fr: "CSC 220 a enregistré une copie de moins que prévu.",
+              ar: "سجل اختبار CSC 220 ورقة أقل من المتوقع."
+            },
+            readAt: null,
+            createdAt: past(2)
+          }
+        ],
+
+        activity: [
+          {
+            title: {
+              en: "CSC 315 timetable updated",
+              fr: "Emploi du temps CSC 315 mis à jour",
+              ar: "تم تحديث جدول CSC 315"
+            },
+            createdAt: past(1)
+          },
+          {
+            title: {
+              en: "Engineering Hall A confirmed",
+              fr: "Engineering Hall A confirmée",
+              ar: "تم تأكيد قاعة Engineering Hall A"
+            },
+            createdAt: past(2)
+          },
+          {
+            title: {
+              en: "CSC 220 scripts transferred",
+              fr: "Copies CSC 220 transférées",
+              ar: "تم تحويل أوراق CSC 220"
+            },
+            createdAt: past(3)
+          }
+        ]
+      };
+    }
+
+    function loadData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (error) {
+        console.warn("Could not load local sample data.", error);
+      }
+
+      return createInitialData();
+    }
+
+    function persistData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      } catch (error) {
+        console.warn("Could not save local sample data.", error);
+      }
+    }
+
+    function activeCourse() {
+      return state.data.courses.find(course => course.id === state.activeCourseId) || null;
+    }
+
+    function courseById(id) {
+      return state.data.courses.find(course => course.id === id) || null;
+    }
+
+    function venueById(id) {
+      return state.data.venues.find(venue => venue.id === id) || null;
+    }
+
+    function invigilatorById(id) {
+      return state.data.invigilators.find(invigilator => invigilator.id === id) || null;
+    }
+
+    function examById(id) {
+      return state.data.exams.find(exam => exam.id === id) || null;
+    }
+
+    function candidateById(id) {
+      return state.data.candidates.find(candidate => candidate.id === id) || null;
+    }
+
+    function addActivity(title) {
+      state.data.activity.unshift({
+        title: {
+          en: title,
+          fr: title,
+          ar: title
+        },
+        createdAt: new Date().toISOString()
+      });
+
+      state.data.activity = state.data.activity.slice(0, 12);
+    }
+
+    function detectLanguage() {
+      try {
+        const saved = localStorage.getItem(LANGUAGE_KEY);
+
+        if (I18N[saved]) {
+          return saved;
+        }
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      const language = navigator.languages?.[0] || navigator.language || "en";
+
+      if (language.toLowerCase().startsWith("ar")) {
+        return "ar";
+      }
+
+      if (language.toLowerCase().startsWith("fr")) {
+        return "fr";
+      }
+
+      return "en";
+    }
+
+    function applyLanguage(language, rerender = true) {
+      state.language = I18N[language] ? language : "en";
+
+      try {
+        localStorage.setItem(LANGUAGE_KEY, state.language);
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      document.documentElement.lang = state.language;
+      document.documentElement.dir = state.language === "ar" ? "rtl" : "ltr";
+
+      $$("[data-i18n]").forEach(node => {
+        node.textContent = t(node.dataset.i18n);
+      });
+
+      $$("[data-i18n-placeholder]").forEach(node => {
+        node.placeholder = t(node.dataset.i18nPlaceholder);
+      });
+
+      $$("[data-i18n-aria-label]").forEach(node => {
+        node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
+      });
+
+      $$("[data-language]", $("#language-switcher")).forEach(buttonNode => {
+        buttonNode.setAttribute(
+          "aria-pressed",
+          String(buttonNode.dataset.language === state.language)
+        );
+      });
+
+      renderNavigation();
+      renderIdentity();
+      renderBreadcrumbs();
+      renderPageMeta();
+      populateCourseSwitch();
+      renderNotifications();
+
+      if ($("#modal").open) {
+        closeModal();
+      }
+
+      if (rerender) {
+        renderRoute();
+      }
+    }
+
+    function applyTheme(theme) {
+      state.theme = theme === "dark" ? "dark" : "light";
+
+      try {
+        localStorage.setItem(THEME_KEY, state.theme);
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      document.documentElement.dataset.theme = state.theme;
+      $("#theme-icon").textContent = state.theme === "dark" ? "☀" : "◐";
+    }
+
+    function loadPreferences() {
+      let theme = "";
+
+      try {
+        theme = localStorage.getItem(THEME_KEY) || "";
+      } catch {
+        theme = "";
+      }
+
+      if (theme !== "light" && theme !== "dark") {
+        theme = matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
+
+      applyTheme(theme);
+      applyLanguage(detectLanguage(), false);
+    }
+
+    function renderNavigation() {
+      const navigation = $("#sidebar-nav");
+      navigation.replaceChildren();
+
+      ROUTES.forEach(([route, icon, labelKey]) => {
+        navigation.append(
+          el("button", {
+            attrs: {
+              type: "button",
+              "aria-current": state.route === route ? "page" : "false"
+            },
+            children: [
+              el("span", {
+                className: "nav-icon",
+                text: icon,
+                attrs: {
+                  "aria-hidden": "true"
+                }
+              }),
+              el("span", {
+                text: t(labelKey)
+              })
+            ],
+            events: {
+              click: () => navigate(route)
+            }
+          })
+        );
+      });
+    }
+
+    function renderIdentity() {
+      const context = state.data.context;
+
+      $("#header-name").textContent = context.officerName;
+      $("#header-avatar").textContent = initials(context.officerName);
+      $("#profile-name").textContent = context.officerName;
+      $("#profile-role").textContent = t("departmentExamOfficer");
+      $("#profile-department").textContent = context.department;
+      $("#sidebar-scope").textContent =
+        `${context.department} · ${context.academicSession}`;
+    }
+
+    function populateCourseSwitch() {
+      const select = $("#course-switch");
+      select.replaceChildren();
+
+      state.data.courses.forEach(course => {
+        select.append(
+          el("option", {
+            text: `${course.code} · ${localized(course.title)}`,
+            attrs: {
+              value: course.id
+            }
+          })
+        );
+      });
+
+      select.value = state.activeCourseId;
+    }
+
+    function renderBreadcrumbs() {
+      const container = $("#breadcrumbs");
+      container.replaceChildren();
+
+      container.append(
+        el("button", {
+          text: t("dashboard"),
+          attrs: {
+            type: "button"
+          },
+          events: {
+            click: () => navigate("dashboard")
+          }
+        })
+      );
+
+      if (state.route !== "dashboard") {
+        container.append(
+          el("span", {
+            text: "/",
+            attrs: {
+              "aria-hidden": "true"
+            }
+          }),
+          el("span", {
+            text: t(ROUTE_META[state.route][0]),
+            attrs: {
+              "aria-current": "page"
+            }
+          })
+        );
+      }
+    }
+
+    function renderPageMeta() {
+      const [titleKey, subtitleKey] = ROUTE_META[state.route];
+
+      $("#page-eyebrow").textContent = t("departmentExamOfficer");
+      $("#page-title").textContent = t(titleKey);
+      $("#page-subtitle").textContent = t(subtitleKey);
+
+      document.title = `${t(titleKey)} · YAJIB ${t("portalName")}`;
+    }
+
+    function navigate(route) {
+      if (!ROUTE_META[route]) {
+        return;
+      }
+
+      if (state.resultsDirty && state.route === "results") {
+        const proceed = confirm(t("resultsSaved"));
+
+        if (!proceed) {
+          return;
+        }
+      }
+
+      state.route = route;
+      state.resultsDirty = false;
+
+      closeSidebar();
+      closeSearch();
+
+      renderNavigation();
+      renderBreadcrumbs();
+      renderPageMeta();
+      renderRoute();
+
+      location.hash = `view=${encodeURIComponent(route)}&course=${encodeURIComponent(state.activeCourseId)}`;
+
+      $("#main-content").focus({
+        preventScroll: true
+      });
+
+      scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function parseHash() {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+
+      const route = params.get("view");
+      const courseId = params.get("course");
+
+      if (ROUTE_META[route]) {
+        state.route = route;
+      }
+
+      if (state.data.courses.some(course => course.id === courseId)) {
+        state.activeCourseId = courseId;
+      }
+    }
+
+    function renderRoute() {
+      $("#page-actions").replaceChildren();
+
+      switch (state.route) {
+        case "dashboard":
+          renderDashboard();
+          break;
+
+        case "exams":
+          renderExams();
+          break;
+
+        case "timetable":
+          renderTimetable();
+          break;
+
+        case "candidates":
+          renderCandidates();
+          break;
+
+        case "venues":
+          renderVenues();
+          break;
+
+        case "invigilators":
+          renderInvigilators();
+          break;
+
+        case "scripts":
+          renderScripts();
+          break;
+
+        case "results":
+          renderResults();
+          break;
+
+        case "incidents":
+          renderIncidents();
+          break;
+
+        case "reports":
+          renderReports();
+          break;
+
+        case "help":
+          renderHelp();
+          break;
+
+        default:
+          navigate("dashboard");
+      }
+    }
+
+    function renderDashboard() {
+      const data = state.data;
+
+      const scheduledExams = data.exams.filter(exam =>
+        ["scheduled", "draft"].includes(exam.status)
+      ).length;
+
+      const candidateCount = data.candidates.length;
+
+      const availableVenues = data.venues.filter(
+        venue => venue.status === "available"
+      ).length;
+
+      const activeInvigilators = data.invigilators.filter(
+        invigilator => invigilator.status === "active"
+      ).length;
+
+      const unreturnedScripts = data.scripts.filter(
+        script => script.status !== "returned" && script.received > 0
+      ).length;
+
+      const openIncidents = data.incidents.filter(
+        incident => incident.status !== "resolved"
+      ).length;
+
+      const pendingResults = data.results.filter(
+        result => result.moderationStatus === "draft"
+      ).length;
+
+      const upcoming = data.exams
+        .filter(exam => new Date(exam.dateTime) > new Date())
+        .sort((first, second) =>
+          new Date(first.dateTime) - new Date(second.dateTime)
+        )
+        .slice(0, 5);
+
+      const hero = el("section", {
+        className: "hero",
+        children: [
+          el("div", {
+            children: [
+              el("h2", {
+                text: `${t("welcome")}, ${data.context.officerName}`
+              }),
+              el("p", {
+                text: t("dashboardSubtitle")
+              })
+            ]
+          }),
+          el("div", {
+            className: "hero-card",
+            children: [
+              el("strong", {
+                text: `${data.context.academicSession} · ${data.context.semester}`
+              }),
+              el("span", {
+                text: data.context.department
+              })
+            ]
+          })
+        ]
+      });
+
+      const kpis = el("div", {
+        className: "kpi-grid",
+        children: [
+          statCard(formatNumber(data.courses.length), t("assignedCourses")),
+          statCard(formatNumber(scheduledExams), t("scheduledExams"), "silver"),
+          statCard(formatNumber(candidateCount), t("registeredCandidates")),
+          statCard(formatNumber(availableVenues), t("availableVenues"), "silver"),
+          statCard(formatNumber(activeInvigilators), t("assignedInvigilators")),
+          statCard(formatNumber(unreturnedScripts), t("unreturnedScripts"), "danger"),
+          statCard(formatNumber(openIncidents), t("openIncidents"), "danger"),
+          statCard(formatNumber(pendingResults), t("pendingResults"), "silver")
+        ]
+      });
+
+      const quickActions = el("section", {
+        className: "panel",
+        children: [
+          el("div", {
+            className: "panel-header",
+            children: [
+              el("h2", {
+                text: t("quickActions")
+              })
+            ]
+          }),
+          el("div", {
+            className: "quick-grid",
+            children: [
+              quickAction(t("createExam"), t("examsSubtitle"), "exams", openExamDialog),
+              quickAction(t("addVenue"), t("venuesSubtitle"), "venues", openVenueDialog),
+              quickAction(
+                t("addInvigilator"),
+                t("invigilatorsSubtitle"),
+                "invigilators",
+                openInvigilatorDialog
+              ),
+              quickAction(
+                t("reportIncident"),
+                t("incidentsSubtitle"),
+                "incidents",
+                openIncidentDialog
+              ),
+              quickAction(t("openResults"), t("resultsSubtitle"), "results")
+            ]
+          })
+        ]
+      });
+
+      const upcomingList = el("ul", {
+        className: "list"
+      });
+
+      upcoming.forEach(exam => {
+        const course = courseById(exam.courseId);
+        const venue = venueById(exam.venueId);
+
+        upcomingList.append(
+          el("li", {
+            className: "list-item",
+            children: [
+              el("strong", {
+                text: `${course.code} · ${localized(course.title)}`
+              }),
+              el("span", {
+                text: `${formatDateTime(exam.dateTime)} · ${venue?.name || "—"}`
+              }),
+              badge(exam.status)
+            ]
+          })
+        );
+      });
+
+      const activityList = el("ul", {
+        className: "list"
+      });
+
+      data.activity.slice(0, 6).forEach(activity => {
+        activityList.append(
+          el("li", {
+            className: "list-item",
+            children: [
+              el("strong", {
+                text: localized(activity.title)
+              }),
+              el("time", {
+                text: formatDateTime(activity.createdAt),
+                attrs: {
+                  datetime: activity.createdAt
+                }
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(
+        hero,
+        kpis,
+        el("div", {
+          className: "grid two",
+          children: [
+            quickActions,
+            el("section", {
+              className: "panel",
+              children: [
+                el("div", {
+                  className: "panel-header",
+                  children: [
+                    el("h2", {
+                      text: t("upcomingExams")
+                    })
+                  ]
+                }),
+                upcomingList
+              ]
+            })
+          ]
+        }),
+        el("section", {
+          className: "panel",
+          attrs: {
+            style: "margin-top:1rem;"
+          },
+          children: [
+            el("div", {
+              className: "panel-header",
+              children: [
+                el("h2", {
+                  text: t("recentActivity")
+                })
+              ]
+            }),
+            activityList
+          ]
+        })
+      );
+    }
+
+    function quickAction(title, description, route, afterNavigate) {
+      return el("button", {
+        className: "quick-action",
+        attrs: {
+          type: "button"
+        },
+        children: [
+          el("strong", {
+            text: title
+          }),
+          el("span", {
+            text: description
+          })
+        ],
+        events: {
+          click: () => {
+            navigate(route);
+
+            if (afterNavigate) {
+              afterNavigate();
+            }
+          }
+        }
+      });
+    }
+
+    function filteredExams() {
+      const search = state.filters.examSearch.toLocaleLowerCase(LOCALES[state.language]);
+
+      return state.data.exams
+        .filter(exam => {
+          const course = courseById(exam.courseId);
+          const venue = venueById(exam.venueId);
+
+          const searchable = [
+            course?.code,
+            localized(course?.title),
+            venue?.name,
+            exam.status
+          ]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language]);
+
+          return (
+            (!search || searchable.includes(search)) &&
+            (!state.filters.examStatus || exam.status === state.filters.examStatus)
+          );
+        })
+        .sort((first, second) =>
+          new Date(first.dateTime) - new Date(second.dateTime)
+        );
+    }
+
+    function renderExams() {
+      $("#page-actions").append(
+        button(t("createExam"), () => openExamDialog())
+      );
+
+      const searchInput = el("input", {
+        attrs: {
+          id: "exam-search",
+          type: "search",
+          value: state.filters.examSearch,
+          placeholder: t("searchExams")
+        }
+      });
+
+      searchInput.addEventListener(
+        "input",
+        debounce(event => {
+          state.filters.examSearch = normalize(event.target.value);
+          renderExamTable();
+        })
+      );
+
+      const statusSelect = el("select", {
+        attrs: {
+          id: "exam-status"
+        }
+      });
+
+      [
+        ["", t("allStatuses")],
+        ["draft", t("draft")],
+        ["scheduled", t("scheduled")],
+        ["completed", t("completed")],
+        ["cancelled", t("cancelled")]
+      ].forEach(([value, label]) => {
+        statusSelect.append(
+          el("option", {
+            text: label,
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      statusSelect.value = state.filters.examStatus;
+
+      statusSelect.addEventListener("change", event => {
+        state.filters.examStatus = event.target.value;
+        renderExamTable();
+      });
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "toolbar",
+          children: [
+            field("searchExams", searchInput),
+            field("status", statusSelect),
+            button(
+              t("resetFilters"),
+              () => {
+                state.filters.examSearch = "";
+                state.filters.examStatus = "";
+                renderExams();
+              },
+              "btn secondary"
+            )
+          ]
+        }),
+        el("div", {
+          attrs: {
+            id: "exam-table-container"
+          }
+        })
+      );
+
+      renderExamTable();
+    }
+
+    function renderExamTable() {
+      const container = $("#exam-table-container");
+
+      if (!container) {
+        return;
+      }
+
+      const exams = filteredExams();
+      container.replaceChildren();
+
+      if (!exams.length) {
+        container.append(
+          emptyState(t("noMatches"), t("noMatchesBody"), "◷")
+        );
+        return;
+      }
+
+      const body = el("tbody");
+
+      exams.forEach(exam => {
+        const course = courseById(exam.courseId);
+        const venue = venueById(exam.venueId);
+        const invigilator = invigilatorById(exam.chiefInvigilatorId);
+
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                text: course?.code || "—"
+              }),
+              el("td", {
+                text: localized(course?.title)
+              }),
+              el("td", {
+                text: formatDateTime(exam.dateTime)
+              }),
+              el("td", {
+                text: `${formatNumber(exam.duration)} ${t("minutes")}`
+              }),
+              el("td", {
+                text: venue?.name || "—"
+              }),
+              el("td", {
+                text: invigilator?.name || "—"
+              }),
+              el("td", {
+                children: [
+                  badge(exam.status)
+                ]
+              }),
+              el("td", {
+                children: [
+                  el("div", {
+                    className: "inline",
+                    children: [
+                      button(
+                        t("edit"),
+                        () => openExamDialog(exam),
+                        "btn secondary small"
+                      ),
+                      button(
+                        t("delete"),
+                        () => deleteExam(exam),
+                        "btn danger small"
+                      )
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("caption", {
+                  text: `${t("examinations")} · ${formatNumber(exams.length)}`
+                }),
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("code"),
+                        tableHeader("title"),
+                        tableHeader("date"),
+                        tableHeader("duration"),
+                        tableHeader("venue"),
+                        tableHeader("chiefInvigilator"),
+                        tableHeader("status"),
+                        tableHeader("actions")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function tableHeader(key) {
+      return el("th", {
+        text: t(key),
+        attrs: {
+          scope: "col"
+        }
+      });
+    }
+
+    function openExamDialog(existing = null) {
+      const courseSelect = el("select", {
+        attrs: {
+          id: "exam-course",
+          required: true
+        }
+      });
+
+      state.data.courses.forEach(course => {
+        courseSelect.append(
+          el("option", {
+            text: `${course.code} · ${localized(course.title)}`,
+            attrs: {
+              value: course.id
+            }
+          })
+        );
+      });
+
+      courseSelect.value = existing?.courseId || state.activeCourseId;
+
+      const dateInput = el("input", {
+        attrs: {
+          id: "exam-date",
+          type: "date",
+          required: true,
+          value: existing?.dateTime
+            ? new Date(existing.dateTime).toISOString().slice(0, 10)
+            : ""
+        }
+      });
+
+      const timeInput = el("input", {
+        attrs: {
+          id: "exam-time",
+          type: "time",
+          required: true,
+          value: existing?.dateTime
+            ? new Date(existing.dateTime).toTimeString().slice(0, 5)
+            : ""
+        }
+      });
+
+      const durationInput = el("input", {
+        attrs: {
+          id: "exam-duration",
+          type: "number",
+          min: "30",
+          max: "480",
+          step: "5",
+          required: true,
+          value: existing?.duration || "120"
+        }
+      });
+
+      const venueSelect = el("select", {
+        attrs: {
+          id: "exam-venue",
+          required: true
+        }
+      });
+
+      state.data.venues.forEach(venue => {
+        venueSelect.append(
+          el("option", {
+            text: `${venue.name} · ${formatNumber(venue.capacity)}`,
+            attrs: {
+              value: venue.id
+            }
+          })
+        );
+      });
+
+      venueSelect.value = existing?.venueId || state.data.venues[0]?.id;
+
+      const invigilatorSelect = el("select", {
+        attrs: {
+          id: "exam-invigilator",
+          required: true
+        }
+      });
+
+      state.data.invigilators
+        .filter(invigilator => invigilator.status === "active")
+        .forEach(invigilator => {
+          invigilatorSelect.append(
+            el("option", {
+              text: invigilator.name,
+              attrs: {
+                value: invigilator.id
+              }
+            })
+          );
+        });
+
+      invigilatorSelect.value =
+        existing?.chiefInvigilatorId ||
+        state.data.invigilators.find(item => item.status === "active")?.id;
+
+      const statusSelect = el("select", {
+        attrs: {
+          id: "exam-record-status"
+        }
+      });
+
+      ["draft", "scheduled", "completed", "cancelled"].forEach(status => {
+        statusSelect.append(
+          el("option", {
+            text: formatStatus(status),
+            attrs: {
+              value: status
+            }
+          })
+        );
+      });
+
+      statusSelect.value = existing?.status || "draft";
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("examination")}` : t("createExam"),
+        content: el("div", {
+          className: "form-grid",
+          children: [
+            field("course", courseSelect, "", true),
+            field("date", dateInput),
+            field("time", timeInput),
+            field("duration", durationInput),
+            field("venue", venueSelect),
+            field("chiefInvigilator", invigilatorSelect),
+            field("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const dateTime = new Date(`${dateInput.value}T${timeInput.value}`);
+          const duration = Number(durationInput.value);
+
+          if (
+            Number.isNaN(dateTime.getTime()) ||
+            !Number.isFinite(duration) ||
+            duration < 30 ||
+            duration > 480 ||
+            !courseSelect.value ||
+            !venueSelect.value ||
+            !invigilatorSelect.value
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `exam-${crypto.randomUUID()}`,
+            courseId: courseSelect.value,
+            dateTime: dateTime.toISOString(),
+            duration,
+            venueId: venueSelect.value,
+            chiefInvigilatorId: invigilatorSelect.value,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.exams.findIndex(item => item.id === existing.id);
+            state.data.exams[index] = record;
+          } else {
+            state.data.exams.push(record);
+
+            const course = courseById(record.courseId);
+
+            state.data.scripts.push({
+              id: `script-${record.id}`,
+              examId: record.id,
+              courseId: record.courseId,
+              expected: course?.candidates || 0,
+              received: 0,
+              status: "pending"
+            });
+          }
+
+          persistData();
+          addActivity(`${courseById(record.courseId)?.code || ""} examination updated`);
+          showToast(t("examinations"), t("sampleSaved"), "success");
+          renderExams();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteExam(exam) {
+      if (!confirm(t("confirmDelete"))) {
+        return;
+      }
+
+      state.data.exams = state.data.exams.filter(item => item.id !== exam.id);
+      state.data.scripts = state.data.scripts.filter(item => item.examId !== exam.id);
+      state.data.incidents = state.data.incidents.filter(item => item.examId !== exam.id);
+
+      persistData();
+      showToast(t("examinations"), t("sampleDeleted"), "success");
+      renderExams();
+    }
+
+    function renderTimetable() {
+      $("#page-actions").append(
+        button(t("print"), () => print(), "btn secondary"),
+        button(t("exportCsv"), exportTimetable, "btn secondary")
+      );
+
+      const body = el("tbody");
+
+      state.data.exams
+        .slice()
+        .sort((first, second) =>
+          new Date(first.dateTime) - new Date(second.dateTime)
+        )
+        .forEach(exam => {
+          const course = courseById(exam.courseId);
+          const venue = venueById(exam.venueId);
+          const invigilator = invigilatorById(exam.chiefInvigilatorId);
+
+          body.append(
+            el("tr", {
+              children: [
+                el("td", {
+                  text: formatDate(exam.dateTime)
+                }),
+                el("td", {
+                  text: formatDate(exam.dateTime, {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })
+                }),
+                el("td", {
+                  text: course?.code || "—"
+                }),
+                el("td", {
+                  text: localized(course?.title)
+                }),
+                el("td", {
+                  text: venue?.name || "—"
+                }),
+                el("td", {
+                  text: invigilator?.name || "—"
+                }),
+                el("td", {
+                  children: [
+                    badge(exam.status)
+                  ]
+                })
+              ]
+            })
+          );
+        });
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("caption", {
+                  text: `${state.data.context.department} · ${state.data.context.academicSession}`
+                }),
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("date"),
+                        tableHeader("time"),
+                        tableHeader("code"),
+                        tableHeader("title"),
+                        tableHeader("venue"),
+                        tableHeader("chiefInvigilator"),
+                        tableHeader("status")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function exportTimetable() {
+      const rows = [
+        [
+          "date",
+          "time",
+          "course_code",
+          "course_title",
+          "venue",
+          "chief_invigilator",
+          "status"
+        ]
+      ];
+
+      state.data.exams.forEach(exam => {
+        const course = courseById(exam.courseId);
+
+        rows.push([
+          formatDate(exam.dateTime),
+          formatDate(exam.dateTime, {
+            hour: "2-digit",
+            minute: "2-digit"
+          }),
+          course?.code,
+          localized(course?.title),
+          venueById(exam.venueId)?.name,
+          invigilatorById(exam.chiefInvigilatorId)?.name,
+          exam.status
+        ]);
+      });
+
+      downloadCsv("department-examination-timetable.csv", rows);
+    }
+
+    function filteredCandidates() {
+      const search =
+        state.filters.candidateSearch.toLocaleLowerCase(LOCALES[state.language]);
+
+      return state.data.candidates.filter(candidate => {
+        if (candidate.courseId !== state.activeCourseId) {
+          return false;
+        }
+
+        const searchable = [
+          candidate.registrationNumber,
+          candidate.name,
+          localized(candidate.programme)
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (
+            !state.filters.candidateEligibility ||
+            candidate.eligibility === state.filters.candidateEligibility
+          )
+        );
+      });
+    }
+
+    function renderCandidates() {
+      const searchInput = el("input", {
+        attrs: {
+          id: "candidate-search",
+          type: "search",
+          value: state.filters.candidateSearch,
+          placeholder: t("searchCandidates")
+        }
+      });
+
+      searchInput.addEventListener(
+        "input",
+        debounce(event => {
+          state.filters.candidateSearch = normalize(event.target.value);
+          renderCandidateTable();
+        })
+      );
+
+      const eligibilitySelect = el("select", {
+        attrs: {
+          id: "candidate-eligibility"
+        }
+      });
+
+      [
+        ["", t("allStatuses")],
+        ["eligible", t("eligible")],
+        ["ineligible", t("ineligible")]
+      ].forEach(([value, label]) => {
+        eligibilitySelect.append(
+          el("option", {
+            text: label,
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      eligibilitySelect.value = state.filters.candidateEligibility;
+
+      eligibilitySelect.addEventListener("change", event => {
+        state.filters.candidateEligibility = event.target.value;
+        renderCandidateTable();
+      });
+
+      $("#page-actions").append(
+        button(t("exportCsv"), exportCandidates, "btn secondary")
+      );
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "toolbar",
+          children: [
+            field("searchCandidates", searchInput),
+            field("eligibility", eligibilitySelect)
+          ]
+        }),
+        el("div", {
+          attrs: {
+            id: "candidate-table-container"
+          }
+        })
+      );
+
+      renderCandidateTable();
+    }
+
+    function renderCandidateTable() {
+      const container = $("#candidate-table-container");
+
+      if (!container) {
+        return;
+      }
+
+      const candidates = filteredCandidates();
+      container.replaceChildren();
+
+      if (!candidates.length) {
+        container.append(
+          emptyState(t("noMatches"), t("noMatchesBody"), "♙")
+        );
+        return;
+      }
+
+      const body = el("tbody");
+
+      candidates.forEach(candidate => {
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                children: [
+                  el("div", {
+                    className: "person-cell",
+                    children: [
+                      el("span", {
+                        className: "avatar",
+                        text: initials(candidate.name),
+                        attrs: {
+                          "aria-hidden": "true"
+                        }
+                      }),
+                      el("div", {
+                        children: [
+                          el("strong", {
+                            text: candidate.name
+                          }),
+                          el("span", {
+                            text: candidate.registrationNumber
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+              el("td", {
+                text: localized(candidate.programme)
+              }),
+              el("td", {
+                children: [
+                  badge(candidate.eligibility)
+                ]
+              }),
+              el("td", {
+                text: candidate.specialArrangement
+                  ? localized(candidate.specialArrangement)
+                  : t("noSpecialArrangement")
+              }),
+              el("td", {
+                children: [
+                  button(
+                    t("edit"),
+                    () => openCandidateDialog(candidate),
+                    "btn secondary small"
+                  )
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("caption", {
+                  text: `${activeCourse().code} · ${formatNumber(candidates.length)}`
+                }),
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("name"),
+                        tableHeader("programme"),
+                        tableHeader("eligibility"),
+                        tableHeader("specialArrangement"),
+                        tableHeader("actions")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function openCandidateDialog(candidate) {
+      const eligibilitySelect = el("select", {
+        attrs: {
+          id: "candidate-dialog-eligibility"
+        }
+      });
+
+      ["eligible", "ineligible"].forEach(value => {
+        eligibilitySelect.append(
+          el("option", {
+            text: formatStatus(value),
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      eligibilitySelect.value = candidate.eligibility;
+
+      const arrangementInput = el("textarea", {
+        attrs: {
+          id: "candidate-arrangement",
+          maxlength: "1000"
+        }
+      });
+
+      arrangementInput.value = localized(candidate.specialArrangement);
+
+      openModal({
+        title: candidate.name,
+        content: el("div", {
+          className: "form-grid",
+          children: [
+            field("eligibility", eligibilitySelect),
+            field("specialArrangement", arrangementInput, "", true)
+          ]
+        }),
+        submitLabel: t("update"),
+        onSubmit: () => {
+          candidate.eligibility = eligibilitySelect.value;
+
+          const arrangement = normalize(arrangementInput.value);
+
+          candidate.specialArrangement = arrangement
+            ? {
+                en: arrangement,
+                fr: arrangement,
+                ar: arrangement
+              }
+            : null;
+
+          persistData();
+          showToast(t("candidates"), t("sampleSaved"), "success");
+          renderCandidates();
+
+          return true;
+        }
+      });
+    }
+
+    function exportCandidates() {
+      const rows = [
+        [
+          "registration_number",
+          "name",
+          "programme",
+          "eligibility",
+          "special_arrangement"
+        ]
+      ];
+
+      filteredCandidates().forEach(candidate => {
+        rows.push([
+          candidate.registrationNumber,
+          candidate.name,
+          localized(candidate.programme),
+          candidate.eligibility,
+          localized(candidate.specialArrangement)
+        ]);
+      });
+
+      downloadCsv(`${activeCourse().code.replace(/\s+/g, "-")}-candidates.csv`, rows);
+    }
+
+    function renderVenues() {
+      $("#page-actions").append(
+        button(t("addVenue"), () => openVenueDialog())
+      );
+
+      const searchInput = el("input", {
+        attrs: {
+          id: "venue-search",
+          type: "search",
+          value: state.filters.venueSearch,
+          placeholder: t("searchVenues")
+        }
+      });
+
+      searchInput.addEventListener(
+        "input",
+        debounce(event => {
+          state.filters.venueSearch = normalize(event.target.value);
+          renderVenueTable();
+        })
+      );
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "toolbar",
+          children: [
+            field("searchVenues", searchInput)
+          ]
+        }),
+        el("div", {
+          attrs: {
+            id: "venue-table-container"
+          }
+        })
+      );
+
+      renderVenueTable();
+    }
+
+    function renderVenueTable() {
+      const container = $("#venue-table-container");
+
+      if (!container) {
+        return;
+      }
+
+      const search =
+        state.filters.venueSearch.toLocaleLowerCase(LOCALES[state.language]);
+
+      const venues = state.data.venues.filter(venue =>
+        !search ||
+        [venue.name, venue.building]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language])
+          .includes(search)
+      );
+
+      container.replaceChildren();
+
+      if (!venues.length) {
+        container.append(
+          emptyState(t("noMatches"), t("noMatchesBody"), "⌑")
+        );
+        return;
+      }
+
+      const body = el("tbody");
+
+      venues.forEach(venue => {
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                text: venue.name
+              }),
+              el("td", {
+                text: venue.building
+              }),
+              el("td", {
+                text: formatNumber(venue.capacity)
+              }),
+              el("td", {
+                children: [
+                  badge(venue.accessible ? "accessible" : "not_accessible")
+                ]
+              }),
+              el("td", {
+                children: [
+                  badge(venue.status)
+                ]
+              }),
+              el("td", {
+                children: [
+                  el("div", {
+                    className: "inline",
+                    children: [
+                      button(
+                        t("edit"),
+                        () => openVenueDialog(venue),
+                        "btn secondary small"
+                      ),
+                      button(
+                        t("delete"),
+                        () => deleteVenue(venue),
+                        "btn danger small"
+                      )
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("venue"),
+                        tableHeader("building"),
+                        tableHeader("capacity"),
+                        tableHeader("accessibility"),
+                        tableHeader("status"),
+                        tableHeader("actions")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function openVenueDialog(existing = null) {
+      const nameInput = el("input", {
+        attrs: {
+          id: "venue-name",
+          type: "text",
+          maxlength: "160",
+          required: true,
+          value: existing?.name || ""
+        }
+      });
+
+      const buildingInput = el("input", {
+        attrs: {
+          id: "venue-building",
+          type: "text",
+          maxlength: "160",
+          required: true,
+          value: existing?.building || ""
+        }
+      });
+
+      const capacityInput = el("input", {
+        attrs: {
+          id: "venue-capacity",
+          type: "number",
+          min: "1",
+          max: "5000",
+          required: true,
+          value: existing?.capacity || ""
+        }
+      });
+
+      const accessibleInput = el("input", {
+        attrs: {
+          id: "venue-accessible",
+          type: "checkbox"
+        }
+      });
+
+      accessibleInput.checked = existing?.accessible ?? true;
+
+      const statusSelect = el("select", {
+        attrs: {
+          id: "venue-status"
+        }
+      });
+
+      ["available", "unavailable"].forEach(status => {
+        statusSelect.append(
+          el("option", {
+            text: formatStatus(status),
+            attrs: {
+              value: status
+            }
+          })
+        );
+      });
+
+      statusSelect.value = existing?.status || "available";
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("venue")}` : t("addVenue"),
+        content: el("div", {
+          className: "form-grid",
+          children: [
+            field("venue", nameInput),
+            field("building", buildingInput),
+            field("seatCapacity", capacityInput),
+            field("status", statusSelect),
+            el("label", {
+              className: "check-field full",
+              children: [
+                accessibleInput,
+                el("span", {
+                  text: t("accessible")
+                })
+              ]
+            })
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const capacity = Number(capacityInput.value);
+
+          if (
+            !normalize(nameInput.value) ||
+            !normalize(buildingInput.value) ||
+            !Number.isFinite(capacity) ||
+            capacity < 1
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const venue = {
+            id: existing?.id || `venue-${crypto.randomUUID()}`,
+            name: normalize(nameInput.value),
+            building: normalize(buildingInput.value),
+            capacity,
+            accessible: accessibleInput.checked,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.venues.findIndex(item => item.id === existing.id);
+            state.data.venues[index] = venue;
+          } else {
+            state.data.venues.push(venue);
+          }
+
+          persistData();
+          showToast(t("venues"), t("sampleSaved"), "success");
+          renderVenues();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteVenue(venue) {
+      const inUse = state.data.exams.some(exam => exam.venueId === venue.id);
+
+      if (inUse) {
+        showToast(t("validationFailed"), t("venueIssue"), "danger");
+        return;
+      }
+
+      if (!confirm(t("confirmDelete"))) {
+        return;
+      }
+
+      state.data.venues = state.data.venues.filter(item => item.id !== venue.id);
+      persistData();
+
+      showToast(t("venues"), t("sampleDeleted"), "success");
+      renderVenues();
+    }
+
+    function renderInvigilators() {
+      $("#page-actions").append(
+        button(t("addInvigilator"), () => openInvigilatorDialog())
+      );
+
+      const searchInput = el("input", {
+        attrs: {
+          id: "invigilator-search",
+          type: "search",
+          value: state.filters.invigilatorSearch,
+          placeholder: t("searchInvigilators")
+        }
+      });
+
+      searchInput.addEventListener(
+        "input",
+        debounce(event => {
+          state.filters.invigilatorSearch = normalize(event.target.value);
+          renderInvigilatorTable();
+        })
+      );
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "toolbar",
+          children: [
+            field("searchInvigilators", searchInput)
+          ]
+        }),
+        el("div", {
+          attrs: {
+            id: "invigilator-table-container"
+          }
+        })
+      );
+
+      renderInvigilatorTable();
+    }
+
+    function renderInvigilatorTable() {
+      const container = $("#invigilator-table-container");
+
+      if (!container) {
+        return;
+      }
+
+      const search =
+        state.filters.invigilatorSearch.toLocaleLowerCase(LOCALES[state.language]);
+
+      const invigilators = state.data.invigilators.filter(invigilator =>
+        !search ||
+        [
+          invigilator.name,
+          invigilator.email,
+          invigilator.department
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language])
+          .includes(search)
+      );
+
+      container.replaceChildren();
+
+      if (!invigilators.length) {
+        container.append(
+          emptyState(t("noMatches"), t("noMatchesBody"), "♜")
+        );
+        return;
+      }
+
+      const body = el("tbody");
+
+      invigilators.forEach(invigilator => {
+        const assignmentCount = state.data.exams.filter(
+          exam => exam.chiefInvigilatorId === invigilator.id
+        ).length;
+
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                children: [
+                  el("div", {
+                    className: "person-cell",
+                    children: [
+                      el("span", {
+                        className: "avatar",
+                        text: initials(invigilator.name),
+                        attrs: {
+                          "aria-hidden": "true"
+                        }
+                      }),
+                      el("div", {
+                        children: [
+                          el("strong", {
+                            text: invigilator.name
+                          }),
+                          el("span", {
+                            text: invigilator.email
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+              el("td", {
+                text: invigilator.phone
+              }),
+              el("td", {
+                text: invigilator.department
+              }),
+              el("td", {
+                text: formatNumber(assignmentCount)
+              }),
+              el("td", {
+                children: [
+                  badge(invigilator.status)
+                ]
+              }),
+              el("td", {
+                children: [
+                  el("div", {
+                    className: "inline",
+                    children: [
+                      button(
+                        t("edit"),
+                        () => openInvigilatorDialog(invigilator),
+                        "btn secondary small"
+                      ),
+                      button(
+                        t("delete"),
+                        () => deleteInvigilator(invigilator),
+                        "btn danger small"
+                      )
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("name"),
+                        tableHeader("phone"),
+                        tableHeader("department"),
+                        tableHeader("assignmentCount"),
+                        tableHeader("status"),
+                        tableHeader("actions")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function openInvigilatorDialog(existing = null) {
+      const nameInput = el("input", {
+        attrs: {
+          id: "invigilator-name",
+          type: "text",
+          maxlength: "160",
+          required: true,
+          value: existing?.name || ""
+        }
+      });
+
+      const emailInput = el("input", {
+        attrs: {
+          id: "invigilator-email",
+          type: "email",
+          maxlength: "200",
+          required: true,
+          value: existing?.email || ""
+        }
+      });
+
+      const phoneInput = el("input", {
+        attrs: {
+          id: "invigilator-phone",
+          type: "tel",
+          maxlength: "40",
+          required: true,
+          value: existing?.phone || ""
+        }
+      });
+
+      const departmentInput = el("input", {
+        attrs: {
+          id: "invigilator-department",
+          type: "text",
+          maxlength: "160",
+          required: true,
+          value: existing?.department || ""
+        }
+      });
+
+      const statusSelect = el("select", {
+        attrs: {
+          id: "invigilator-status"
+        }
+      });
+
+      ["active", "inactive"].forEach(status => {
+        statusSelect.append(
+          el("option", {
+            text: formatStatus(status),
+            attrs: {
+              value: status
+            }
+          })
+        );
+      });
+
+      statusSelect.value = existing?.status || "active";
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("invigilators")}` : t("addInvigilator"),
+        content: el("div", {
+          className: "form-grid",
+          children: [
+            field("name", nameInput),
+            field("email", emailInput),
+            field("phone", phoneInput),
+            field("department", departmentInput),
+            field("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          if (
+            !normalize(nameInput.value) ||
+            !emailInput.validity.valid ||
+            !normalize(phoneInput.value) ||
+            !normalize(departmentInput.value)
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const invigilator = {
+            id: existing?.id || `inv-${crypto.randomUUID()}`,
+            name: normalize(nameInput.value),
+            email: normalize(emailInput.value),
+            phone: normalize(phoneInput.value),
+            department: normalize(departmentInput.value),
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.invigilators.findIndex(
+              item => item.id === existing.id
+            );
+
+            state.data.invigilators[index] = invigilator;
+          } else {
+            state.data.invigilators.push(invigilator);
+          }
+
+          persistData();
+          showToast(t("invigilators"), t("sampleSaved"), "success");
+          renderInvigilators();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteInvigilator(invigilator) {
+      const inUse = state.data.exams.some(
+        exam => exam.chiefInvigilatorId === invigilator.id
+      );
+
+      if (inUse) {
+        showToast(t("validationFailed"), t("chiefInvigilator"), "danger");
+        return;
+      }
+
+      if (!confirm(t("confirmDelete"))) {
+        return;
+      }
+
+      state.data.invigilators = state.data.invigilators.filter(
+        item => item.id !== invigilator.id
+      );
+
+      persistData();
+      showToast(t("invigilators"), t("sampleDeleted"), "success");
+      renderInvigilators();
+    }
+
+    function renderScripts() {
+      const body = el("tbody");
+
+      state.data.scripts.forEach(script => {
+        const exam = examById(script.examId);
+        const course = courseById(script.courseId);
+
+        const receivedInput = el("input", {
+          className: "score-input",
+          attrs: {
+            type: "number",
+            min: "0",
+            max: script.expected,
+            value: script.received,
+            "aria-label": `${course?.code} ${t("receivedScripts")}`
+          }
+        });
+
+        receivedInput.addEventListener("change", () => {
+          const value = Number(receivedInput.value);
+
+          if (
+            !Number.isFinite(value) ||
+            value < 0 ||
+            value > script.expected
+          ) {
+            receivedInput.setAttribute("aria-invalid", "true");
+            return;
+          }
+
+          receivedInput.removeAttribute("aria-invalid");
+          script.received = value;
+          persistData();
+
+          showToast(t("scripts"), t("sampleSaved"), "success");
+        });
+
+        const statusSelect = el("select", {
+          className: "table-select",
+          attrs: {
+            "aria-label": `${course?.code} ${t("scriptStatus")}`
+          }
+        });
+
+        ["pending", "collected", "transferred", "returned", "missing"].forEach(status => {
+          statusSelect.append(
+            el("option", {
+              text: formatStatus(status),
+              attrs: {
+                value: status
+              }
+            })
+          );
+        });
+
+        statusSelect.value = script.status;
+
+        statusSelect.addEventListener("change", () => {
+          script.status = statusSelect.value;
+          persistData();
+
+          showToast(t("scripts"), t("sampleSaved"), "success");
+        });
+
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                text: course?.code || "—"
+              }),
+              el("td", {
+                text: formatDateTime(exam?.dateTime)
+              }),
+              el("td", {
+                text: formatNumber(script.expected)
+              }),
+              el("td", {
+                children: [
+                  receivedInput
+                ]
+              }),
+              el("td", {
+                children: [
+                  statusSelect
+                ]
+              }),
+              el("td", {
+                children: [
+                  badge(
+                    script.expected === script.received
+                      ? "ready"
+                      : "pending"
+                  )
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("course"),
+                        tableHeader("date"),
+                        tableHeader("expectedScripts"),
+                        tableHeader("receivedScripts"),
+                        tableHeader("scriptStatus"),
+                        tableHeader("readiness")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function activeCourseResults() {
+      return state.data.results.filter(result => result.courseId === state.activeCourseId);
+    }
+
+    function renderResults() {
+      $("#page-actions").append(
+        button(t("exportCsv"), exportResults, "btn secondary"),
+        button(t("validateResults"), () => validateResults(true), "btn secondary"),
+        button(t("saveDraft"), saveResultsDraft, "btn secondary"),
+        button(t("submitModeration"), submitResults)
+      );
+
+      const notice = el("div", {
+        className: "validation-summary",
+        text: t("protectedStateNotice")
+      });
+
+      const validation = el("div", {
+        className: "validation-summary",
+        attrs: {
+          id: "result-validation",
+          hidden: true
+        }
+      });
+
+      const body = el("tbody");
+
+      activeCourseResults().forEach(result => {
+        const candidate = candidateById(result.candidateId);
+
+        const input = el("input", {
+          className: `score-input${result.score == null ? " missing" : ""}`,
+          attrs: {
+            type: "number",
+            min: "0",
+            max: result.maximumScore,
+            step: ".01",
+            value: result.score == null ? "" : result.score,
+            "data-result-id": result.candidateId,
+            "data-maximum": result.maximumScore,
+            "aria-label": `${candidate?.name} ${t("score")}`
+          }
+        });
+
+        input.addEventListener("input", () => {
+          validateResultInput(input);
+          state.resultsDirty = true;
+        });
+
+        body.append(
+          el("tr", {
+            children: [
+              el("td", {
+                text: candidate?.registrationNumber || "—"
+              }),
+              el("td", {
+                text: candidate?.name || "—"
+              }),
+              el("td", {
+                children: [
+                  input
+                ]
+              }),
+              el("td", {
+                text: formatNumber(result.maximumScore)
+              }),
+              el("td", {
+                children: [
+                  badge(result.moderationStatus)
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(
+        notice,
+        validation,
+        el("div", {
+          className: "table-wrap",
+          children: [
+            el("table", {
+              children: [
+                el("caption", {
+                  text: `${activeCourse().code} · ${localized(activeCourse().title)}`
+                }),
+                el("thead", {
+                  children: [
+                    el("tr", {
+                      children: [
+                        tableHeader("registrationNumber"),
+                        tableHeader("name"),
+                        tableHeader("score"),
+                        tableHeader("maximumScore"),
+                        tableHeader("moderationStatus")
+                      ]
+                    })
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function validateResultInput(input) {
+      const raw = normalize(input.value);
+      const maximum = Number(input.dataset.maximum);
+      const numeric = Number(raw);
+
+      const missing = raw === "";
+      const invalid =
+        !missing &&
+        (
+          !Number.isFinite(numeric) ||
+          numeric < 0 ||
+          numeric > maximum
+        );
+
+      input.classList.toggle("missing", missing);
+      input.classList.toggle("invalid", invalid);
+      input.setAttribute("aria-invalid", invalid ? "true" : "false");
+
+      return {
+        missing,
+        invalid
+      };
+    }
+
+    function validateResults(requireComplete) {
+      const inputs = $$(".score-input", $("#view"));
+      let missing = 0;
+      let invalid = 0;
+
+      inputs.forEach(input => {
+        const result = validateResultInput(input);
+
+        if (result.missing) {
+          missing += 1;
+        }
+
+        if (result.invalid) {
+          invalid += 1;
+        }
+      });
+
+      const valid =
+        invalid === 0 &&
+        (!requireComplete || missing === 0);
+
+      const summary = $("#result-validation");
+
+      summary.hidden = false;
+      summary.classList.toggle("success", valid);
+
+      if (valid) {
+        summary.textContent = t("passedValidation");
+      } else {
+        const messages = [];
+
+        if (missing && requireComplete) {
+          messages.push(`${t("missingScoreError")} (${formatNumber(missing)})`);
+        }
+
+        if (invalid) {
+          messages.push(`${t("scoreRangeError")} (${formatNumber(invalid)})`);
+        }
+
+        summary.textContent = messages.join(" ");
+      }
+
+      return {
+        valid,
+        missing,
+        invalid
+      };
+    }
+
+    function collectResultChanges() {
+      $$(".score-input", $("#view")).forEach(input => {
+        const result = state.data.results.find(
+          item => item.candidateId === input.dataset.resultId
+        );
+
+        if (!result) {
+          return;
+        }
+
+        const raw = normalize(input.value);
+        result.score = raw === "" ? null : Number(raw);
+      });
+    }
+
+    function saveResultsDraft() {
+      const validation = validateResults(false);
+
+      if (!validation.valid) {
+        showToast(t("validationFailed"), t("scoreRangeError"), "danger");
+        return;
+      }
+
+      collectResultChanges();
+      persistData();
+
+      state.resultsDirty = false;
+
+      showToast(t("results"), t("resultsSaved"), "success");
+    }
+
+    function submitResults() {
+      const validation = validateResults(true);
+
+      if (!validation.valid) {
+        showToast(t("validationFailed"), t("correctErrors"), "danger");
+        return;
+      }
+
+      collectResultChanges();
+
+      activeCourseResults().forEach(result => {
+        result.moderationStatus = "pending";
+      });
+
+      persistData();
+      state.resultsDirty = false;
+
+      showToast(t("results"), t("resultsSubmitted"), "success");
+      renderResults();
+    }
+
+    function exportResults() {
+      const rows = [
+        [
+          "registration_number",
+          "candidate_name",
+          "score",
+          "maximum_score",
+          "moderation_status"
+        ]
+      ];
+
+      activeCourseResults().forEach(result => {
+        const candidate = candidateById(result.candidateId);
+
+        rows.push([
+          candidate?.registrationNumber,
+          candidate?.name,
+          result.score,
+          result.maximumScore,
+          result.moderationStatus
+        ]);
+      });
+
+      downloadCsv(`${activeCourse().code.replace(/\s+/g, "-")}-results.csv`, rows);
+    }
+
+    function renderIncidents() {
+      $("#page-actions").append(
+        button(t("reportIncident"), () => openIncidentDialog())
+      );
+
+      if (!state.data.incidents.length) {
+        $("#view").replaceChildren(
+          emptyState(t("incidents"), t("noData"), "!")
+        );
+        return;
+      }
+
+      const list = el("ul", {
+        className: "list"
+      });
+
+      state.data.incidents
+        .slice()
+        .sort((first, second) =>
+          new Date(second.createdAt) - new Date(first.createdAt)
+        )
+        .forEach(incident => {
+          const exam = examById(incident.examId);
+          const course = courseById(exam?.courseId);
+
+          list.append(
+            el("li", {
+              className: "list-item",
+              children: [
+                el("div", {
+                  className: "status-line",
+                  children: [
+                    el("strong", {
+                      text: `${course?.code || "—"} · ${formatStatus(incident.type)}`
+                    }),
+                    badge(incident.severity),
+                    badge(incident.status)
+                  ]
+                }),
+                el("p", {
+                  text: localized(incident.description)
+                }),
+                el("span", {
+                  text: incident.resolution
+                    ? `${t("resolution")}: ${localized(incident.resolution)}`
+                    : t("pending")
+                }),
+                el("time", {
+                  text: formatDateTime(incident.createdAt),
+                  attrs: {
+                    datetime: incident.createdAt
+                  }
+                }),
+                el("div", {
+                  className: "inline",
+                  attrs: {
+                    style: "margin-top:.55rem;"
+                  },
+                  children: [
+                    button(
+                      t("edit"),
+                      () => openIncidentDialog(incident),
+                      "btn secondary small"
+                    ),
+                    button(
+                      t("delete"),
+                      () => deleteIncident(incident),
+                      "btn danger small"
+                    )
+                  ]
+                })
+              ]
+            })
+          );
+        });
+
+      $("#view").replaceChildren(
+        el("section", {
+          className: "panel",
+          children: [
+            list
+          ]
+        })
+      );
+    }
+
+    function openIncidentDialog(existing = null) {
+      const examSelect = el("select", {
+        attrs: {
+          id: "incident-exam",
+          required: true
+        }
+      });
+
+      state.data.exams.forEach(exam => {
+        const course = courseById(exam.courseId);
+
+        examSelect.append(
+          el("option", {
+            text: `${course?.code || "—"} · ${formatDateTime(exam.dateTime)}`,
+            attrs: {
+              value: exam.id
+            }
+          })
+        );
+      });
+
+      examSelect.value =
+        existing?.examId ||
+        state.data.exams.find(exam => exam.courseId === state.activeCourseId)?.id ||
+        state.data.exams[0]?.id;
+
+      const typeSelect = el("select", {
+        attrs: {
+          id: "incident-type"
+        }
+      });
+
+      [
+        "misconduct",
+        "medical",
+        "attendance_issue",
+        "venue_issue",
+        "script_issue",
+        "other"
+      ].forEach(value => {
+        typeSelect.append(
+          el("option", {
+            text: formatStatus(value),
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      typeSelect.value = existing?.type || "other";
+
+      const severitySelect = el("select", {
+        attrs: {
+          id: "incident-severity"
+        }
+      });
+
+      ["low", "medium", "high", "critical"].forEach(value => {
+        severitySelect.append(
+          el("option", {
+            text: formatStatus(value),
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      severitySelect.value = existing?.severity || "medium";
+
+      const descriptionInput = el("textarea", {
+        attrs: {
+          id: "incident-description",
+          minlength: "10",
+          maxlength: "5000",
+          required: true
+        }
+      });
+
+      descriptionInput.value = localized(existing?.description);
+
+      const resolutionInput = el("textarea", {
+        attrs: {
+          id: "incident-resolution",
+          maxlength: "5000"
+        }
+      });
+
+      resolutionInput.value = localized(existing?.resolution);
+
+      const statusSelect = el("select", {
+        attrs: {
+          id: "incident-status"
+        }
+      });
+
+      ["open", "investigating", "resolved"].forEach(value => {
+        statusSelect.append(
+          el("option", {
+            text: formatStatus(value),
+            attrs: {
+              value
+            }
+          })
+        );
+      });
+
+      statusSelect.value = existing?.status || "open";
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("incidents")}` : t("reportIncident"),
+        content: el("div", {
+          className: "form-grid",
+          children: [
+            field("examination", examSelect, "", true),
+            field("incidentType", typeSelect),
+            field("severity", severitySelect),
+            field("description", descriptionInput, "", true),
+            field("resolution", resolutionInput, "", true),
+            field("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const description = normalize(descriptionInput.value);
+          const resolution = normalize(resolutionInput.value);
+
+          if (description.length < 10 || !examSelect.value) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const incident = {
+            id: existing?.id || `incident-${crypto.randomUUID()}`,
+            examId: examSelect.value,
+            type: typeSelect.value,
+            severity: severitySelect.value,
+            description: {
+              en: description,
+              fr: description,
+              ar: description
+            },
+            resolution: resolution
+              ? {
+                  en: resolution,
+                  fr: resolution,
+                  ar: resolution
+                }
+              : null,
+            status: statusSelect.value,
+            createdAt: existing?.createdAt || new Date().toISOString()
+          };
+
+          if (existing) {
+            const index = state.data.incidents.findIndex(
+              item => item.id === existing.id
+            );
+
+            state.data.incidents[index] = incident;
+          } else {
+            state.data.incidents.push(incident);
+          }
+
+          persistData();
+          showToast(t("incidents"), t("sampleSaved"), "success");
+          renderIncidents();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteIncident(incident) {
+      if (!confirm(t("confirmDelete"))) {
+        return;
+      }
+
+      state.data.incidents = state.data.incidents.filter(
+        item => item.id !== incident.id
+      );
+
+      persistData();
+      showToast(t("incidents"), t("sampleDeleted"), "success");
+      renderIncidents();
+    }
+
+    function renderReports() {
+      $("#page-actions").append(
+        button(t("print"), () => print(), "btn secondary"),
+        button(t("exportCsv"), exportReport, "btn secondary")
+      );
+
+      const scheduled = state.data.exams.filter(
+        exam => exam.status === "scheduled"
+      ).length;
+
+      const readyExams = state.data.exams.filter(exam => {
+        const venue = venueById(exam.venueId);
+        const invigilator = invigilatorById(exam.chiefInvigilatorId);
+
+        return (
+          exam.status === "scheduled" &&
+          venue?.status === "available" &&
+          invigilator?.status === "active"
+        );
+      }).length;
+
+      const resultRows = activeCourseResults();
+      const completeResults = resultRows.filter(
+        result => result.score != null
+      ).length;
+
+      const eligibleCandidates = state.data.candidates.filter(
+        candidate => candidate.eligibility === "eligible"
+      ).length;
+
+      const venueUsage = state.data.venues.map(venue => ({
+        label: venue.name,
+        count: state.data.exams.filter(exam => exam.venueId === venue.id).length
+      }));
+
+      const incidentGroups = ["low", "medium", "high", "critical"].map(severity => ({
+        label: formatStatus(severity),
+        count: state.data.incidents.filter(
+          incident => incident.severity === severity
+        ).length
+      }));
+
+      $("#view").replaceChildren(
+        el("div", {
+          className: "kpi-grid",
+          children: [
+            statCard(
+              `${formatNumber(readyExams)}/${formatNumber(scheduled || 0)}`,
+              t("examinationReadiness")
+            ),
+            statCard(
+              `${formatNumber(completeResults)}/${formatNumber(resultRows.length)}`,
+              t("resultCompletion"),
+              "silver"
+            ),
+            statCard(
+              `${formatNumber(eligibleCandidates)}/${formatNumber(state.data.candidates.length)}`,
+              t("candidateEligibility")
+            ),
+            statCard(
+              formatNumber(state.data.incidents.length),
+              t("incidentSummary"),
+              "danger"
+            )
+          ]
+        }),
+        el("div", {
+          className: "grid two",
+          children: [
+            chartPanel(t("venueUtilization"), venueUsage),
+            chartPanel(t("incidentSummary"), incidentGroups)
+          ]
+        })
+      );
+    }
+
+    function chartPanel(title, items) {
+      const maximum = Math.max(
+        1,
+        ...items.map(item => Number(item.count || 0))
+      );
+
+      const chart = el("div", {
+        className: "chart",
+        attrs: {
+          role: "img",
+          "aria-label": title
+        }
+      });
+
+      items.forEach(item => {
+        const width = Math.max(
+          0,
+          Math.min(100, Number(item.count || 0) / maximum * 100)
+        );
+
+        chart.append(
+          el("div", {
+            className: "chart-row",
+            children: [
+              el("span", {
+                className: "chart-label",
+                text: item.label
+              }),
+              el("div", {
+                className: "chart-track",
+                children: [
+                  el("div", {
+                    className: "chart-bar",
+                    attrs: {
+                      style: `width:${width}%`
+                    }
+                  })
+                ]
+              }),
+              el("strong", {
+                className: "chart-value",
+                text: formatNumber(item.count)
+              })
+            ]
+          })
+        );
+      });
+
+      return el("section", {
+        className: "panel",
+        children: [
+          el("div", {
+            className: "panel-header",
+            children: [
+              el("h2", {
+                text: title
+              })
+            ]
+          }),
+          chart
+        ]
+      });
+    }
+
+    function exportReport() {
+      const rows = [
+        ["metric", "value"],
+        ["courses", state.data.courses.length],
+        ["examinations", state.data.exams.length],
+        ["candidates", state.data.candidates.length],
+        ["venues", state.data.venues.length],
+        ["invigilators", state.data.invigilators.length],
+        ["incidents", state.data.incidents.length],
+        [
+          "missing_scores",
+          state.data.results.filter(result => result.score == null).length
+        ]
+      ];
+
+      downloadCsv("department-examination-report.csv", rows);
+    }
+
+    function renderHelp() {
+      const panel = el("section", {
+        className: "panel"
+      });
+
+      [
+        ["helpSecurity", "helpSecurityBody"],
+        ["helpResults", "helpResultsBody"],
+        ["helpIncidents", "helpIncidentsBody"],
+        ["helpLanguage", "helpLanguageBody"],
+        ["helpSample", "helpSampleBody"]
+      ].forEach(([titleKey, bodyKey]) => {
+        panel.append(
+          el("details", {
+            children: [
+              el("summary", {
+                text: t(titleKey)
+              }),
+              el("p", {
+                text: t(bodyKey)
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(panel);
+    }
+
+    function openModal({
+      title,
+      content,
+      submitLabel = t("save"),
+      onSubmit = null
+    }) {
+      $("#modal-title").textContent = title;
+      $("#modal-body").replaceChildren(content);
+      $("#modal-error").hidden = true;
+      $("#modal-error").textContent = "";
+
+      state.modalSubmit = onSubmit;
+
+      $("#modal-submit").hidden = !onSubmit;
+      $("#modal-submit").textContent = submitLabel;
+
+      if (!$("#modal").open) {
+        $("#modal").showModal();
+      }
+    }
+
+    function closeModal() {
+      if ($("#modal").open) {
+        $("#modal").close();
+      }
+
+      state.modalSubmit = null;
+      $("#modal-body").replaceChildren();
+      $("#modal-error").hidden = true;
+    }
+
+    function showModalError(message) {
+      $("#modal-error").hidden = false;
+      $("#modal-error").textContent = message;
+    }
+
+    function renderNotifications() {
+      const container = $("#notification-list");
+      const unread = state.data.notifications.filter(
+        notification => !notification.readAt
+      ).length;
+
+      container.replaceChildren();
+
+      $("#notification-count").textContent = formatNumber(unread);
+      $("#notification-count").hidden = unread === 0;
+
+      $("#notification-toggle").setAttribute(
+        "aria-label",
+        `${t("notifications")}: ${formatNumber(unread)}`
+      );
+
+      if (!state.data.notifications.length) {
+        container.append(
+          emptyState(t("noNotifications"), t("noData"), "♢")
+        );
+        return;
+      }
+
+      const list = el("ul", {
+        className: "list"
+      });
+
+      state.data.notifications.forEach(notification => {
+        const actions = el("div", {
+          className: "inline",
+          attrs: {
+            style: "margin-top:.55rem;"
+          }
+        });
+
+        if (!notification.readAt) {
+          actions.append(
+            button(
+              t("markRead"),
+              () => {
+                notification.readAt = new Date().toISOString();
+                persistData();
+                renderNotifications();
+              },
+              "btn secondary small"
+            )
+          );
+        }
+
+        actions.append(
+          button(
+            t("remove"),
+            () => {
+              state.data.notifications = state.data.notifications.filter(
+                item => item.id !== notification.id
+              );
+
+              persistData();
+              renderNotifications();
+
+              showToast(t("notifications"), t("sampleDeleted"), "success");
+            },
+            "btn danger small"
+          )
+        );
+
+        list.append(
+          el("li", {
+            className: "list-item",
+            children: [
+              el("strong", {
+                text: localized(notification.title)
+              }),
+              el("span", {
+                text: localized(notification.body)
+              }),
+              el("time", {
+                text: formatDateTime(notification.createdAt),
+                attrs: {
+                  datetime: notification.createdAt
+                }
+              }),
+              actions
+            ]
+          })
+        );
+      });
+
+      container.append(list);
+    }
+
+    function openSidebar() {
+      $("#sidebar").dataset.open = "true";
+      $("#sidebar-toggle").setAttribute("aria-expanded", "true");
+      $("#sidebar-backdrop").dataset.open = "true";
+      $("#sidebar-backdrop").setAttribute("aria-hidden", "false");
+      document.body.dataset.scrollLock = "true";
+    }
+
+    function closeSidebar() {
+      $("#sidebar").dataset.open = "false";
+      $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+      $("#sidebar-backdrop").dataset.open = "false";
+      $("#sidebar-backdrop").setAttribute("aria-hidden", "true");
+
+      if ($("#notification-drawer").dataset.open !== "true") {
+        document.body.dataset.scrollLock = "false";
+      }
+    }
+
+    function openNotifications() {
+      $("#notification-drawer").dataset.open = "true";
+      $("#notification-drawer").setAttribute("aria-hidden", "false");
+      $("#notification-toggle").setAttribute("aria-expanded", "true");
+      $("#notification-backdrop").dataset.open = "true";
+      $("#notification-backdrop").setAttribute("aria-hidden", "false");
+      document.body.dataset.scrollLock = "true";
+
+      $("#notification-close").focus();
+    }
+
+    function closeNotifications() {
+      $("#notification-drawer").dataset.open = "false";
+      $("#notification-drawer").setAttribute("aria-hidden", "true");
+      $("#notification-toggle").setAttribute("aria-expanded", "false");
+      $("#notification-backdrop").dataset.open = "false";
+      $("#notification-backdrop").setAttribute("aria-hidden", "true");
+      document.body.dataset.scrollLock = "false";
+    }
+
+    function closeProfileMenu() {
+      $("#profile-menu").hidden = true;
+      $("#profile-toggle").setAttribute("aria-expanded", "false");
+    }
+
+    function closeSearch() {
+      $("#search-results").hidden = true;
+      $("#search-results").replaceChildren();
+    }
+
+    function performSearch(query) {
+      const search = normalize(query).toLocaleLowerCase(LOCALES[state.language]);
+      const container = $("#search-results");
+
+      if (search.length < 2) {
+        closeSearch();
+        return;
+      }
+
+      const results = [];
+
+      state.data.exams.forEach(exam => {
+        const course = courseById(exam.courseId);
+
+        if (
+          [
+            course?.code,
+            localized(course?.title),
+            venueById(exam.venueId)?.name
+          ]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "exams",
+            title: `${course?.code} · ${localized(course?.title)}`,
+            subtitle: formatDateTime(exam.dateTime)
+          });
+        }
+      });
+
+      state.data.candidates.forEach(candidate => {
+        if (
+          [candidate.name, candidate.registrationNumber]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "candidates",
+            courseId: candidate.courseId,
+            title: candidate.name,
+            subtitle: candidate.registrationNumber
+          });
+        }
+      });
+
+      state.data.venues.forEach(venue => {
+        if (
+          [venue.name, venue.building]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "venues",
+            title: venue.name,
+            subtitle: venue.building
+          });
+        }
+      });
+
+      state.data.invigilators.forEach(invigilator => {
+        if (
+          [invigilator.name, invigilator.email]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "invigilators",
+            title: invigilator.name,
+            subtitle: invigilator.email
+          });
+        }
+      });
+
+      container.replaceChildren();
+
+      results.slice(0, 12).forEach(result => {
+        container.append(
+          el("button", {
+            attrs: {
+              type: "button"
+            },
+            children: [
+              el("strong", {
+                text: result.title
+              }),
+              el("small", {
+                text: result.subtitle
+              })
+            ],
+            events: {
+              click: () => {
+                if (result.courseId) {
+                  state.activeCourseId = result.courseId;
+                  populateCourseSwitch();
+                }
+
+                closeSearch();
+                $("#global-search-input").value = "";
+                navigate(result.route);
+              }
+            }
+          })
+        );
+      });
+
+      if (!results.length) {
+        container.append(
+          el("div", {
+            className: "list-item",
+            text: t("noMatches")
+          })
+        );
+      }
+
+      container.hidden = false;
+    }
+
+    function resetSampleData() {
+      if (!confirm(t("resetConfirm"))) {
+        return;
+      }
+
+      state.data = createInitialData();
+      state.activeCourseId = state.data.courses[0].id;
+
+      persistData();
+      populateCourseSwitch();
+      renderIdentity();
+      renderNotifications();
+      renderRoute();
+
+      showToast(t("resetSample"), t("resetComplete"), "success");
+    }
+
+    function bindEvents() {
+      $("#sidebar-toggle").addEventListener("click", () => {
+        if ($("#sidebar").dataset.open === "true") {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+
+      $("#sidebar-backdrop").addEventListener("click", closeSidebar);
+
+      $("#notification-toggle").addEventListener("click", openNotifications);
+      $("#notification-close").addEventListener("click", closeNotifications);
+      $("#notification-backdrop").addEventListener("click", closeNotifications);
+
+      $("#profile-toggle").addEventListener("click", event => {
+        event.stopPropagation();
+
+        const menu = $("#profile-menu");
+        menu.hidden = !menu.hidden;
+
+        $("#profile-toggle").setAttribute(
+          "aria-expanded",
+          String(!menu.hidden)
+        );
+      });
+
+      document.addEventListener("click", event => {
+        if (
+          !$("#profile-menu").hidden &&
+          !$("#profile-menu").contains(event.target) &&
+          !$("#profile-toggle").contains(event.target)
+        ) {
+          closeProfileMenu();
+        }
+
+        if (
+          !$("#search-results").contains(event.target) &&
+          !$(".global-search").contains(event.target)
+        ) {
+          closeSearch();
+        }
+      });
+
+      $("#course-switch").addEventListener("change", event => {
+        state.activeCourseId = event.target.value;
+        state.resultsDirty = false;
+
+        renderBreadcrumbs();
+        renderPageMeta();
+        renderRoute();
+
+        location.hash =
+          `view=${encodeURIComponent(state.route)}` +
+          `&course=${encodeURIComponent(state.activeCourseId)}`;
+      });
+
+      $$("[data-language]", $("#language-switcher")).forEach(buttonNode => {
+        buttonNode.addEventListener("click", () => {
+          applyLanguage(buttonNode.dataset.language);
+        });
+      });
+
+      $("#theme-toggle").addEventListener("click", () => {
+        applyTheme(state.theme === "dark" ? "light" : "dark");
+      });
+
+      $("#global-search-input").addEventListener(
+        "input",
+        debounce(event => {
+          performSearch(event.target.value);
+        })
+      );
+
+      $("#modal-close").addEventListener("click", closeModal);
+      $("#modal-cancel").addEventListener("click", closeModal);
+
+      $("#modal-form").addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!state.modalSubmit) {
+          closeModal();
+          return;
+        }
+
+        try {
+          const close = await state.modalSubmit();
+
+          if (close !== false) {
+            closeModal();
+          }
+        } catch (error) {
+          showModalError(error?.message || t("correctErrors"));
+        }
+      });
+
+      $$("[data-profile-action]").forEach(buttonNode => {
+        buttonNode.addEventListener("click", () => {
+          closeProfileMenu();
+
+          switch (buttonNode.dataset.profileAction) {
+            case "print":
+              print();
+              break;
+
+            case "help":
+              navigate("help");
+              break;
+
+            case "reset":
+              resetSampleData();
+              break;
+
+            case "signout":
+              showToast(t("signOut"), t("previewNotice"), "info");
+              break;
+          }
+        });
+      });
+
+      document.addEventListener("keydown", event => {
+        const target = event.target;
+
+        const editable =
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement ||
+          target?.isContentEditable;
+
+        if (event.key === "/" && !editable) {
+          event.preventDefault();
+          $("#global-search-input").focus();
+        }
+
+        if (event.key === "Escape") {
+          closeSidebar();
+          closeNotifications();
+          closeProfileMenu();
+          closeSearch();
+        }
+      });
+
+      window.addEventListener("beforeunload", event => {
+        if (!state.resultsDirty) {
+          return;
+        }
+
+        event.preventDefault();
+        event.returnValue = "";
+      });
+
+      window.addEventListener("resize", () => {
+        if (innerWidth > 1088) {
+          closeSidebar();
+        }
+      });
+    }
+
+    function runSelfChecks() {
+      const tests = [];
+
+      function test(name, callback) {
+        try {
+          callback();
+          tests.push({
+            test: name,
+            status: "PASS"
+          });
+        } catch (error) {
+          tests.push({
+            test: name,
+            status: "FAIL",
+            message: error.message
+          });
+        }
+      }
+
+      test("Every menu route has metadata", () => {
+        ROUTES.forEach(([route]) => {
+          if (!ROUTE_META[route]) {
+            throw new Error(`Missing route metadata: ${route}`);
+          }
+        });
+      });
+
+      test("All menu labels exist in all languages", () => {
+        ["en", "fr", "ar"].forEach(language => {
+          ROUTES.forEach(([, , key]) => {
+            if (!I18N[language][key]) {
+              throw new Error(`${language} missing ${key}`);
+            }
+          });
+        });
+      });
+
+      test("Role remains Department Exam Officer", () => {
+        if (state.data.context.role !== "Department Exam Officer") {
+          throw new Error("Role scope changed.");
+        }
+      });
+
+      test("Every examination references a valid course", () => {
+        state.data.exams.forEach(exam => {
+          if (!courseById(exam.courseId)) {
+            throw new Error(`Invalid course reference: ${exam.id}`);
+          }
+        });
+      });
+
+      console.table(tests);
+    }
+
+    function initialize() {
+      state.data = loadData();
+      state.activeCourseId = state.data.courses[0]?.id || null;
+
+      loadPreferences();
+      parseHash();
+      bindEvents();
+
+      renderNavigation();
+      renderIdentity();
+      populateCourseSwitch();
+      renderBreadcrumbs();
+      renderPageMeta();
+      renderNotifications();
+      renderRoute();
+
+      runSelfChecks();
+    }
+
+    initialize();
+  </script>
+</body>
+</html>

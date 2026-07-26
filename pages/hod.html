@@ -1,0 +1,6416 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#071426">
+  <meta name="theme-color" content="#111827">
+  <meta http-equiv="Content-Security-Policy"content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>HOD Dashboard | YAJIB University</title>
+
+  <!--
+    YAJIB HOD DASHBOARD
+    ===================
+
+    This standalone version uses persistent browser sample data.
+
+    Production requirements:
+    - Verify the active HOD role on the server.
+    - Restrict all queries by institution_id and department_id.
+    - Enforce authorization with database RLS.
+    - Use audited RPCs for approvals and protected academic actions.
+    - Never place service-role keys or application secrets in this file.
+    - Do not trust role names, entity IDs, or approval states sent by the browser.
+  -->
+
+  <style>
+    :root {
+      --gold: #ffd700;
+      --gold-soft: #fff3a0;
+      --gold-dark: #8d7100;
+      --crimson: #dc143c;
+      --crimson-dark: #a50e2e;
+      --silver: #c0c0c0;
+
+      --navy-950: #050b16;
+      --navy-900: #071426;
+      --navy-850: #10213b;
+      --navy-800: #172e50;
+      --navy-700: #29476f;
+
+      --bg: #f1f4f8;
+      --surface: #ffffff;
+      --surface-soft: #f7f9fc;
+      --surface-strong: #e8edf4;
+      --glass: rgb(255 255 255 / 88%);
+
+      --text: #141a24;
+      --text-soft: #596577;
+      --text-muted: #7c8798;
+      --border: #d7dee8;
+
+      --success: #087443;
+      --warning: #8a5100;
+      --danger: #b20e31;
+      --info: #0763ad;
+      --focus: #0064c8;
+
+      --sidebar-width: 18.5rem;
+      --header-height: 4.85rem;
+      --content-width: 108rem;
+
+      --radius-xs: .42rem;
+      --radius-sm: .64rem;
+      --radius-md: .92rem;
+      --radius-lg: 1.25rem;
+      --radius-xl: 1.75rem;
+
+      --shadow-xs: 0 1px 4px rgb(15 23 42 / 8%);
+      --shadow-sm: 0 8px 24px rgb(15 23 42 / 9%);
+      --shadow-md: 0 20px 52px rgb(15 23 42 / 16%);
+      --shadow-lg: 0 30px 90px rgb(0 0 0 / 36%);
+
+      --transition: 180ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    html[data-theme="dark"] {
+      --bg: #070b12;
+      --surface: #111923;
+      --surface-soft: #18212e;
+      --surface-strong: #263243;
+      --glass: rgb(17 25 35 / 89%);
+
+      --text: #f7f8fb;
+      --text-soft: #c2cad6;
+      --text-muted: #929dae;
+      --border: #303c4d;
+
+      --success: #62dda5;
+      --warning: #ffd080;
+      --danger: #ff809c;
+      --info: #82c8ff;
+      --focus: #8bc7ff;
+
+      --shadow-xs: 0 1px 4px rgb(0 0 0 / 35%);
+      --shadow-sm: 0 8px 24px rgb(0 0 0 / 38%);
+      --shadow-md: 0 20px 52px rgb(0 0 0 / 52%);
+      --shadow-lg: 0 30px 90px rgb(0 0 0 / 70%);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 20rem;
+      min-height: 100%;
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 98% 0, rgb(255 215 0 / 14%), transparent 28rem),
+        radial-gradient(circle at 0 100%, rgb(220 20 60 / 8%), transparent 25rem),
+        var(--bg);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        "Noto Sans Arabic",
+        sans-serif;
+      line-height: 1.5;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body[data-scroll-lock="true"] {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+    }
+
+    button,
+    select,
+    input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    ::selection {
+      color: #111;
+      background: var(--gold);
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 5000;
+      inset-block-start: .7rem;
+      inset-inline-start: .7rem;
+      padding: .7rem 1rem;
+      color: #111;
+      background: var(--gold);
+      border: 2px solid #111;
+      border-radius: var(--radius-sm);
+      font-weight: 900;
+      transform: translateY(-160%);
+      transition: transform var(--transition);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .sidebar {
+      position: fixed;
+      z-index: 900;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      color: #fff;
+      background:
+        radial-gradient(circle at 12% 0, rgb(255 215 0 / 15%), transparent 17rem),
+        linear-gradient(180deg, var(--navy-950), var(--navy-900) 58%, #10192a);
+      border-inline-end: 1px solid rgb(255 255 255 / 9%);
+      box-shadow: 18px 0 48px rgb(3 7 18 / 14%);
+      transition: transform var(--transition);
+    }
+
+    .brand {
+      display: flex;
+      min-height: var(--header-height);
+      align-items: center;
+      gap: .85rem;
+      padding: .9rem 1rem;
+      border-block-end: 1px solid rgb(255 255 255 / 10%);
+    }
+
+    .brand-mark {
+      position: relative;
+      display: grid;
+      width: 3rem;
+      height: 3rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #111;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: .92rem;
+      box-shadow:
+        inset 0 -4px 0 rgb(0 0 0 / 13%),
+        0 11px 30px rgb(255 215 0 / 22%);
+      font-size: 1.22rem;
+      font-weight: 950;
+    }
+
+    .brand-mark::after {
+      position: absolute;
+      width: .62rem;
+      height: .62rem;
+      inset-block-start: -.14rem;
+      inset-inline-end: -.14rem;
+      content: "";
+      background: var(--crimson);
+      border: 2px solid var(--navy-950);
+      border-radius: 50%;
+    }
+
+    .brand-copy strong,
+    .brand-copy span {
+      display: block;
+    }
+
+    .brand-copy strong {
+      font-size: 1.08rem;
+      letter-spacing: -.025em;
+    }
+
+    .brand-copy span {
+      color: #bec8d8;
+      font-size: .75rem;
+    }
+
+    .sidebar-label {
+      padding: 1rem 1.05rem .35rem;
+      color: #8491a7;
+      font-size: .67rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      display: grid;
+      gap: .18rem;
+      padding: .2rem .7rem .9rem;
+    }
+
+    .sidebar-nav button {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-height: 2.8rem;
+      align-items: center;
+      gap: .72rem;
+      padding: .62rem .75rem;
+      overflow: hidden;
+      color: #b9c3d3;
+      text-align: start;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: .72rem;
+      transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+    }
+
+    .sidebar-nav button::before {
+      position: absolute;
+      width: 3px;
+      inset-block: .55rem;
+      inset-inline-start: 0;
+      content: "";
+      background: var(--gold);
+      border-radius: 999px;
+      opacity: 0;
+      transform: scaleY(.2);
+      transition: var(--transition);
+    }
+
+    .sidebar-nav button:hover {
+      color: #fff;
+      background: rgb(255 255 255 / 7%);
+      transform: translateX(2px);
+    }
+
+    [dir="rtl"] .sidebar-nav button:hover {
+      transform: translateX(-2px);
+    }
+
+    .sidebar-nav button[aria-current="page"] {
+      color: #fff;
+      background:
+        linear-gradient(
+          90deg,
+          rgb(255 215 0 / 15%),
+          rgb(255 255 255 / 5%)
+        );
+      border-color: rgb(255 215 0 / 18%);
+    }
+
+    .sidebar-nav button[aria-current="page"]::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      display: grid;
+      width: 1.7rem;
+      height: 1.7rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--gold);
+      background: rgb(255 255 255 / 6%);
+      border-radius: .46rem;
+      font-size: .9rem;
+    }
+
+    .sidebar-footer {
+      margin-block-start: auto;
+      padding: 1rem;
+      color: #9ca8ba;
+      border-block-start: 1px solid rgb(255 255 255 / 9%);
+      font-size: .74rem;
+    }
+
+    .sidebar-footer strong,
+    .sidebar-footer span {
+      display: block;
+    }
+
+    .sidebar-footer strong {
+      color: #e9edf4;
+    }
+
+    .workspace {
+      min-height: 100vh;
+      margin-inline-start: var(--sidebar-width);
+    }
+
+    .sample-banner {
+      display: flex;
+      min-height: 2.7rem;
+      align-items: center;
+      justify-content: center;
+      gap: .65rem;
+      padding: .55rem 1rem;
+      color: #1c1700;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          var(--gold),
+          var(--gold) 11px,
+          #ffe75b 11px,
+          #ffe75b 22px
+        );
+      border-block-end: 2px solid #735d00;
+      font-size: .8rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 700;
+      inset-block-start: 0;
+      display: grid;
+      grid-template-columns: minmax(12rem, 1fr) minmax(17rem, 33rem) auto;
+      align-items: center;
+      gap: .85rem;
+      min-height: var(--header-height);
+      padding: .65rem clamp(.75rem, 2vw, 1.45rem);
+      background: var(--glass);
+      border-block-end: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+      backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .topbar-start,
+    .topbar-actions,
+    .breadcrumbs,
+    .inline,
+    .toolbar,
+    .status-line,
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+
+    .topbar-start {
+      min-width: 0;
+    }
+
+    .breadcrumbs {
+      min-width: 0;
+      flex-wrap: wrap;
+      color: var(--text-soft);
+      font-size: .8rem;
+    }
+
+    .breadcrumbs button {
+      max-width: 16rem;
+      padding: .15rem;
+      overflow: hidden;
+      color: inherit;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background: transparent;
+      border: 0;
+    }
+
+    .breadcrumbs button:hover {
+      color: var(--text);
+      text-decoration: underline;
+    }
+
+    .global-search {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .global-search-symbol {
+      position: absolute;
+      inset-inline-start: .86rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .global-search input {
+      width: 100%;
+      min-height: 2.78rem;
+      padding: .62rem 3rem .62rem 2.45rem;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+    }
+
+    [dir="rtl"] .global-search input {
+      padding: .62rem 2.45rem .62rem 3rem;
+    }
+
+    .global-search kbd {
+      position: absolute;
+      inset-inline-end: .75rem;
+      padding: .1rem .36rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .34rem;
+      font-size: .66rem;
+    }
+
+    .search-results {
+      position: absolute;
+      z-index: 1300;
+      inset-block-start: calc(100% + .45rem);
+      inset-inline: 0;
+      max-height: 25rem;
+      overflow: auto;
+      padding: .45rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .82rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .search-results button {
+      display: grid;
+      width: 100%;
+      gap: .1rem;
+      padding: .66rem;
+      color: var(--text);
+      text-align: start;
+      background: transparent;
+      border: 0;
+      border-radius: .55rem;
+    }
+
+    .search-results button:hover {
+      background: var(--surface-soft);
+    }
+
+    .search-results small {
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      justify-content: flex-end;
+    }
+
+    .icon-button,
+    .profile-button {
+      display: inline-grid;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      place-items: center;
+      padding: .46rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition);
+    }
+
+    .icon-button:hover,
+    .profile-button:hover {
+      background: var(--surface-strong);
+      border-color: var(--gold-dark);
+      transform: translateY(-1px);
+    }
+
+    .profile-button {
+      grid-auto-flow: column;
+      gap: .45rem;
+      padding-inline: .42rem .72rem;
+    }
+
+    .avatar {
+      display: grid;
+      width: 2.12rem;
+      height: 2.12rem;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #111;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: 50%;
+      box-shadow: inset 0 -2px 0 rgb(0 0 0 / 12%);
+      font-size: .7rem;
+      font-weight: 950;
+    }
+
+    .notification-button {
+      position: relative;
+    }
+
+    .notification-count {
+      position: absolute;
+      display: grid;
+      min-width: 1.18rem;
+      height: 1.18rem;
+      place-items: center;
+      inset-block-start: -.27rem;
+      inset-inline-end: -.27rem;
+      padding-inline: .2rem;
+      color: #fff;
+      background: var(--crimson);
+      border: 2px solid var(--surface);
+      border-radius: 999px;
+      font-size: .58rem;
+      font-weight: 950;
+    }
+
+    .compact-select {
+      min-height: 2.75rem;
+      max-width: 16rem;
+      padding: .5rem .7rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .language-switcher {
+      display: flex;
+      padding: .2rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .72rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .language-switcher button {
+      min-width: 2.45rem;
+      min-height: 2.25rem;
+      padding: .3rem .45rem;
+      color: var(--text-soft);
+      background: transparent;
+      border: 0;
+      border-radius: .5rem;
+      font-size: .72rem;
+      font-weight: 900;
+    }
+
+    .language-switcher button:hover {
+      color: var(--text);
+      background: var(--surface-strong);
+    }
+
+    .language-switcher button[aria-pressed="true"] {
+      color: #111;
+      background: var(--gold);
+      box-shadow: inset 0 -2px 0 rgb(0 0 0 / 10%);
+    }
+
+    .content {
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      padding: clamp(1rem, 2vw, 1.75rem);
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-block-end: 1rem;
+    }
+
+    .page-heading h1,
+    .page-heading p {
+      margin: 0;
+    }
+
+    .page-heading h1 {
+      font-size: clamp(1.65rem, 3vw, 2.45rem);
+      line-height: 1.15;
+      letter-spacing: -.04em;
+    }
+
+    .page-heading p {
+      max-width: 58rem;
+      margin-block-start: .4rem;
+      color: var(--text-soft);
+    }
+
+    .eyebrow {
+      display: block;
+      margin-block-end: .25rem;
+      color: var(--crimson);
+      font-size: .72rem;
+      font-weight: 950;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .page-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: .55rem;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(14rem, .55fr);
+      gap: 1rem;
+      overflow: hidden;
+      padding: clamp(1.35rem, 3vw, 2.2rem);
+      color: #fff;
+      background:
+        linear-gradient(120deg, rgb(220 20 60 / 74%), transparent 48%),
+        radial-gradient(circle at 90% 8%, rgb(255 215 0 / 22%), transparent 17rem),
+        linear-gradient(145deg, #060d18, #1b3152);
+      border: 1px solid rgb(255 255 255 / 8%);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero h2,
+    .hero p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      line-height: 1.17;
+    }
+
+    .hero p {
+      max-width: 50rem;
+      margin-block-start: .55rem;
+      color: #e5eaf2;
+    }
+
+    .hero-card {
+      position: relative;
+      z-index: 1;
+      align-self: center;
+      padding: 1rem;
+      color: #161300;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border-radius: var(--radius-md);
+      box-shadow:
+        inset 0 -4px 0 rgb(0 0 0 / 12%),
+        0 14px 32px rgb(0 0 0 / 20%);
+    }
+
+    .hero-card strong,
+    .hero-card span {
+      display: block;
+    }
+
+    .hero-card span {
+      margin-block-start: .2rem;
+      font-size: .78rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin-block: 1rem;
+    }
+
+    .card,
+    .panel,
+    .kpi,
+    .empty-state {
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel,
+    .card {
+      padding: 1rem;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      margin-block-end: .85rem;
+    }
+
+    .panel-header h2,
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .kpi {
+      position: relative;
+      min-height: 8.45rem;
+      overflow: hidden;
+      padding: 1rem;
+      transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
+    }
+
+    .kpi:hover {
+      border-color: color-mix(in srgb, var(--gold-dark) 55%, var(--border));
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .kpi::before {
+      position: absolute;
+      height: 3px;
+      inset-block-start: 0;
+      inset-inline: 0;
+      content: "";
+      background: linear-gradient(90deg, var(--gold), var(--crimson));
+    }
+
+    .kpi::after {
+      position: absolute;
+      width: 5.5rem;
+      height: 5.5rem;
+      inset-inline-end: -2.2rem;
+      inset-block-end: -2.9rem;
+      content: "";
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: .15;
+    }
+
+    .kpi[data-tone="danger"]::after {
+      background: var(--crimson);
+    }
+
+    .kpi[data-tone="silver"]::after {
+      background: var(--silver);
+    }
+
+    .kpi-label,
+    .kpi-value,
+    .kpi-note {
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .kpi-label {
+      min-height: 2.5rem;
+      color: var(--text-soft);
+      font-size: .8rem;
+      font-weight: 850;
+    }
+
+    .kpi-value {
+      margin-block-start: .35rem;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      font-variant-numeric: tabular-nums;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .kpi-note {
+      margin-block-start: .5rem;
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+    }
+
+    .quick-action,
+    .entity-card {
+      position: relative;
+      padding: .9rem;
+      overflow: hidden;
+      color: var(--text);
+      text-align: start;
+      background: linear-gradient(145deg, var(--surface-soft), var(--surface));
+      border: 1px solid var(--border);
+      border-radius: .8rem;
+      transition: var(--transition);
+    }
+
+    .quick-action {
+      min-height: 6.6rem;
+    }
+
+    .quick-action::after,
+    .entity-card::after {
+      position: absolute;
+      width: 3.5rem;
+      height: 3.5rem;
+      inset-block-end: -2rem;
+      inset-inline-end: -1.2rem;
+      content: "";
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: .12;
+    }
+
+    .quick-action:hover,
+    .entity-card:hover {
+      border-color: var(--gold-dark);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .quick-action strong,
+    .quick-action span,
+    .entity-card strong,
+    .entity-card span {
+      display: block;
+    }
+
+    .quick-action span,
+    .entity-card span {
+      margin-block-start: .32rem;
+      color: var(--text-soft);
+      font-size: .78rem;
+    }
+
+    .toolbar {
+      flex-wrap: wrap;
+      align-items: end;
+      margin-block-end: 1rem;
+      padding: .85rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .field {
+      display: grid;
+      gap: .34rem;
+      min-width: 0;
+    }
+
+    .field.grow {
+      min-width: min(100%, 18rem);
+      flex: 1 1 18rem;
+    }
+
+    .field label,
+    .field-label {
+      color: var(--text-soft);
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field select,
+    .field textarea,
+    .table-select {
+      width: 100%;
+      min-height: 2.72rem;
+      padding: .62rem .72rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .6rem;
+    }
+
+    .field textarea {
+      min-height: 7.5rem;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .table-select:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      outline: none;
+    }
+
+    .field-help {
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .check-field {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+      padding: .65rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .6rem;
+    }
+
+    .check-field input {
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-block-start: .12rem;
+      accent-color: var(--crimson);
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 2.65rem;
+      align-items: center;
+      justify-content: center;
+      gap: .42rem;
+      padding: .58rem .88rem;
+      color: #181300;
+      background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+      border: 1px solid var(--gold-dark);
+      border-radius: .64rem;
+      box-shadow:
+        inset 0 -2px 0 rgb(0 0 0 / 10%),
+        0 3px 9px rgb(255 215 0 / 12%);
+      font-weight: 880;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      box-shadow:
+        inset 0 -2px 0 rgb(0 0 0 / 12%),
+        0 7px 18px rgb(255 215 0 / 19%);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn.secondary:hover {
+      background: var(--surface-strong);
+      border-color: var(--gold-dark);
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: linear-gradient(145deg, #ef3158, var(--crimson));
+      border-color: var(--crimson-dark);
+    }
+
+    .btn.success {
+      color: #fff;
+      background: #087443;
+      border-color: #075e37;
+    }
+
+    .btn.small {
+      min-height: 2.15rem;
+      padding: .37rem .58rem;
+      font-size: .77rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      min-height: 1.65rem;
+      align-items: center;
+      justify-content: center;
+      padding: .18rem .5rem;
+      color: var(--text);
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 880;
+      line-height: 1.15;
+    }
+
+    .badge.success {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--success) 34%, var(--border));
+    }
+
+    .badge.warning {
+      color: var(--warning);
+      background: color-mix(in srgb, var(--warning) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--warning) 34%, var(--border));
+    }
+
+    .badge.danger {
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--danger) 34%, var(--border));
+    }
+
+    .badge.info {
+      color: var(--info);
+      background: color-mix(in srgb, var(--info) 9%, var(--surface));
+      border-color: color-mix(in srgb, var(--info) 34%, var(--border));
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .42rem;
+      margin-block-start: .65rem;
+      color: var(--text-soft);
+      font-size: .76rem;
+    }
+
+    .meta-row span {
+      padding: .23rem .42rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .36rem;
+    }
+
+    progress {
+      width: 100%;
+      height: .68rem;
+      margin-block-start: .7rem;
+      accent-color: var(--gold-dark);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: .78rem;
+      box-shadow: var(--shadow-xs);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: .83rem;
+    }
+
+    caption {
+      padding: .78rem;
+      color: var(--text-soft);
+      text-align: start;
+      font-weight: 780;
+    }
+
+    th,
+    td {
+      padding: .7rem;
+      text-align: start;
+      vertical-align: middle;
+      border-block-end: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text);
+      background: var(--surface-soft);
+      font-size: .7rem;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: color-mix(in srgb, var(--gold) 6%, var(--surface));
+    }
+
+    tbody tr:last-child td {
+      border-block-end: 0;
+    }
+
+    .person-cell {
+      display: flex;
+      min-width: 13rem;
+      align-items: center;
+      gap: .65rem;
+    }
+
+    .person-cell strong,
+    .person-cell span {
+      display: block;
+    }
+
+    .person-cell span {
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .list {
+      display: grid;
+      gap: .65rem;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .list-item {
+      padding: .78rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .66rem;
+    }
+
+    .list-item strong,
+    .list-item span,
+    .list-item p,
+    .list-item time {
+      display: block;
+    }
+
+    .list-item span,
+    .list-item p,
+    .list-item time {
+      margin: .22rem 0 0;
+      color: var(--text-soft);
+      font-size: .77rem;
+    }
+
+    .chart {
+      display: grid;
+      gap: .65rem;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: minmax(6rem, .8fr) minmax(8rem, 3fr) auto;
+      align-items: center;
+      gap: .62rem;
+    }
+
+    .chart-track {
+      height: 1.08rem;
+      overflow: hidden;
+      background: var(--surface-strong);
+      border-radius: 999px;
+    }
+
+    .chart-bar {
+      height: 100%;
+      min-width: 2px;
+      background: linear-gradient(90deg, var(--crimson), var(--gold));
+      border-radius: 999px;
+    }
+
+    .chart-label,
+    .chart-value {
+      font-size: .76rem;
+    }
+
+    .chart-value {
+      font-variant-numeric: tabular-nums;
+      font-weight: 880;
+    }
+
+    .empty-state {
+      display: grid;
+      min-height: 13rem;
+      place-items: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .empty-state > div {
+      max-width: 40rem;
+    }
+
+    .empty-state h2,
+    .empty-state p {
+      margin: .42rem 0 0;
+    }
+
+    .empty-state p {
+      color: var(--text-soft);
+    }
+
+    .state-icon {
+      font-size: 2.15rem;
+    }
+
+    .validation-summary {
+      padding: .75rem;
+      margin-block-end: .8rem;
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+      border-radius: .66rem;
+      font-size: .82rem;
+      font-weight: 780;
+    }
+
+    .backdrop {
+      position: fixed;
+      z-index: 1080;
+      inset: 0;
+      background: rgb(2 6 15 / 68%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+      backdrop-filter: blur(3px);
+    }
+
+    .backdrop[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      z-index: 1100;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: min(94vw, 29rem);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      color: var(--text);
+      background: var(--surface);
+      border-inline-start: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transform: translateX(105%);
+      transition: transform var(--transition);
+    }
+
+    [dir="rtl"] .drawer {
+      transform: translateX(-105%);
+    }
+
+    .drawer[data-open="true"] {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      padding-block-end: .8rem;
+      border-block-end: 1px solid var(--border);
+    }
+
+    .drawer-header h2 {
+      margin: 0;
+      font-size: 1.18rem;
+    }
+
+    .drawer-body {
+      overflow: auto;
+      padding-block: .85rem;
+    }
+
+    .profile-menu {
+      position: fixed;
+      z-index: 1050;
+      inset-block-start: calc(var(--header-height) - .05rem);
+      inset-inline-end: 1rem;
+      width: min(92vw, 21rem);
+      padding: .55rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .82rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .profile-summary {
+      padding: .7rem;
+      border-block-end: 1px solid var(--border);
+    }
+
+    .profile-summary strong,
+    .profile-summary span {
+      display: block;
+    }
+
+    .profile-summary span {
+      color: var(--text-soft);
+      font-size: .76rem;
+    }
+
+    .profile-menu button {
+      width: 100%;
+      min-height: 2.5rem;
+      padding: .52rem .65rem;
+      color: var(--text);
+      text-align: start;
+      background: transparent;
+      border: 0;
+      border-radius: .52rem;
+    }
+
+    .profile-menu button:hover {
+      background: var(--surface-soft);
+    }
+
+    dialog {
+      width: min(calc(100% - 1.5rem), 52rem);
+      max-height: min(93vh, 60rem);
+      padding: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    dialog::backdrop {
+      background: rgb(2 6 15 / 70%);
+      backdrop-filter: blur(5px);
+    }
+
+    .dialog-shell {
+      display: flex;
+      max-height: min(93vh, 60rem);
+      flex-direction: column;
+    }
+
+    .dialog-header,
+    .dialog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+      padding: 1rem;
+    }
+
+    .dialog-header {
+      color: #fff;
+      background:
+        linear-gradient(120deg, rgb(220 20 60 / 67%), transparent 55%),
+        linear-gradient(145deg, #080e19, #1a2f50);
+      border-block-end: 1px solid var(--border);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 1.17rem;
+    }
+
+    .dialog-header .icon-button {
+      color: #fff;
+      background: rgb(255 255 255 / 8%);
+      border-color: rgb(255 255 255 / 17%);
+    }
+
+    .dialog-body {
+      overflow: auto;
+      padding: 1rem;
+    }
+
+    .dialog-footer {
+      justify-content: flex-end;
+      background: var(--surface-soft);
+      border-block-start: 1px solid var(--border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .toast-region {
+      position: fixed;
+      z-index: 2500;
+      inset-block-end: max(1rem, env(safe-area-inset-bottom));
+      inset-inline-end: max(1rem, env(safe-area-inset-right));
+      display: grid;
+      width: min(calc(100% - 2rem), 25rem);
+      gap: .62rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: start;
+      gap: .65rem;
+      padding: .82rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-inline-start: .36rem solid var(--info);
+      border-radius: .75rem;
+      box-shadow: var(--shadow-md);
+      pointer-events: auto;
+    }
+
+    .toast[data-tone="success"] {
+      border-inline-start-color: var(--success);
+    }
+
+    .toast[data-tone="warning"] {
+      border-inline-start-color: var(--warning);
+    }
+
+    .toast[data-tone="danger"] {
+      border-inline-start-color: var(--danger);
+    }
+
+    .toast strong,
+    .toast span {
+      display: block;
+    }
+
+    .toast span {
+      margin-block-start: .1rem;
+      color: var(--text-soft);
+      font-size: .76rem;
+    }
+
+    .toast button {
+      padding: .1rem;
+      color: var(--text-soft);
+      background: transparent;
+      border: 0;
+    }
+
+    details {
+      padding: .8rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: .65rem;
+    }
+
+    details + details {
+      margin-block-start: .65rem;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    @media (max-width: 84rem) {
+      .kpi-grid,
+      .grid.four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profile-name {
+        display: none;
+      }
+    }
+
+    @media (max-width: 68rem) {
+      :root {
+        --header-height: 7.9rem;
+      }
+
+      .sidebar {
+        transform: translateX(-105%);
+        box-shadow: var(--shadow-lg);
+      }
+
+      [dir="rtl"] .sidebar {
+        transform: translateX(105%);
+      }
+
+      .sidebar[data-open="true"] {
+        transform: translateX(0);
+      }
+
+      .workspace {
+        margin-inline-start: 0;
+      }
+
+      .topbar {
+        grid-template-columns: minmax(10rem, 1fr) auto;
+      }
+
+      .global-search {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .mobile-only {
+        display: inline-grid;
+      }
+
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 50rem) {
+      .content {
+        padding: .85rem;
+      }
+
+      .page-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .page-actions {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .kpi-grid,
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .quick-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar > * {
+        width: 100%;
+      }
+
+      .toolbar .btn {
+        width: auto;
+        flex: 1 1 9rem;
+      }
+
+      #scope-switch {
+        display: none;
+      }
+
+      .topbar-actions {
+        gap: .28rem;
+      }
+
+      .language-switcher button {
+        min-width: 2.1rem;
+      }
+    }
+
+    @media (max-width: 29rem) {
+      .language-switcher {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 1.2cm;
+      }
+
+      :root {
+        color-scheme: light;
+        --bg: #fff;
+        --surface: #fff;
+        --surface-soft: #fff;
+        --surface-strong: #eee;
+        --text: #000;
+        --text-soft: #333;
+        --text-muted: #444;
+        --border: #999;
+      }
+
+      body {
+        background: #fff;
+        font-size: 10pt;
+      }
+
+      .sidebar,
+      .topbar,
+      .sample-banner,
+      .backdrop,
+      .drawer,
+      .profile-menu,
+      .toast-region,
+      .page-actions,
+      .toolbar,
+      .btn,
+      .icon-button,
+      .profile-button {
+        display: none !important;
+      }
+
+      .workspace {
+        margin: 0;
+      }
+
+      .content {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+      }
+
+      .panel,
+      .card,
+      .kpi,
+      .table-wrap {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .hero {
+        color: #000;
+        background: #fff;
+        border: 2px solid #000;
+      }
+
+      .hero p {
+        color: #222;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="skip">
+    Skip to main content
+  </a>
+
+  <div id="sidebar-backdrop" class="backdrop" data-open="false" aria-hidden="true"></div>
+
+  <aside id="sidebar" class="sidebar" data-open="false" aria-label="Primary navigation">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">Y</div>
+
+      <div class="brand-copy">
+        <strong>YAJIB University</strong>
+        <span data-i18n="hodPortal">Head of Department Portal</span>
+      </div>
+    </div>
+
+    <div class="sidebar-label" data-i18n="workspace">Workspace</div>
+    <nav id="sidebar-nav" class="sidebar-nav"></nav>
+
+    <div class="sidebar-footer">
+      <strong data-i18n="secureWorkspace">Secure departmental workspace</strong>
+      <span id="sidebar-scope"></span>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <div class="sample-banner" role="status">
+      <span aria-hidden="true">⚠</span>
+      <span data-i18n="sampleNotice">
+        SAMPLE WORKSPACE — Changes are stored only in this browser.
+      </span>
+    </div>
+
+    <header class="topbar">
+      <div class="topbar-start">
+        <button
+          id="sidebar-toggle"
+          class="icon-button mobile-only"
+          type="button"
+          aria-controls="sidebar"
+          aria-expanded="false"
+          aria-label="Open navigation"
+        >
+          ☰
+        </button>
+
+        <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb"></nav>
+      </div>
+
+      <div class="global-search">
+        <span class="global-search-symbol" aria-hidden="true">⌕</span>
+
+        <label class="sr-only" for="global-search-input" data-i18n="search">
+          Search
+        </label>
+
+        <input
+          id="global-search-input"
+          type="search"
+          autocomplete="off"
+          data-i18n-placeholder="searchPlaceholder"
+          placeholder="Search programmes, courses, lecturers, or students"
+        >
+
+        <kbd aria-hidden="true">/</kbd>
+        <div id="search-results" class="search-results" hidden></div>
+      </div>
+
+      <div class="topbar-actions">
+        <label class="sr-only" for="scope-switch" data-i18n="programmeScope">
+          Programme scope
+        </label>
+
+        <select id="scope-switch" class="compact-select"></select>
+
+        <div id="language-switcher" class="language-switcher" aria-label="Language">
+          <button type="button" data-language="en" aria-pressed="true" aria-label="English">
+            EN
+          </button>
+
+          <button type="button" data-language="fr" aria-pressed="false" aria-label="Français">
+            FR
+          </button>
+
+          <button type="button" data-language="ar" aria-pressed="false" aria-label="العربية">
+            AR
+          </button>
+        </div>
+
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">
+          <span id="theme-icon" aria-hidden="true">◐</span>
+        </button>
+
+        <button
+          id="notification-toggle"
+          class="icon-button notification-button"
+          type="button"
+          aria-controls="notification-drawer"
+          aria-expanded="false"
+          aria-label="Notifications"
+        >
+          <span aria-hidden="true">♢</span>
+          <span id="notification-count" class="notification-count" aria-hidden="true">0</span>
+        </button>
+
+        <button
+          id="profile-toggle"
+          class="profile-button"
+          type="button"
+          aria-controls="profile-menu"
+          aria-expanded="false"
+        >
+          <span id="header-avatar" class="avatar" aria-hidden="true">HOD</span>
+          <span id="header-name" class="profile-name">Head of Department</span>
+          <span aria-hidden="true">▾</span>
+        </button>
+      </div>
+    </header>
+
+    <div id="profile-menu" class="profile-menu" role="menu" hidden>
+      <div class="profile-summary">
+        <strong id="profile-name">Head of Department</strong>
+        <span id="profile-role">Head of Department</span>
+        <span id="profile-department">Department</span>
+      </div>
+
+      <button type="button" role="menuitem" data-profile-action="print" data-i18n="print">
+        Print
+      </button>
+
+      <button type="button" role="menuitem" data-profile-action="help" data-i18n="help">
+        Help
+      </button>
+
+      <button type="button" role="menuitem" data-profile-action="reset" data-i18n="resetSample">
+        Reset sample data
+      </button>
+
+      <button type="button" role="menuitem" data-profile-action="signout" data-i18n="signOut">
+        Sign out
+      </button>
+    </div>
+
+    <main id="main-content" class="content" tabindex="-1">
+      <header class="page-heading">
+        <div>
+          <span id="page-eyebrow" class="eyebrow">Head of Department</span>
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-subtitle"></p>
+        </div>
+
+        <div id="page-actions" class="page-actions"></div>
+      </header>
+
+      <section id="view" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <div id="notification-backdrop" class="backdrop" data-open="false" aria-hidden="true"></div>
+
+  <aside
+    id="notification-drawer"
+    class="drawer"
+    data-open="false"
+    aria-hidden="true"
+    aria-labelledby="notification-title"
+  >
+    <div class="drawer-header">
+      <h2 id="notification-title" data-i18n="notifications">Notifications</h2>
+
+      <button
+        id="notification-close"
+        class="icon-button"
+        type="button"
+        data-i18n-aria-label="close"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+
+    <div id="notification-list" class="drawer-body"></div>
+  </aside>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <form id="modal-form" class="dialog-shell" novalidate>
+      <div class="dialog-header">
+        <h2 id="modal-title">Dialog</h2>
+
+        <button
+          id="modal-close"
+          class="icon-button"
+          type="button"
+          data-i18n-aria-label="close"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div id="modal-error" class="validation-summary" role="alert" hidden></div>
+      <div id="modal-body" class="dialog-body"></div>
+
+      <div class="dialog-footer">
+        <button id="modal-cancel" class="btn secondary" type="button" data-i18n="cancel">
+          Cancel
+        </button>
+
+        <button id="modal-submit" class="btn" type="submit">
+          Save
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+  <script type="module">
+    "use strict";
+
+    const STORAGE_KEY = "yajib-hod-dashboard-data-v4";
+    const LANGUAGE_KEY = "yajib-hod-dashboard-language";
+    const THEME_KEY = "yajib-hod-dashboard-theme";
+    const SCOPE_KEY = "yajib-hod-dashboard-scope";
+
+    const LOCALES = {
+      en: "en-GB",
+      fr: "fr-FR",
+      ar: "ar"
+    };
+
+    const ROUTES = [
+      ["dashboard", "⌂", "dashboard"],
+      ["programmes", "▦", "programmes"],
+      ["levels", "▥", "levels"],
+      ["courses", "◫", "courses"],
+      ["lecturers", "♜", "lecturers"],
+      ["students", "♙", "students"],
+      ["approvals", "✓", "approvals"],
+      ["research", "◆", "research"],
+      ["analytics", "▤", "analytics"],
+      ["help", "ⓘ", "help"]
+    ];
+
+    const ROUTE_META = {
+      dashboard: ["dashboard", "dashboardSubtitle"],
+      programmes: ["programmes", "programmesSubtitle"],
+      levels: ["levels", "levelsSubtitle"],
+      courses: ["courses", "coursesSubtitle"],
+      lecturers: ["lecturers", "lecturersSubtitle"],
+      students: ["students", "studentsSubtitle"],
+      approvals: ["approvals", "approvalsSubtitle"],
+      research: ["research", "researchSubtitle"],
+      analytics: ["analytics", "analyticsSubtitle"],
+      help: ["help", "helpSubtitle"]
+    };
+
+    const I18N = {
+      en: {
+        skip: "Skip to main content",
+        hodPortal: "Head of Department Portal",
+        workspace: "Workspace",
+        secureWorkspace: "Secure departmental workspace",
+        sampleNotice: "SAMPLE WORKSPACE — Changes are stored only in this browser.",
+        dashboard: "Dashboard",
+        programmes: "Programmes",
+        levels: "Levels",
+        courses: "Courses",
+        lecturers: "Lecturers",
+        students: "Students",
+        approvals: "Approvals",
+        research: "Research",
+        analytics: "Analytics",
+        help: "Help",
+        search: "Search",
+        searchPlaceholder: "Search programmes, courses, lecturers, or students",
+        programmeScope: "Programme scope",
+        allProgrammes: "All programmes",
+        notifications: "Notifications",
+        close: "Close",
+        cancel: "Cancel",
+        save: "Save",
+        create: "Create",
+        update: "Update",
+        edit: "Edit",
+        delete: "Delete",
+        print: "Print",
+        signOut: "Sign out",
+        resetSample: "Reset sample data",
+        headOfDepartment: "Head of Department",
+
+        dashboardSubtitle: "Manage departmental programmes, courses, staffing, students, approvals, research, and performance.",
+        programmesSubtitle: "Create and manage the academic programmes assigned to this department.",
+        levelsSubtitle: "Manage programme levels, coordinators, enrolment, and academic standing.",
+        coursesSubtitle: "Manage departmental courses, assignments, progress, and lecturer responsibility.",
+        lecturersSubtitle: "Manage lecturer records, workload, availability, and course assignments.",
+        studentsSubtitle: "Search and manage department student records and academic standing.",
+        approvalsSubtitle: "Review departmental result submissions and return, approve, or reject them with an audit reason.",
+        researchSubtitle: "Track departmental research projects, leads, milestones, and progress.",
+        analyticsSubtitle: "Review enrolment, GPA, workload, approval, and student-risk summaries.",
+        helpSubtitle: "Guidance for secure and accessible Head of Department workflows.",
+
+        welcome: "Welcome",
+        academicSession: "Academic session",
+        semester: "Semester",
+        totalProgrammes: "Programmes",
+        totalLevels: "Levels",
+        totalCourses: "Courses",
+        totalLecturers: "Lecturers",
+        totalStudents: "Students",
+        averageGpa: "Average GPA",
+        pendingApprovals: "Pending approvals",
+        atRiskStudents: "At-risk students",
+        quickActions: "Quick actions",
+        recentActivity: "Recent activity",
+        addProgramme: "Add programme",
+        addLevel: "Add level",
+        addCourse: "Add course",
+        addLecturer: "Add lecturer",
+        addStudent: "Add student",
+        addResearch: "Add research project",
+        code: "Code",
+        title: "Title",
+        status: "Status",
+        actions: "Actions",
+        active: "Active",
+        inactive: "Inactive",
+        draft: "Draft",
+        pending: "Pending",
+        approved: "Approved",
+        rejected: "Rejected",
+        returned: "Returned",
+        completed: "Completed",
+        inProgress: "In progress",
+        good: "Good",
+        atRisk: "At risk",
+        probation: "Probation",
+        full: "Full",
+        partTime: "Part-time",
+        programme: "Programme",
+        level: "Level",
+        coordinator: "Coordinator",
+        enrolment: "Enrolment",
+        credits: "Credits",
+        lecturer: "Lecturer",
+        progress: "Progress",
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        workload: "Workload",
+        rating: "Rating",
+        matricNumber: "Matriculation number",
+        cgpa: "CGPA",
+        anomalies: "Anomalies",
+        submitted: "Submitted",
+        comment: "Comment",
+        approve: "Approve",
+        reject: "Reject",
+        returnCorrection: "Return for correction",
+        batchApprove: "Batch approve",
+        batchReject: "Batch reject",
+        selectAll: "Select all",
+        lead: "Research lead",
+        milestones: "Milestones",
+        searchProgrammes: "Search programmes",
+        searchLevels: "Search levels",
+        searchCourses: "Search courses",
+        searchLecturers: "Search lecturers",
+        searchStudents: "Search students",
+        searchApprovals: "Search approvals",
+        searchResearch: "Search research",
+        allStatuses: "All statuses",
+        resetFilters: "Reset filters",
+        exportCsv: "Export CSV",
+        confirmDelete: "Delete this sample record?",
+        linkedRecord: "This record cannot be deleted while another record depends on it.",
+        validationFailed: "Validation failed",
+        correctErrors: "Correct the highlighted fields and try again.",
+        reasonRequired: "Enter a clear reason before completing this approval action.",
+        sampleSaved: "The sample-data change was saved in this browser.",
+        sampleDeleted: "The sample record was removed.",
+        resetConfirm: "Reset all local sample data to the original version?",
+        resetComplete: "Sample data was reset.",
+        noData: "No data available",
+        noMatches: "No matching records",
+        noMatchesBody: "Change the search or filter values and try again.",
+        markRead: "Mark as read",
+        remove: "Remove",
+        noNotifications: "No notifications",
+        signOutSample: "Sign-out is disabled in this isolated sample workspace.",
+        approvalNotice: "Approval actions in this sample are stored locally. A live system must use audited server-side workflows.",
+        distributionByProgramme: "Distribution by programme",
+        studentStanding: "Student standing",
+        lecturerWorkload: "Lecturer workload",
+        approvalStatus: "Approval status",
+        helpSecurity: "Security and authorization",
+        helpSecurityBody: "A live implementation must verify the active HOD role on the server, scope every query to the institution and department, and keep RLS as the final authorization boundary.",
+        helpApprovals: "Protected approvals",
+        helpApprovalsBody: "Result approval actions should be performed through audited RPCs. The browser must never be able to bypass moderation or institutional controls.",
+        helpLanguage: "Language and direction",
+        helpLanguageBody: "English, French, and Arabic switch immediately. Arabic applies right-to-left direction to the whole interface.",
+        helpSample: "Sample data",
+        helpSampleBody: "All sample CRUD changes are persisted locally in this browser. Reset sample data restores the original records."
+      },
+
+      fr: {
+        skip: "Aller au contenu principal",
+        hodPortal: "Portail du Chef de Département",
+        workspace: "Espace de travail",
+        secureWorkspace: "Espace départemental sécurisé",
+        sampleNotice: "ESPACE DE DÉMONSTRATION — Les changements sont enregistrés uniquement dans ce navigateur.",
+        dashboard: "Tableau de bord",
+        programmes: "Programmes",
+        levels: "Niveaux",
+        courses: "Cours",
+        lecturers: "Enseignants",
+        students: "Étudiants",
+        approvals: "Approbations",
+        research: "Recherche",
+        analytics: "Analyses",
+        help: "Aide",
+        search: "Rechercher",
+        searchPlaceholder: "Rechercher programmes, cours, enseignants ou étudiants",
+        programmeScope: "Périmètre du programme",
+        allProgrammes: "Tous les programmes",
+        notifications: "Notifications",
+        close: "Fermer",
+        cancel: "Annuler",
+        save: "Enregistrer",
+        create: "Créer",
+        update: "Mettre à jour",
+        edit: "Modifier",
+        delete: "Supprimer",
+        print: "Imprimer",
+        signOut: "Se déconnecter",
+        resetSample: "Réinitialiser les données",
+        headOfDepartment: "Chef de Département",
+
+        dashboardSubtitle: "Gérez les programmes, cours, enseignants, étudiants, approbations, recherches et performances.",
+        programmesSubtitle: "Créez et gérez les programmes académiques attribués au département.",
+        levelsSubtitle: "Gérez les niveaux, coordinateurs, inscriptions et résultats académiques.",
+        coursesSubtitle: "Gérez les cours, affectations, progrès et responsabilités des enseignants.",
+        lecturersSubtitle: "Gérez les enseignants, charges de travail, disponibilités et affectations.",
+        studentsSubtitle: "Recherchez et gérez les dossiers étudiants et leur situation académique.",
+        approvalsSubtitle: "Examinez les résultats et approuvez, rejetez ou retournez-les avec un motif d’audit.",
+        researchSubtitle: "Suivez les projets de recherche, responsables, étapes et progression.",
+        analyticsSubtitle: "Analysez les inscriptions, moyennes, charges, approbations et risques.",
+        helpSubtitle: "Conseils pour des flux sécurisés et accessibles du Chef de Département.",
+
+        welcome: "Bienvenue",
+        academicSession: "Année universitaire",
+        semester: "Semestre",
+        totalProgrammes: "Programmes",
+        totalLevels: "Niveaux",
+        totalCourses: "Cours",
+        totalLecturers: "Enseignants",
+        totalStudents: "Étudiants",
+        averageGpa: "Moyenne générale",
+        pendingApprovals: "Approbations en attente",
+        atRiskStudents: "Étudiants à risque",
+        quickActions: "Actions rapides",
+        recentActivity: "Activité récente",
+        addProgramme: "Ajouter un programme",
+        addLevel: "Ajouter un niveau",
+        addCourse: "Ajouter un cours",
+        addLecturer: "Ajouter un enseignant",
+        addStudent: "Ajouter un étudiant",
+        addResearch: "Ajouter un projet de recherche",
+        code: "Code",
+        title: "Titre",
+        status: "Statut",
+        actions: "Actions",
+        active: "Actif",
+        inactive: "Inactif",
+        draft: "Brouillon",
+        pending: "En attente",
+        approved: "Approuvé",
+        rejected: "Rejeté",
+        returned: "Retourné",
+        completed: "Terminé",
+        inProgress: "En cours",
+        good: "Bon",
+        atRisk: "À risque",
+        probation: "Probation",
+        full: "Complète",
+        partTime: "Temps partiel",
+        programme: "Programme",
+        level: "Niveau",
+        coordinator: "Coordinateur",
+        enrolment: "Inscriptions",
+        credits: "Crédits",
+        lecturer: "Enseignant",
+        progress: "Progression",
+        name: "Nom",
+        email: "E-mail",
+        phone: "Téléphone",
+        workload: "Charge de travail",
+        rating: "Évaluation",
+        matricNumber: "Numéro matricule",
+        cgpa: "Moyenne cumulative",
+        anomalies: "Anomalies",
+        submitted: "Soumis",
+        comment: "Commentaire",
+        approve: "Approuver",
+        reject: "Rejeter",
+        returnCorrection: "Retourner pour correction",
+        batchApprove: "Approbation groupée",
+        batchReject: "Rejet groupé",
+        selectAll: "Tout sélectionner",
+        lead: "Responsable de recherche",
+        milestones: "Étapes",
+        searchProgrammes: "Rechercher des programmes",
+        searchLevels: "Rechercher des niveaux",
+        searchCourses: "Rechercher des cours",
+        searchLecturers: "Rechercher des enseignants",
+        searchStudents: "Rechercher des étudiants",
+        searchApprovals: "Rechercher des approbations",
+        searchResearch: "Rechercher des projets",
+        allStatuses: "Tous les statuts",
+        resetFilters: "Réinitialiser les filtres",
+        exportCsv: "Exporter CSV",
+        confirmDelete: "Supprimer cet enregistrement de démonstration ?",
+        linkedRecord: "Cet élément ne peut pas être supprimé car un autre enregistrement en dépend.",
+        validationFailed: "Échec de la validation",
+        correctErrors: "Corrigez les champs signalés et réessayez.",
+        reasonRequired: "Saisissez un motif clair avant de terminer cette action.",
+        sampleSaved: "La modification a été enregistrée dans ce navigateur.",
+        sampleDeleted: "L’enregistrement a été supprimé.",
+        resetConfirm: "Réinitialiser toutes les données locales ?",
+        resetComplete: "Les données ont été réinitialisées.",
+        noData: "Aucune donnée",
+        noMatches: "Aucun résultat",
+        noMatchesBody: "Modifiez la recherche ou les filtres et réessayez.",
+        markRead: "Marquer comme lu",
+        remove: "Retirer",
+        noNotifications: "Aucune notification",
+        signOutSample: "La déconnexion est désactivée dans cet espace de démonstration.",
+        approvalNotice: "Les approbations de démonstration sont stockées localement. La version directe doit utiliser des flux audités côté serveur.",
+        distributionByProgramme: "Répartition par programme",
+        studentStanding: "Situation des étudiants",
+        lecturerWorkload: "Charge des enseignants",
+        approvalStatus: "Statut des approbations",
+        helpSecurity: "Sécurité et autorisation",
+        helpSecurityBody: "La version directe doit vérifier le rôle actif côté serveur, limiter chaque requête à l’établissement et au département, et conserver les RLS comme limite finale.",
+        helpApprovals: "Approbations protégées",
+        helpApprovalsBody: "Les approbations doivent utiliser des RPC auditées. Le navigateur ne doit jamais pouvoir contourner la modération.",
+        helpLanguage: "Langue et direction",
+        helpLanguageBody: "L’anglais, le français et l’arabe changent immédiatement. L’arabe active la direction droite-à-gauche.",
+        helpSample: "Données de démonstration",
+        helpSampleBody: "Toutes les modifications sont conservées localement. La réinitialisation restaure les données d’origine."
+      },
+
+      ar: {
+        skip: "الانتقال إلى المحتوى الرئيسي",
+        hodPortal: "بوابة رئيس القسم",
+        workspace: "مساحة العمل",
+        secureWorkspace: "مساحة قسم آمنة",
+        sampleNotice: "مساحة تجريبية — تُحفظ التغييرات في هذا المتصفح فقط.",
+        dashboard: "لوحة المعلومات",
+        programmes: "البرامج",
+        levels: "المستويات",
+        courses: "المقررات",
+        lecturers: "المحاضرون",
+        students: "الطلاب",
+        approvals: "الموافقات",
+        research: "البحث العلمي",
+        analytics: "التحليلات",
+        help: "المساعدة",
+        search: "بحث",
+        searchPlaceholder: "ابحث في البرامج أو المقررات أو المحاضرين أو الطلاب",
+        programmeScope: "نطاق البرنامج",
+        allProgrammes: "كل البرامج",
+        notifications: "الإشعارات",
+        close: "إغلاق",
+        cancel: "إلغاء",
+        save: "حفظ",
+        create: "إنشاء",
+        update: "تحديث",
+        edit: "تعديل",
+        delete: "حذف",
+        print: "طباعة",
+        signOut: "تسجيل الخروج",
+        resetSample: "إعادة ضبط البيانات",
+        headOfDepartment: "رئيس القسم",
+
+        dashboardSubtitle: "إدارة برامج القسم ومقرراته وموظفيه وطلابه والموافقات والبحث والأداء.",
+        programmesSubtitle: "إنشاء وإدارة البرامج الأكاديمية المسندة إلى القسم.",
+        levelsSubtitle: "إدارة المستويات والمنسقين والتسجيل والأداء الأكاديمي.",
+        coursesSubtitle: "إدارة مقررات القسم والتكليفات والتقدم ومسؤولية المحاضر.",
+        lecturersSubtitle: "إدارة سجلات المحاضرين وعبء العمل والتوفر وتكليف المقررات.",
+        studentsSubtitle: "البحث في سجلات طلاب القسم وإدارة حالتهم الأكاديمية.",
+        approvalsSubtitle: "مراجعة النتائج واعتمادها أو رفضها أو إعادتها مع سبب تدقيق.",
+        researchSubtitle: "متابعة مشاريع البحث وقادتها ومراحلها وتقدمها.",
+        analyticsSubtitle: "مراجعة التسجيل والمعدل وعبء العمل والموافقات ومخاطر الطلاب.",
+        helpSubtitle: "إرشادات لسير عمل رئيس القسم الآمن والمتاح.",
+
+        welcome: "مرحباً",
+        academicSession: "السنة الأكاديمية",
+        semester: "الفصل الدراسي",
+        totalProgrammes: "البرامج",
+        totalLevels: "المستويات",
+        totalCourses: "المقررات",
+        totalLecturers: "المحاضرون",
+        totalStudents: "الطلاب",
+        averageGpa: "متوسط المعدل",
+        pendingApprovals: "موافقات معلقة",
+        atRiskStudents: "طلاب معرضون للخطر",
+        quickActions: "إجراءات سريعة",
+        recentActivity: "النشاط الأخير",
+        addProgramme: "إضافة برنامج",
+        addLevel: "إضافة مستوى",
+        addCourse: "إضافة مقرر",
+        addLecturer: "إضافة محاضر",
+        addStudent: "إضافة طالب",
+        addResearch: "إضافة مشروع بحث",
+        code: "الرمز",
+        title: "العنوان",
+        status: "الحالة",
+        actions: "الإجراءات",
+        active: "نشط",
+        inactive: "غير نشط",
+        draft: "مسودة",
+        pending: "قيد الانتظار",
+        approved: "معتمد",
+        rejected: "مرفوض",
+        returned: "معاد",
+        completed: "مكتمل",
+        inProgress: "قيد التنفيذ",
+        good: "جيد",
+        atRisk: "معرض للخطر",
+        probation: "إنذار أكاديمي",
+        full: "كامل",
+        partTime: "جزئي",
+        programme: "البرنامج",
+        level: "المستوى",
+        coordinator: "المنسق",
+        enrolment: "التسجيل",
+        credits: "الساعات",
+        lecturer: "المحاضر",
+        progress: "التقدم",
+        name: "الاسم",
+        email: "البريد الإلكتروني",
+        phone: "الهاتف",
+        workload: "عبء العمل",
+        rating: "التقييم",
+        matricNumber: "الرقم الجامعي",
+        cgpa: "المعدل التراكمي",
+        anomalies: "الملاحظات",
+        submitted: "تاريخ الإرسال",
+        comment: "التعليق",
+        approve: "اعتماد",
+        reject: "رفض",
+        returnCorrection: "إعادة للتصحيح",
+        batchApprove: "اعتماد جماعي",
+        batchReject: "رفض جماعي",
+        selectAll: "تحديد الكل",
+        lead: "قائد البحث",
+        milestones: "المراحل",
+        searchProgrammes: "بحث البرامج",
+        searchLevels: "بحث المستويات",
+        searchCourses: "بحث المقررات",
+        searchLecturers: "بحث المحاضرين",
+        searchStudents: "بحث الطلاب",
+        searchApprovals: "بحث الموافقات",
+        searchResearch: "بحث المشاريع",
+        allStatuses: "كل الحالات",
+        resetFilters: "إعادة ضبط التصفية",
+        exportCsv: "تصدير CSV",
+        confirmDelete: "حذف هذا السجل التجريبي؟",
+        linkedRecord: "لا يمكن حذف هذا السجل لوجود سجل آخر يعتمد عليه.",
+        validationFailed: "فشل التحقق",
+        correctErrors: "صحح الحقول المحددة وحاول مرة أخرى.",
+        reasonRequired: "أدخل سبباً واضحاً قبل إكمال إجراء الموافقة.",
+        sampleSaved: "تم حفظ التغيير التجريبي في هذا المتصفح.",
+        sampleDeleted: "تم حذف السجل التجريبي.",
+        resetConfirm: "إعادة جميع البيانات المحلية إلى النسخة الأصلية؟",
+        resetComplete: "تمت إعادة ضبط البيانات.",
+        noData: "لا توجد بيانات",
+        noMatches: "لا توجد نتائج مطابقة",
+        noMatchesBody: "غيّر البحث أو التصفية وحاول مرة أخرى.",
+        markRead: "تحديد كمقروء",
+        remove: "إزالة",
+        noNotifications: "لا توجد إشعارات",
+        signOutSample: "تسجيل الخروج غير متاح في مساحة البيانات التجريبية.",
+        approvalNotice: "تُحفظ إجراءات الموافقة التجريبية محلياً. يجب أن يستخدم النظام المباشر سير عمل مدققاً على الخادم.",
+        distributionByProgramme: "التوزيع حسب البرنامج",
+        studentStanding: "الحالة الأكاديمية للطلاب",
+        lecturerWorkload: "عبء عمل المحاضرين",
+        approvalStatus: "حالة الموافقات",
+        helpSecurity: "الأمان والتفويض",
+        helpSecurityBody: "يجب أن تتحقق النسخة المباشرة من دور رئيس القسم على الخادم، وتقيّد كل استعلام بالمؤسسة والقسم، وتبقي RLS حاجز التفويض النهائي.",
+        helpApprovals: "الموافقات المحمية",
+        helpApprovalsBody: "يجب تنفيذ الموافقات عبر RPC مدققة، ولا يجوز للمتصفح تجاوز المراجعة أو الضوابط المؤسسية.",
+        helpLanguage: "اللغة والاتجاه",
+        helpLanguageBody: "تتغير الإنجليزية والفرنسية والعربية فوراً، وتفعّل العربية اتجاه الواجهة من اليمين إلى اليسار.",
+        helpSample: "البيانات التجريبية",
+        helpSampleBody: "تُحفظ كل تغييرات CRUD محلياً في المتصفح، وتعيد إعادة الضبط السجلات الأصلية."
+      }
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+    const state = {
+      language: "en",
+      theme: "light",
+      route: "dashboard",
+      scopeProgrammeId: "",
+      data: null,
+      modalSubmit: null,
+      approvalSelection: new Set(),
+      filters: {
+        programmes: "",
+        levels: "",
+        courses: "",
+        lecturers: "",
+        students: "",
+        approvals: "",
+        research: "",
+        status: ""
+      }
+    };
+
+    function t(key) {
+      return I18N[state.language]?.[key] ?? I18N.en[key] ?? key;
+    }
+
+    function localized(value) {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        return value[state.language] ?? value.en ?? Object.values(value)[0] ?? "";
+      }
+
+      return value == null ? "" : String(value);
+    }
+
+    function normalize(value) {
+      return String(value ?? "").trim();
+    }
+
+    function initials(name = "") {
+      return normalize(name)
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part[0]?.toUpperCase() || "")
+        .join("") || "HOD";
+    }
+
+    function formatNumber(value, options = {}) {
+      const numeric = Number(value);
+
+      return Number.isFinite(numeric)
+        ? new Intl.NumberFormat(LOCALES[state.language], options).format(numeric)
+        : "—";
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+
+      return Number.isNaN(date.getTime())
+        ? "—"
+        : new Intl.DateTimeFormat(LOCALES[state.language], {
+            dateStyle: "medium"
+          }).format(date);
+    }
+
+    function formatDateTime(value) {
+      const date = new Date(value);
+
+      return Number.isNaN(date.getTime())
+        ? "—"
+        : new Intl.DateTimeFormat(LOCALES[state.language], {
+            dateStyle: "medium",
+            timeStyle: "short"
+          }).format(date);
+    }
+
+    function statusTranslationKey(value) {
+      return normalize(value)
+        .replace(/[-_\s]+(.)?/g, (_, character) =>
+          character ? character.toUpperCase() : ""
+        )
+        .replace(/^./, character => character.toLowerCase());
+    }
+
+    function formatStatus(value) {
+      const key = statusTranslationKey(value);
+      return I18N.en[key] ? t(key) : normalize(value);
+    }
+
+    function statusTone(value) {
+      const status = normalize(value).toLowerCase();
+
+      if (
+        ["active", "approved", "completed", "good", "full"].includes(status)
+      ) {
+        return "success";
+      }
+
+      if (
+        ["rejected", "inactive", "at_risk"].includes(status)
+      ) {
+        return "danger";
+      }
+
+      if (
+        ["pending", "draft", "returned", "probation", "in_progress"].includes(status)
+      ) {
+        return "warning";
+      }
+
+      return "info";
+    }
+
+    function createElement(tag, options = {}) {
+      const node = document.createElement(tag);
+
+      if (options.className) {
+        node.className = options.className;
+      }
+
+      if (options.text != null) {
+        node.textContent = String(options.text);
+      }
+
+      for (const [name, value] of Object.entries(options.attrs || {})) {
+        if (value == null || value === false) {
+          continue;
+        }
+
+        node.setAttribute(name, value === true ? "" : String(value));
+      }
+
+      for (const [name, value] of Object.entries(options.dataset || {})) {
+        node.dataset[name] = String(value);
+      }
+
+      for (const [name, handler] of Object.entries(options.events || {})) {
+        node.addEventListener(name, handler);
+      }
+
+      node.append(...(options.children || []).filter(Boolean));
+
+      return node;
+    }
+
+    function makeButton(label, handler, className = "btn", attrs = {}) {
+      return createElement("button", {
+        className,
+        text: label,
+        attrs: {
+          type: "button",
+          ...attrs
+        },
+        events: {
+          click: handler
+        }
+      });
+    }
+
+    function makeBadge(value) {
+      return createElement("span", {
+        className: `badge ${statusTone(value)}`,
+        text: formatStatus(value)
+      });
+    }
+
+    function makeField(labelKey, control, help = "", full = false) {
+      const wrapper = createElement("div", {
+        className: `field${full ? " full" : ""}`
+      });
+
+      wrapper.append(
+        createElement("label", {
+          text: t(labelKey),
+          attrs: {
+            for: control.id
+          }
+        }),
+        control
+      );
+
+      if (help) {
+        wrapper.append(
+          createElement("span", {
+            className: "field-help",
+            text: help
+          })
+        );
+      }
+
+      return wrapper;
+    }
+
+    function makeStat(value, label, tone = "gold", note = "") {
+      return createElement("article", {
+        className: "kpi",
+        dataset: {
+          tone
+        },
+        children: [
+          createElement("span", {
+            className: "kpi-label",
+            text: label
+          }),
+          createElement("strong", {
+            className: "kpi-value",
+            text: value
+          }),
+          createElement("span", {
+            className: "kpi-note",
+            text: note
+          })
+        ]
+      });
+    }
+
+    function emptyState(title = t("noData"), body = t("noMatchesBody"), icon = "◇") {
+      return createElement("div", {
+        className: "empty-state",
+        children: [
+          createElement("div", {
+            children: [
+              createElement("span", {
+                className: "state-icon",
+                text: icon,
+                attrs: {
+                  "aria-hidden": "true"
+                }
+              }),
+              createElement("h2", {
+                text: title
+              }),
+              createElement("p", {
+                text: body
+              })
+            ]
+          })
+        ]
+      });
+    }
+
+    function debounce(callback, delay = 250) {
+      let timeout;
+
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => callback(...args), delay);
+      };
+    }
+
+    function showToast(title, message, tone = "info", duration = 4500) {
+      const toast = createElement("div", {
+        className: "toast",
+        dataset: {
+          tone
+        },
+        attrs: {
+          role: tone === "danger" ? "alert" : "status"
+        }
+      });
+
+      toast.append(
+        createElement("span", {
+          text:
+            tone === "success"
+              ? "✓"
+              : tone === "danger"
+                ? "!"
+                : tone === "warning"
+                  ? "⚠"
+                  : "ⓘ",
+          attrs: {
+            "aria-hidden": "true"
+          }
+        }),
+
+        createElement("div", {
+          children: [
+            createElement("strong", {
+              text: title
+            }),
+            createElement("span", {
+              text: message
+            })
+          ]
+        }),
+
+        makeButton("×", () => toast.remove(), "", {
+          "aria-label": t("close")
+        })
+      );
+
+      $("#toast-region").append(toast);
+      setTimeout(() => toast.remove(), duration);
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function downloadCsv(filename, rows) {
+      const source = rows
+        .map(row => row.map(csvCell).join(","))
+        .join("\r\n");
+
+      const blob = new Blob([source], {
+        type: "text/csv;charset=utf-8"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = filename;
+
+      document.body.append(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function makeLocalized(value) {
+      return {
+        en: value,
+        fr: value,
+        ar: value
+      };
+    }
+
+    function createInitialData() {
+      const now = new Date();
+
+      const past = days => {
+        const date = new Date(now);
+        date.setDate(date.getDate() - days);
+        return date.toISOString();
+      };
+
+      return {
+        context: {
+          name: "Prof. Adebayo Ogunleye",
+          id: "HOD/2020/0001",
+          email: "hod@demo.edu",
+          role: "Head of Department",
+          institution: "YAJIB International University",
+          department: "Department of Computer Science",
+          academicSession: "2026/2027",
+          semester: "First Semester"
+        },
+
+        programmes: [
+          {
+            id: "programme-csc",
+            code: "CSC",
+            title: {
+              en: "Computer Science",
+              fr: "Informatique",
+              ar: "علوم الحاسب"
+            },
+            status: "active"
+          },
+          {
+            id: "programme-it",
+            code: "IFT",
+            title: {
+              en: "Information Technology",
+              fr: "Technologies de l’Information",
+              ar: "تقنية المعلومات"
+            },
+            status: "active"
+          }
+        ],
+
+        levels: [
+          {
+            id: "level-csc-100",
+            programmeId: "programme-csc",
+            level: "100",
+            coordinator: "Dr. Halima Garba",
+            enrolment: 48,
+            gpa: 3.18,
+            status: "active"
+          },
+          {
+            id: "level-csc-200",
+            programmeId: "programme-csc",
+            level: "200",
+            coordinator: "Dr. Okafor Nwosu",
+            enrolment: 54,
+            gpa: 3.46,
+            status: "active"
+          },
+          {
+            id: "level-csc-300",
+            programmeId: "programme-csc",
+            level: "300",
+            coordinator: "Prof. Davies Mensah",
+            enrolment: 49,
+            gpa: 3.67,
+            status: "active"
+          },
+          {
+            id: "level-csc-400",
+            programmeId: "programme-csc",
+            level: "400",
+            coordinator: "Dr. Janet Johnson",
+            enrolment: 45,
+            gpa: 3.82,
+            status: "active"
+          },
+          {
+            id: "level-it-100",
+            programmeId: "programme-it",
+            level: "100",
+            coordinator: "Mrs. Aïcha Touré",
+            enrolment: 42,
+            gpa: 3.22,
+            status: "active"
+          },
+          {
+            id: "level-it-200",
+            programmeId: "programme-it",
+            level: "200",
+            coordinator: "Mr. Samuel Mensah",
+            enrolment: 38,
+            gpa: 3.51,
+            status: "active"
+          }
+        ],
+
+        lecturers: [
+          {
+            id: "lecturer-1",
+            name: "Dr. Halima Garba",
+            email: "halima.garba@example.edu",
+            phone: "+234 800 000 1101",
+            workload: "full",
+            rating: 4.7,
+            status: "active"
+          },
+          {
+            id: "lecturer-2",
+            name: "Dr. Okafor Nwosu",
+            email: "okafor.nwosu@example.edu",
+            phone: "+234 800 000 1102",
+            workload: "full",
+            rating: 4.4,
+            status: "active"
+          },
+          {
+            id: "lecturer-3",
+            name: "Prof. Davies Mensah",
+            email: "davies.mensah@example.edu",
+            phone: "+234 800 000 1103",
+            workload: "full",
+            rating: 4.8,
+            status: "active"
+          },
+          {
+            id: "lecturer-4",
+            name: "Dr. Janet Johnson",
+            email: "janet.johnson@example.edu",
+            phone: "+234 800 000 1104",
+            workload: "part_time",
+            rating: 4.2,
+            status: "active"
+          }
+        ],
+
+        courses: [
+          {
+            id: "course-csc101",
+            programmeId: "programme-csc",
+            levelId: "level-csc-100",
+            code: "CSC 101",
+            title: {
+              en: "Introduction to Computing",
+              fr: "Introduction à l’Informatique",
+              ar: "مقدمة في الحوسبة"
+            },
+            credits: 3,
+            lecturerId: "lecturer-1",
+            students: 48,
+            progress: 82,
+            status: "active"
+          },
+          {
+            id: "course-csc201",
+            programmeId: "programme-csc",
+            levelId: "level-csc-200",
+            code: "CSC 201",
+            title: {
+              en: "Data Structures",
+              fr: "Structures de Données",
+              ar: "هياكل البيانات"
+            },
+            credits: 3,
+            lecturerId: "lecturer-2",
+            students: 54,
+            progress: 74,
+            status: "active"
+          },
+          {
+            id: "course-csc301",
+            programmeId: "programme-csc",
+            levelId: "level-csc-300",
+            code: "CSC 301",
+            title: {
+              en: "Database Systems",
+              fr: "Systèmes de Bases de Données",
+              ar: "نظم قواعد البيانات"
+            },
+            credits: 3,
+            lecturerId: "lecturer-3",
+            students: 49,
+            progress: 68,
+            status: "active"
+          },
+          {
+            id: "course-csc401",
+            programmeId: "programme-csc",
+            levelId: "level-csc-400",
+            code: "CSC 401",
+            title: {
+              en: "Software Engineering",
+              fr: "Génie Logiciel",
+              ar: "هندسة البرمجيات"
+            },
+            credits: 3,
+            lecturerId: "lecturer-4",
+            students: 45,
+            progress: 91,
+            status: "active"
+          },
+          {
+            id: "course-ift101",
+            programmeId: "programme-it",
+            levelId: "level-it-100",
+            code: "IFT 101",
+            title: {
+              en: "Digital Literacy",
+              fr: "Culture Numérique",
+              ar: "الثقافة الرقمية"
+            },
+            credits: 2,
+            lecturerId: "lecturer-1",
+            students: 42,
+            progress: 79,
+            status: "active"
+          },
+          {
+            id: "course-ift205",
+            programmeId: "programme-it",
+            levelId: "level-it-200",
+            code: "IFT 205",
+            title: {
+              en: "Information Systems",
+              fr: "Systèmes d’Information",
+              ar: "نظم المعلومات"
+            },
+            credits: 3,
+            lecturerId: "lecturer-2",
+            students: 38,
+            progress: 63,
+            status: "active"
+          }
+        ],
+
+        students: [
+          {
+            id: "student-1",
+            name: "Fatima Bello",
+            matric: "YAJ/CSC/2024/001",
+            programmeId: "programme-csc",
+            levelId: "level-csc-300",
+            cgpa: 4.31,
+            status: "good"
+          },
+          {
+            id: "student-2",
+            name: "Jean-Pierre Diallo",
+            matric: "YAJ/CSC/2024/002",
+            programmeId: "programme-csc",
+            levelId: "level-csc-300",
+            cgpa: 2.21,
+            status: "at_risk"
+          },
+          {
+            id: "student-3",
+            name: "Maryam Ibrahim",
+            matric: "YAJ/CSC/2024/003",
+            programmeId: "programme-csc",
+            levelId: "level-csc-400",
+            cgpa: 4.68,
+            status: "good"
+          },
+          {
+            id: "student-4",
+            name: "Samuel Okafor",
+            matric: "YAJ/CSC/2024/004",
+            programmeId: "programme-csc",
+            levelId: "level-csc-200",
+            cgpa: 2.74,
+            status: "probation"
+          },
+          {
+            id: "student-5",
+            name: "Aïcha Touré",
+            matric: "YAJ/IFT/2025/001",
+            programmeId: "programme-it",
+            levelId: "level-it-100",
+            cgpa: 4.45,
+            status: "good"
+          },
+          {
+            id: "student-6",
+            name: "David Mensah",
+            matric: "YAJ/IFT/2024/002",
+            programmeId: "programme-it",
+            levelId: "level-it-200",
+            cgpa: 3.58,
+            status: "good"
+          }
+        ],
+
+        approvals: [
+          {
+            id: "approval-1",
+            courseId: "course-csc201",
+            lecturerId: "lecturer-2",
+            anomalies: {
+              en: "Three missing scores",
+              fr: "Trois notes manquantes",
+              ar: "ثلاث درجات مفقودة"
+            },
+            submittedAt: past(2),
+            status: "pending",
+            comment: ""
+          },
+          {
+            id: "approval-2",
+            courseId: "course-csc301",
+            lecturerId: "lecturer-3",
+            anomalies: {
+              en: "Two scores exceed the permitted range",
+              fr: "Deux notes dépassent la plage autorisée",
+              ar: "درجتان تتجاوزان النطاق المسموح"
+            },
+            submittedAt: past(3),
+            status: "pending",
+            comment: ""
+          }
+        ],
+
+        research: [
+          {
+            id: "research-1",
+            title: {
+              en: "Artificial Intelligence in Education",
+              fr: "Intelligence Artificielle dans l’Éducation",
+              ar: "الذكاء الاصطناعي في التعليم"
+            },
+            leadId: "lecturer-1",
+            milestones: 3,
+            progress: 62,
+            status: "in_progress",
+            submittedAt: past(18)
+          },
+          {
+            id: "research-2",
+            title: {
+              en: "Database Query Optimization",
+              fr: "Optimisation des Requêtes de Base de Données",
+              ar: "تحسين استعلامات قواعد البيانات"
+            },
+            leadId: "lecturer-3",
+            milestones: 5,
+            progress: 88,
+            status: "in_progress",
+            submittedAt: past(31)
+          }
+        ],
+
+        notifications: [
+          {
+            id: "notification-1",
+            title: {
+              en: "Result anomaly detected",
+              fr: "Anomalie de résultat détectée",
+              ar: "تم اكتشاف ملاحظة في النتائج"
+            },
+            body: {
+              en: "CSC 301 contains scores outside the configured range.",
+              fr: "CSC 301 contient des notes hors de la plage configurée.",
+              ar: "يحتوي مقرر CSC 301 على درجات خارج النطاق المحدد."
+            },
+            createdAt: past(1),
+            readAt: null
+          },
+          {
+            id: "notification-2",
+            title: {
+              en: "Approval request received",
+              fr: "Demande d’approbation reçue",
+              ar: "تم استلام طلب موافقة"
+            },
+            body: {
+              en: "CSC 201 results are awaiting departmental review.",
+              fr: "Les résultats de CSC 201 attendent l’examen du département.",
+              ar: "نتائج CSC 201 بانتظار مراجعة القسم."
+            },
+            createdAt: past(2),
+            readAt: null
+          }
+        ],
+
+        activity: [
+          {
+            title: {
+              en: "CSC 401 course progress updated",
+              fr: "Progression du cours CSC 401 mise à jour",
+              ar: "تم تحديث تقدم مقرر CSC 401"
+            },
+            createdAt: past(1)
+          },
+          {
+            title: {
+              en: "New research milestone recorded",
+              fr: "Nouvelle étape de recherche enregistrée",
+              ar: "تم تسجيل مرحلة بحث جديدة"
+            },
+            createdAt: past(2)
+          },
+          {
+            title: {
+              en: "CSC 201 result submission received",
+              fr: "Soumission des résultats CSC 201 reçue",
+              ar: "تم استلام نتائج CSC 201"
+            },
+            createdAt: past(3)
+          }
+        ]
+      };
+    }
+
+    function loadData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (error) {
+        console.warn("Unable to read sample data.", error);
+      }
+
+      return createInitialData();
+    }
+
+    function persistData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      } catch (error) {
+        console.warn("Unable to save sample data.", error);
+      }
+    }
+
+    function programmeById(id) {
+      return state.data.programmes.find(item => item.id === id) || null;
+    }
+
+    function levelById(id) {
+      return state.data.levels.find(item => item.id === id) || null;
+    }
+
+    function courseById(id) {
+      return state.data.courses.find(item => item.id === id) || null;
+    }
+
+    function lecturerById(id) {
+      return state.data.lecturers.find(item => item.id === id) || null;
+    }
+
+    function inProgrammeScope(programmeId) {
+      return !state.scopeProgrammeId || programmeId === state.scopeProgrammeId;
+    }
+
+    function addActivity(message) {
+      state.data.activity.unshift({
+        title: makeLocalized(message),
+        createdAt: new Date().toISOString()
+      });
+
+      state.data.activity = state.data.activity.slice(0, 20);
+    }
+
+    function translateStaticUi() {
+      $$("[data-i18n]").forEach(node => {
+        node.textContent = t(node.dataset.i18n);
+      });
+
+      $$("[data-i18n-placeholder]").forEach(node => {
+        node.placeholder = t(node.dataset.i18nPlaceholder);
+      });
+
+      $$("[data-i18n-aria-label]").forEach(node => {
+        node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
+      });
+    }
+
+    function detectLanguage() {
+      try {
+        const stored = localStorage.getItem(LANGUAGE_KEY);
+
+        if (I18N[stored]) {
+          return stored;
+        }
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      const browserLanguage =
+        navigator.languages?.[0] ||
+        navigator.language ||
+        "en";
+
+      if (browserLanguage.toLowerCase().startsWith("ar")) {
+        return "ar";
+      }
+
+      if (browserLanguage.toLowerCase().startsWith("fr")) {
+        return "fr";
+      }
+
+      return "en";
+    }
+
+    function applyLanguage(language, rerender = true) {
+      state.language = I18N[language] ? language : "en";
+
+      try {
+        localStorage.setItem(LANGUAGE_KEY, state.language);
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      document.documentElement.lang = state.language;
+      document.documentElement.dir = state.language === "ar" ? "rtl" : "ltr";
+
+      $$("[data-language]", $("#language-switcher")).forEach(buttonNode => {
+        buttonNode.setAttribute(
+          "aria-pressed",
+          String(buttonNode.dataset.language === state.language)
+        );
+      });
+
+      translateStaticUi();
+      renderNavigation();
+      renderIdentity();
+      renderBreadcrumbs();
+      renderPageMeta();
+      populateScopeSwitcher();
+      renderNotifications();
+
+      if ($("#modal").open) {
+        closeModal();
+      }
+
+      if (rerender) {
+        renderRoute();
+      }
+    }
+
+    function applyTheme(theme) {
+      state.theme = theme === "dark" ? "dark" : "light";
+
+      try {
+        localStorage.setItem(THEME_KEY, state.theme);
+      } catch {
+        // Storage may be unavailable.
+      }
+
+      document.documentElement.dataset.theme = state.theme;
+      $("#theme-icon").textContent = state.theme === "dark" ? "☀" : "◐";
+    }
+
+    function loadPreferences() {
+      let theme = "";
+
+      try {
+        theme = localStorage.getItem(THEME_KEY) || "";
+        state.scopeProgrammeId = localStorage.getItem(SCOPE_KEY) || "";
+      } catch {
+        theme = "";
+      }
+
+      if (theme !== "light" && theme !== "dark") {
+        theme = matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
+
+      applyTheme(theme);
+      applyLanguage(detectLanguage(), false);
+    }
+
+    function renderNavigation() {
+      const navigation = $("#sidebar-nav");
+      navigation.replaceChildren();
+
+      ROUTES.forEach(([route, icon, labelKey]) => {
+        navigation.append(
+          createElement("button", {
+            attrs: {
+              type: "button",
+              "aria-current": state.route === route ? "page" : "false"
+            },
+            children: [
+              createElement("span", {
+                className: "nav-icon",
+                text: icon,
+                attrs: {
+                  "aria-hidden": "true"
+                }
+              }),
+              createElement("span", {
+                text: t(labelKey)
+              })
+            ],
+            events: {
+              click: () => navigate(route)
+            }
+          })
+        );
+      });
+    }
+
+    function renderIdentity() {
+      const context = state.data.context;
+
+      $("#header-name").textContent = context.name;
+      $("#header-avatar").textContent = initials(context.name);
+      $("#profile-name").textContent = context.name;
+      $("#profile-role").textContent = t("headOfDepartment");
+      $("#profile-department").textContent = context.department;
+      $("#sidebar-scope").textContent =
+        `${context.department} · ${context.academicSession}`;
+    }
+
+    function populateScopeSwitcher() {
+      const select = $("#scope-switch");
+      select.replaceChildren();
+
+      select.append(
+        createElement("option", {
+          text: t("allProgrammes"),
+          attrs: {
+            value: ""
+          }
+        })
+      );
+
+      state.data.programmes.forEach(programme => {
+        select.append(
+          createElement("option", {
+            text: `${programme.code} · ${localized(programme.title)}`,
+            attrs: {
+              value: programme.id
+            }
+          })
+        );
+      });
+
+      if (
+        state.scopeProgrammeId &&
+        !state.data.programmes.some(item => item.id === state.scopeProgrammeId)
+      ) {
+        state.scopeProgrammeId = "";
+      }
+
+      select.value = state.scopeProgrammeId;
+    }
+
+    function renderBreadcrumbs() {
+      const container = $("#breadcrumbs");
+      container.replaceChildren();
+
+      container.append(
+        createElement("button", {
+          text: t("dashboard"),
+          attrs: {
+            type: "button"
+          },
+          events: {
+            click: () => navigate("dashboard")
+          }
+        })
+      );
+
+      if (state.route !== "dashboard") {
+        container.append(
+          createElement("span", {
+            text: "/",
+            attrs: {
+              "aria-hidden": "true"
+            }
+          }),
+          createElement("span", {
+            text: t(ROUTE_META[state.route][0]),
+            attrs: {
+              "aria-current": "page"
+            }
+          })
+        );
+      }
+    }
+
+    function renderPageMeta() {
+      const [titleKey, subtitleKey] = ROUTE_META[state.route];
+
+      $("#page-eyebrow").textContent = t("headOfDepartment");
+      $("#page-title").textContent = t(titleKey);
+      $("#page-subtitle").textContent = t(subtitleKey);
+
+      document.title = `${t(titleKey)} · YAJIB ${t("hodPortal")}`;
+    }
+
+    function navigate(route) {
+      if (!ROUTE_META[route]) {
+        return;
+      }
+
+      state.route = route;
+      closeSidebar();
+      closeSearch();
+
+      renderNavigation();
+      renderBreadcrumbs();
+      renderPageMeta();
+      renderRoute();
+
+      const hash = new URLSearchParams({
+        view: route
+      });
+
+      if (state.scopeProgrammeId) {
+        hash.set("programme", state.scopeProgrammeId);
+      }
+
+      history.replaceState(null, "", `#${hash.toString()}`);
+
+      $("#main-content").focus({
+        preventScroll: true
+      });
+
+      scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function parseHash() {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+
+      if (ROUTE_META[params.get("view")]) {
+        state.route = params.get("view");
+      }
+
+      const programmeId = params.get("programme");
+
+      if (state.data.programmes.some(item => item.id === programmeId)) {
+        state.scopeProgrammeId = programmeId;
+      }
+    }
+
+    function scopedProgrammes() {
+      return state.data.programmes.filter(programme =>
+        inProgrammeScope(programme.id)
+      );
+    }
+
+    function scopedLevels() {
+      return state.data.levels.filter(level =>
+        inProgrammeScope(level.programmeId)
+      );
+    }
+
+    function scopedCourses() {
+      return state.data.courses.filter(course =>
+        inProgrammeScope(course.programmeId)
+      );
+    }
+
+    function scopedStudents() {
+      return state.data.students.filter(student =>
+        inProgrammeScope(student.programmeId)
+      );
+    }
+
+    function scopedApprovals() {
+      return state.data.approvals.filter(approval => {
+        const course = courseById(approval.courseId);
+        return course && inProgrammeScope(course.programmeId);
+      });
+    }
+
+    function scopedResearch() {
+      return state.data.research;
+    }
+
+    function renderRoute() {
+      $("#page-actions").replaceChildren();
+
+      switch (state.route) {
+        case "dashboard":
+          renderDashboard();
+          break;
+        case "programmes":
+          renderProgrammes();
+          break;
+        case "levels":
+          renderLevels();
+          break;
+        case "courses":
+          renderCourses();
+          break;
+        case "lecturers":
+          renderLecturers();
+          break;
+        case "students":
+          renderStudents();
+          break;
+        case "approvals":
+          renderApprovals();
+          break;
+        case "research":
+          renderResearch();
+          break;
+        case "analytics":
+          renderAnalytics();
+          break;
+        case "help":
+          renderHelp();
+          break;
+        default:
+          navigate("dashboard");
+      }
+    }
+
+    function renderDashboard() {
+      const programmes = scopedProgrammes();
+      const levels = scopedLevels();
+      const courses = scopedCourses();
+      const students = scopedStudents();
+      const approvals = scopedApprovals();
+
+      const relevantLecturerIds = new Set(courses.map(course => course.lecturerId));
+
+      const lecturers = state.data.lecturers.filter(lecturer =>
+        !state.scopeProgrammeId || relevantLecturerIds.has(lecturer.id)
+      );
+
+      const averageGpa = students.length
+        ? students.reduce((sum, student) => sum + Number(student.cgpa || 0), 0) /
+          students.length
+        : 0;
+
+      const atRisk = students.filter(student =>
+        ["at_risk", "probation"].includes(student.status)
+      ).length;
+
+      const pending = approvals.filter(item => item.status === "pending").length;
+
+      const hero = createElement("section", {
+        className: "hero",
+        children: [
+          createElement("div", {
+            children: [
+              createElement("h2", {
+                text: `${t("welcome")}, ${state.data.context.name}`
+              }),
+              createElement("p", {
+                text: t("dashboardSubtitle")
+              })
+            ]
+          }),
+          createElement("div", {
+            className: "hero-card",
+            children: [
+              createElement("strong", {
+                text:
+                  `${state.data.context.academicSession} · ` +
+                  `${state.data.context.semester}`
+              }),
+              createElement("span", {
+                text: state.data.context.department
+              })
+            ]
+          })
+        ]
+      });
+
+      const kpis = createElement("div", {
+        className: "kpi-grid",
+        children: [
+          makeStat(formatNumber(programmes.length), t("totalProgrammes")),
+          makeStat(formatNumber(levels.length), t("totalLevels"), "silver"),
+          makeStat(formatNumber(courses.length), t("totalCourses")),
+          makeStat(formatNumber(lecturers.length), t("totalLecturers"), "silver"),
+          makeStat(formatNumber(students.length), t("totalStudents")),
+          makeStat(
+            formatNumber(averageGpa, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }),
+            t("averageGpa")
+          ),
+          makeStat(formatNumber(pending), t("pendingApprovals"), "danger"),
+          makeStat(formatNumber(atRisk), t("atRiskStudents"), "danger")
+        ]
+      });
+
+      const quickPanel = createElement("section", {
+        className: "panel",
+        children: [
+          createElement("div", {
+            className: "panel-header",
+            children: [
+              createElement("h2", {
+                text: t("quickActions")
+              })
+            ]
+          }),
+          createElement("div", {
+            className: "quick-grid",
+            children: [
+              quickAction(t("addProgramme"), t("programmesSubtitle"), "programmes", openProgrammeEditor),
+              quickAction(t("addCourse"), t("coursesSubtitle"), "courses", openCourseEditor),
+              quickAction(t("addLecturer"), t("lecturersSubtitle"), "lecturers", openLecturerEditor),
+              quickAction(t("addStudent"), t("studentsSubtitle"), "students", openStudentEditor),
+              quickAction(t("addResearch"), t("researchSubtitle"), "research", openResearchEditor)
+            ]
+          })
+        ]
+      });
+
+      const activityList = createElement("ul", {
+        className: "list"
+      });
+
+      state.data.activity.slice(0, 8).forEach(activity => {
+        activityList.append(
+          createElement("li", {
+            className: "list-item",
+            children: [
+              createElement("strong", {
+                text: localized(activity.title)
+              }),
+              createElement("time", {
+                text: formatDateTime(activity.createdAt),
+                attrs: {
+                  datetime: activity.createdAt
+                }
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(
+        hero,
+        kpis,
+        createElement("div", {
+          className: "grid two",
+          children: [
+            quickPanel,
+            createElement("section", {
+              className: "panel",
+              children: [
+                createElement("div", {
+                  className: "panel-header",
+                  children: [
+                    createElement("h2", {
+                      text: t("recentActivity")
+                    })
+                  ]
+                }),
+                activityList
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function quickAction(title, description, route, callback) {
+      return createElement("button", {
+        className: "quick-action",
+        attrs: {
+          type: "button"
+        },
+        children: [
+          createElement("strong", {
+            text: title
+          }),
+          createElement("span", {
+            text: description
+          })
+        ],
+        events: {
+          click: () => {
+            navigate(route);
+            callback?.();
+          }
+        }
+      });
+    }
+
+    function makeSearchToolbar(filterKey, placeholderKey, rerender, includeStatus = true) {
+      const searchInput = createElement("input", {
+        attrs: {
+          id: `${filterKey}-search`,
+          type: "search",
+          value: state.filters[filterKey],
+          placeholder: t(placeholderKey)
+        }
+      });
+
+      searchInput.addEventListener(
+        "input",
+        debounce(event => {
+          state.filters[filterKey] = normalize(event.target.value);
+          rerender();
+        })
+      );
+
+      const controls = [
+        makeField(placeholderKey, searchInput)
+      ];
+
+      if (includeStatus) {
+        const statusSelect = createElement("select", {
+          attrs: {
+            id: `${filterKey}-status`
+          }
+        });
+
+        [
+          ["", t("allStatuses")],
+          ["active", t("active")],
+          ["inactive", t("inactive")],
+          ["draft", t("draft")],
+          ["pending", t("pending")],
+          ["approved", t("approved")],
+          ["rejected", t("rejected")],
+          ["returned", t("returned")],
+          ["completed", t("completed")],
+          ["in_progress", t("inProgress")]
+        ].forEach(([value, label]) => {
+          statusSelect.append(
+            createElement("option", {
+              text: label,
+              attrs: {
+                value
+              }
+            })
+          );
+        });
+
+        statusSelect.value = state.filters.status;
+
+        statusSelect.addEventListener("change", event => {
+          state.filters.status = event.target.value;
+          rerender();
+        });
+
+        controls.push(makeField("status", statusSelect));
+      }
+
+      controls.push(
+        makeButton(
+          t("resetFilters"),
+          () => {
+            state.filters[filterKey] = "";
+            state.filters.status = "";
+            renderRoute();
+          },
+          "btn secondary"
+        )
+      );
+
+      return createElement("div", {
+        className: "toolbar",
+        children: controls
+      });
+    }
+
+    function renderProgrammes() {
+      $("#page-actions").append(
+        makeButton(t("addProgramme"), () => openProgrammeEditor()),
+        makeButton(t("exportCsv"), exportProgrammes, "btn secondary")
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar(
+          "programmes",
+          "searchProgrammes",
+          renderProgrammeResults
+        ),
+        createElement("div", {
+          attrs: {
+            id: "programme-results"
+          }
+        })
+      );
+
+      renderProgrammeResults();
+    }
+
+    function renderProgrammeResults() {
+      const container = $("#programme-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.programmes.toLocaleLowerCase(LOCALES[state.language]);
+
+      const programmes = scopedProgrammes().filter(programme => {
+        const searchable = [
+          programme.code,
+          localized(programme.title)
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || programme.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!programmes.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "▦"));
+        return;
+      }
+
+      const grid = createElement("div", {
+        className: "grid three"
+      });
+
+      programmes.forEach(programme => {
+        const levels = state.data.levels.filter(item => item.programmeId === programme.id);
+        const courses = state.data.courses.filter(item => item.programmeId === programme.id);
+        const students = state.data.students.filter(item => item.programmeId === programme.id);
+
+        grid.append(
+          createElement("article", {
+            className: "entity-card",
+            children: [
+              createElement("strong", {
+                text: `${programme.code} · ${localized(programme.title)}`
+              }),
+              createElement("div", {
+                className: "meta-row",
+                children: [
+                  createElement("span", {
+                    text: `${t("levels")}: ${formatNumber(levels.length)}`
+                  }),
+                  createElement("span", {
+                    text: `${t("courses")}: ${formatNumber(courses.length)}`
+                  }),
+                  createElement("span", {
+                    text: `${t("students")}: ${formatNumber(students.length)}`
+                  })
+                ]
+              }),
+              createElement("div", {
+                className: "status-line",
+                attrs: {
+                  style: "margin-top:.75rem;"
+                },
+                children: [
+                  makeBadge(programme.status),
+                  makeButton(t("edit"), () => openProgrammeEditor(programme), "btn secondary small"),
+                  makeButton(t("delete"), () => deleteProgramme(programme), "btn danger small")
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(grid);
+    }
+
+    function openProgrammeEditor(existing = null) {
+      const codeInput = createElement("input", {
+        attrs: {
+          id: "programme-code",
+          type: "text",
+          maxlength: "12",
+          required: true,
+          value: existing?.code || ""
+        }
+      });
+
+      const titleInput = createElement("input", {
+        attrs: {
+          id: "programme-title",
+          type: "text",
+          maxlength: "180",
+          required: true,
+          value: localized(existing?.title)
+        }
+      });
+
+      const statusSelect = createStatusSelect("programme-status", existing?.status || "active", [
+        "active",
+        "inactive"
+      ]);
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("programme")}` : t("addProgramme"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("code", codeInput),
+            makeField("status", statusSelect),
+            makeField("title", titleInput, "", true)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const code = normalize(codeInput.value).toUpperCase();
+          const title = normalize(titleInput.value);
+
+          if (!code || !title) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const duplicate = state.data.programmes.some(
+            item => item.id !== existing?.id && item.code.toLowerCase() === code.toLowerCase()
+          );
+
+          if (duplicate) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `programme-${crypto.randomUUID()}`,
+            code,
+            title: makeLocalized(title),
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.programmes.findIndex(item => item.id === existing.id);
+            state.data.programmes[index] = record;
+          } else {
+            state.data.programmes.push(record);
+          }
+
+          persistData();
+          populateScopeSwitcher();
+          addActivity(`${record.code} programme updated`);
+          showToast(t("programmes"), t("sampleSaved"), "success");
+          renderProgrammes();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteProgramme(programme) {
+      const linked =
+        state.data.levels.some(item => item.programmeId === programme.id) ||
+        state.data.courses.some(item => item.programmeId === programme.id) ||
+        state.data.students.some(item => item.programmeId === programme.id);
+
+      if (linked) {
+        showToast(t("validationFailed"), t("linkedRecord"), "danger");
+        return;
+      }
+
+      deleteRecord("programmes", programme.id, renderProgrammes);
+    }
+
+    function exportProgrammes() {
+      const rows = [["code", "title", "status"]];
+
+      scopedProgrammes().forEach(programme => {
+        rows.push([
+          programme.code,
+          localized(programme.title),
+          programme.status
+        ]);
+      });
+
+      downloadCsv("department-programmes.csv", rows);
+    }
+
+    function renderLevels() {
+      $("#page-actions").append(
+        makeButton(t("addLevel"), () => openLevelEditor())
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar("levels", "searchLevels", renderLevelResults),
+        createElement("div", {
+          attrs: {
+            id: "level-results"
+          }
+        })
+      );
+
+      renderLevelResults();
+    }
+
+    function renderLevelResults() {
+      const container = $("#level-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.levels.toLocaleLowerCase(LOCALES[state.language]);
+
+      const levels = scopedLevels().filter(level => {
+        const programme = programmeById(level.programmeId);
+
+        const searchable = [
+          programme?.code,
+          localized(programme?.title),
+          level.level,
+          level.coordinator
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || level.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!levels.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "▥"));
+        return;
+      }
+
+      const grid = createElement("div", {
+        className: "grid three"
+      });
+
+      levels.forEach(level => {
+        const programme = programmeById(level.programmeId);
+        const courseCount = state.data.courses.filter(item => item.levelId === level.id).length;
+
+        grid.append(
+          createElement("article", {
+            className: "entity-card",
+            children: [
+              createElement("strong", {
+                text: `${programme?.code || "—"} · ${level.level}`
+              }),
+              createElement("span", {
+                text: level.coordinator
+              }),
+              createElement("div", {
+                className: "meta-row",
+                children: [
+                  createElement("span", {
+                    text: `${t("enrolment")}: ${formatNumber(level.enrolment)}`
+                  }),
+                  createElement("span", {
+                    text: `${t("courses")}: ${formatNumber(courseCount)}`
+                  }),
+                  createElement("span", {
+                    text:
+                      `${t("averageGpa")}: ` +
+                      `${formatNumber(level.gpa, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}`
+                  })
+                ]
+              }),
+              createElement("div", {
+                className: "status-line",
+                attrs: {
+                  style: "margin-top:.75rem;"
+                },
+                children: [
+                  makeBadge(level.status),
+                  makeButton(t("edit"), () => openLevelEditor(level), "btn secondary small"),
+                  makeButton(t("delete"), () => deleteLevel(level), "btn danger small")
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(grid);
+    }
+
+    function openLevelEditor(existing = null) {
+      const programmeSelect = createProgrammeSelect(
+        "level-programme",
+        existing?.programmeId || state.scopeProgrammeId
+      );
+
+      const levelInput = createElement("input", {
+        attrs: {
+          id: "level-name",
+          type: "text",
+          maxlength: "20",
+          required: true,
+          value: existing?.level || ""
+        }
+      });
+
+      const coordinatorInput = createElement("input", {
+        attrs: {
+          id: "level-coordinator",
+          type: "text",
+          maxlength: "180",
+          required: true,
+          value: existing?.coordinator || ""
+        }
+      });
+
+      const enrolmentInput = createElement("input", {
+        attrs: {
+          id: "level-enrolment",
+          type: "number",
+          min: "0",
+          max: "10000",
+          value: existing?.enrolment ?? "0"
+        }
+      });
+
+      const gpaInput = createElement("input", {
+        attrs: {
+          id: "level-gpa",
+          type: "number",
+          min: "0",
+          max: "5",
+          step: ".01",
+          value: existing?.gpa ?? "0"
+        }
+      });
+
+      const statusSelect = createStatusSelect(
+        "level-status",
+        existing?.status || "active",
+        ["active", "inactive"]
+      );
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("level")}` : t("addLevel"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("programme", programmeSelect),
+            makeField("level", levelInput),
+            makeField("coordinator", coordinatorInput, "", true),
+            makeField("enrolment", enrolmentInput),
+            makeField("averageGpa", gpaInput),
+            makeField("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const enrolment = Number(enrolmentInput.value);
+          const gpa = Number(gpaInput.value);
+
+          if (
+            !programmeSelect.value ||
+            !normalize(levelInput.value) ||
+            !normalize(coordinatorInput.value) ||
+            !Number.isFinite(enrolment) ||
+            enrolment < 0 ||
+            !Number.isFinite(gpa) ||
+            gpa < 0 ||
+            gpa > 5
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `level-${crypto.randomUUID()}`,
+            programmeId: programmeSelect.value,
+            level: normalize(levelInput.value),
+            coordinator: normalize(coordinatorInput.value),
+            enrolment,
+            gpa,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.levels.findIndex(item => item.id === existing.id);
+            state.data.levels[index] = record;
+          } else {
+            state.data.levels.push(record);
+          }
+
+          persistData();
+          addActivity(`${record.level} level updated`);
+          showToast(t("levels"), t("sampleSaved"), "success");
+          renderLevels();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteLevel(level) {
+      const linked =
+        state.data.courses.some(item => item.levelId === level.id) ||
+        state.data.students.some(item => item.levelId === level.id);
+
+      if (linked) {
+        showToast(t("validationFailed"), t("linkedRecord"), "danger");
+        return;
+      }
+
+      deleteRecord("levels", level.id, renderLevels);
+    }
+
+    function renderCourses() {
+      $("#page-actions").append(
+        makeButton(t("addCourse"), () => openCourseEditor()),
+        makeButton(t("exportCsv"), exportCourses, "btn secondary")
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar("courses", "searchCourses", renderCourseResults),
+        createElement("div", {
+          attrs: {
+            id: "course-results"
+          }
+        })
+      );
+
+      renderCourseResults();
+    }
+
+    function renderCourseResults() {
+      const container = $("#course-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.courses.toLocaleLowerCase(LOCALES[state.language]);
+
+      const courses = scopedCourses().filter(course => {
+        const programme = programmeById(course.programmeId);
+        const lecturer = lecturerById(course.lecturerId);
+
+        const searchable = [
+          course.code,
+          localized(course.title),
+          programme?.code,
+          lecturer?.name
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || course.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!courses.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "◫"));
+        return;
+      }
+
+      const grid = createElement("div", {
+        className: "grid three"
+      });
+
+      courses.forEach(course => {
+        const programme = programmeById(course.programmeId);
+        const level = levelById(course.levelId);
+        const lecturer = lecturerById(course.lecturerId);
+
+        grid.append(
+          createElement("article", {
+            className: "entity-card",
+            children: [
+              createElement("strong", {
+                text: `${course.code} · ${localized(course.title)}`
+              }),
+              createElement("span", {
+                text: lecturer?.name || "—"
+              }),
+              createElement("div", {
+                className: "meta-row",
+                children: [
+                  createElement("span", {
+                    text: programme?.code || "—"
+                  }),
+                  createElement("span", {
+                    text: `${t("level")}: ${level?.level || "—"}`
+                  }),
+                  createElement("span", {
+                    text: `${formatNumber(course.credits)} ${t("credits")}`
+                  }),
+                  createElement("span", {
+                    text: `${formatNumber(course.students)} ${t("students")}`
+                  })
+                ]
+              }),
+              createElement("progress", {
+                attrs: {
+                  max: "100",
+                  value: course.progress,
+                  "aria-label": `${t("progress")}: ${course.progress}%`
+                }
+              }),
+              createElement("div", {
+                className: "status-line",
+                attrs: {
+                  style: "margin-top:.75rem;"
+                },
+                children: [
+                  makeBadge(course.status),
+                  createElement("span", {
+                    text: `${formatNumber(course.progress)}%`
+                  }),
+                  makeButton(t("edit"), () => openCourseEditor(course), "btn secondary small"),
+                  makeButton(t("delete"), () => deleteCourse(course), "btn danger small")
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(grid);
+    }
+
+    function openCourseEditor(existing = null) {
+      const programmeSelect = createProgrammeSelect(
+        "course-programme",
+        existing?.programmeId || state.scopeProgrammeId
+      );
+
+      const levelSelect = createElement("select", {
+        attrs: {
+          id: "course-level",
+          required: true
+        }
+      });
+
+      function refreshLevels(selected = "") {
+        levelSelect.replaceChildren();
+
+        state.data.levels
+          .filter(level => level.programmeId === programmeSelect.value)
+          .forEach(level => {
+            levelSelect.append(
+              createElement("option", {
+                text: level.level,
+                attrs: {
+                  value: level.id
+                }
+              })
+            );
+          });
+
+        if (selected) {
+          levelSelect.value = selected;
+        }
+      }
+
+      programmeSelect.addEventListener("change", () => refreshLevels());
+      refreshLevels(existing?.levelId || "");
+
+      const codeInput = createElement("input", {
+        attrs: {
+          id: "course-code",
+          type: "text",
+          maxlength: "20",
+          required: true,
+          value: existing?.code || ""
+        }
+      });
+
+      const titleInput = createElement("input", {
+        attrs: {
+          id: "course-title",
+          type: "text",
+          maxlength: "180",
+          required: true,
+          value: localized(existing?.title)
+        }
+      });
+
+      const creditsInput = createElement("input", {
+        attrs: {
+          id: "course-credits",
+          type: "number",
+          min: "1",
+          max: "12",
+          value: existing?.credits ?? "3"
+        }
+      });
+
+      const lecturerSelect = createLecturerSelect(
+        "course-lecturer",
+        existing?.lecturerId
+      );
+
+      const studentsInput = createElement("input", {
+        attrs: {
+          id: "course-students",
+          type: "number",
+          min: "0",
+          max: "5000",
+          value: existing?.students ?? "0"
+        }
+      });
+
+      const progressInput = createElement("input", {
+        attrs: {
+          id: "course-progress",
+          type: "number",
+          min: "0",
+          max: "100",
+          value: existing?.progress ?? "0"
+        }
+      });
+
+      const statusSelect = createStatusSelect(
+        "course-status",
+        existing?.status || "active",
+        ["active", "inactive", "completed"]
+      );
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("courses")}` : t("addCourse"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("programme", programmeSelect),
+            makeField("level", levelSelect),
+            makeField("code", codeInput),
+            makeField("credits", creditsInput),
+            makeField("title", titleInput, "", true),
+            makeField("lecturer", lecturerSelect, "", true),
+            makeField("students", studentsInput),
+            makeField("progress", progressInput),
+            makeField("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const credits = Number(creditsInput.value);
+          const students = Number(studentsInput.value);
+          const progress = Number(progressInput.value);
+
+          if (
+            !programmeSelect.value ||
+            !levelSelect.value ||
+            !normalize(codeInput.value) ||
+            !normalize(titleInput.value) ||
+            !lecturerSelect.value ||
+            !Number.isFinite(credits) ||
+            credits < 1 ||
+            !Number.isFinite(students) ||
+            students < 0 ||
+            !Number.isFinite(progress) ||
+            progress < 0 ||
+            progress > 100
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `course-${crypto.randomUUID()}`,
+            programmeId: programmeSelect.value,
+            levelId: levelSelect.value,
+            code: normalize(codeInput.value).toUpperCase(),
+            title: makeLocalized(normalize(titleInput.value)),
+            credits,
+            lecturerId: lecturerSelect.value,
+            students,
+            progress,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.courses.findIndex(item => item.id === existing.id);
+            state.data.courses[index] = record;
+          } else {
+            state.data.courses.push(record);
+          }
+
+          persistData();
+          addActivity(`${record.code} course updated`);
+          showToast(t("courses"), t("sampleSaved"), "success");
+          renderCourses();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteCourse(course) {
+      const linked = state.data.approvals.some(item => item.courseId === course.id);
+
+      if (linked) {
+        showToast(t("validationFailed"), t("linkedRecord"), "danger");
+        return;
+      }
+
+      deleteRecord("courses", course.id, renderCourses);
+    }
+
+    function exportCourses() {
+      const rows = [
+        ["code", "title", "programme", "level", "credits", "lecturer", "students", "progress", "status"]
+      ];
+
+      scopedCourses().forEach(course => {
+        rows.push([
+          course.code,
+          localized(course.title),
+          programmeById(course.programmeId)?.code,
+          levelById(course.levelId)?.level,
+          course.credits,
+          lecturerById(course.lecturerId)?.name,
+          course.students,
+          course.progress,
+          course.status
+        ]);
+      });
+
+      downloadCsv("department-courses.csv", rows);
+    }
+
+    function renderLecturers() {
+      $("#page-actions").append(
+        makeButton(t("addLecturer"), () => openLecturerEditor()),
+        makeButton(t("exportCsv"), exportLecturers, "btn secondary")
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar("lecturers", "searchLecturers", renderLecturerResults),
+        createElement("div", {
+          attrs: {
+            id: "lecturer-results"
+          }
+        })
+      );
+
+      renderLecturerResults();
+    }
+
+    function renderLecturerResults() {
+      const container = $("#lecturer-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.lecturers.toLocaleLowerCase(LOCALES[state.language]);
+      const scopedCourseLecturerIds = new Set(scopedCourses().map(course => course.lecturerId));
+
+      const lecturers = state.data.lecturers.filter(lecturer => {
+        if (state.scopeProgrammeId && !scopedCourseLecturerIds.has(lecturer.id)) {
+          return false;
+        }
+
+        const searchable = [
+          lecturer.name,
+          lecturer.email,
+          lecturer.phone,
+          lecturer.workload
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || lecturer.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!lecturers.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "♜"));
+        return;
+      }
+
+      const body = createElement("tbody");
+
+      lecturers.forEach(lecturer => {
+        const courseCount = state.data.courses.filter(course =>
+          course.lecturerId === lecturer.id &&
+          inProgrammeScope(course.programmeId)
+        ).length;
+
+        body.append(
+          createElement("tr", {
+            children: [
+              createElement("td", {
+                children: [
+                  createElement("div", {
+                    className: "person-cell",
+                    children: [
+                      createElement("span", {
+                        className: "avatar",
+                        text: initials(lecturer.name),
+                        attrs: {
+                          "aria-hidden": "true"
+                        }
+                      }),
+                      createElement("div", {
+                        children: [
+                          createElement("strong", {
+                            text: lecturer.name
+                          }),
+                          createElement("span", {
+                            text: lecturer.email
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+              createElement("td", {
+                text: lecturer.phone
+              }),
+              createElement("td", {
+                text: formatStatus(lecturer.workload)
+              }),
+              createElement("td", {
+                text: formatNumber(courseCount)
+              }),
+              createElement("td", {
+                text: formatNumber(lecturer.rating, {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1
+                })
+              }),
+              createElement("td", {
+                children: [
+                  makeBadge(lecturer.status)
+                ]
+              }),
+              createElement("td", {
+                children: [
+                  createElement("div", {
+                    className: "inline",
+                    children: [
+                      makeButton(t("edit"), () => openLecturerEditor(lecturer), "btn secondary small"),
+                      makeButton(t("delete"), () => deleteLecturer(lecturer), "btn danger small")
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        makeTable(
+          t("lecturers"),
+          ["name", "phone", "workload", "courses", "rating", "status", "actions"],
+          body
+        )
+      );
+    }
+
+    function openLecturerEditor(existing = null) {
+      const nameInput = createElement("input", {
+        attrs: {
+          id: "lecturer-name",
+          type: "text",
+          maxlength: "180",
+          required: true,
+          value: existing?.name || ""
+        }
+      });
+
+      const emailInput = createElement("input", {
+        attrs: {
+          id: "lecturer-email",
+          type: "email",
+          maxlength: "200",
+          required: true,
+          value: existing?.email || ""
+        }
+      });
+
+      const phoneInput = createElement("input", {
+        attrs: {
+          id: "lecturer-phone",
+          type: "tel",
+          maxlength: "50",
+          required: true,
+          value: existing?.phone || ""
+        }
+      });
+
+      const workloadSelect = createStatusSelect(
+        "lecturer-workload",
+        existing?.workload || "full",
+        ["full", "part_time"]
+      );
+
+      const ratingInput = createElement("input", {
+        attrs: {
+          id: "lecturer-rating",
+          type: "number",
+          min: "0",
+          max: "5",
+          step: ".1",
+          value: existing?.rating ?? "0"
+        }
+      });
+
+      const statusSelect = createStatusSelect(
+        "lecturer-status",
+        existing?.status || "active",
+        ["active", "inactive"]
+      );
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("lecturers")}` : t("addLecturer"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("name", nameInput, "", true),
+            makeField("email", emailInput),
+            makeField("phone", phoneInput),
+            makeField("workload", workloadSelect),
+            makeField("rating", ratingInput),
+            makeField("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const rating = Number(ratingInput.value);
+
+          if (
+            !normalize(nameInput.value) ||
+            !emailInput.validity.valid ||
+            !normalize(phoneInput.value) ||
+            !Number.isFinite(rating) ||
+            rating < 0 ||
+            rating > 5
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `lecturer-${crypto.randomUUID()}`,
+            name: normalize(nameInput.value),
+            email: normalize(emailInput.value),
+            phone: normalize(phoneInput.value),
+            workload: workloadSelect.value,
+            rating,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.lecturers.findIndex(item => item.id === existing.id);
+            state.data.lecturers[index] = record;
+          } else {
+            state.data.lecturers.push(record);
+          }
+
+          persistData();
+          addActivity(`${record.name} lecturer record updated`);
+          showToast(t("lecturers"), t("sampleSaved"), "success");
+          renderLecturers();
+
+          return true;
+        }
+      });
+    }
+
+    function deleteLecturer(lecturer) {
+      const linked =
+        state.data.courses.some(item => item.lecturerId === lecturer.id) ||
+        state.data.research.some(item => item.leadId === lecturer.id) ||
+        state.data.approvals.some(item => item.lecturerId === lecturer.id);
+
+      if (linked) {
+        showToast(t("validationFailed"), t("linkedRecord"), "danger");
+        return;
+      }
+
+      deleteRecord("lecturers", lecturer.id, renderLecturers);
+    }
+
+    function exportLecturers() {
+      const rows = [["name", "email", "phone", "workload", "rating", "status"]];
+
+      state.data.lecturers.forEach(lecturer => {
+        rows.push([
+          lecturer.name,
+          lecturer.email,
+          lecturer.phone,
+          lecturer.workload,
+          lecturer.rating,
+          lecturer.status
+        ]);
+      });
+
+      downloadCsv("department-lecturers.csv", rows);
+    }
+
+    function renderStudents() {
+      $("#page-actions").append(
+        makeButton(t("addStudent"), () => openStudentEditor()),
+        makeButton(t("exportCsv"), exportStudents, "btn secondary")
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar("students", "searchStudents", renderStudentResults, false),
+        createElement("div", {
+          attrs: {
+            id: "student-results"
+          }
+        })
+      );
+
+      renderStudentResults();
+    }
+
+    function renderStudentResults() {
+      const container = $("#student-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.students.toLocaleLowerCase(LOCALES[state.language]);
+
+      const students = scopedStudents().filter(student => {
+        const programme = programmeById(student.programmeId);
+        const level = levelById(student.levelId);
+
+        return [
+          student.name,
+          student.matric,
+          programme?.code,
+          localized(programme?.title),
+          level?.level,
+          student.status
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language])
+          .includes(search);
+      });
+
+      container.replaceChildren();
+
+      if (!students.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "♙"));
+        return;
+      }
+
+      const body = createElement("tbody");
+
+      students.forEach(student => {
+        const programme = programmeById(student.programmeId);
+        const level = levelById(student.levelId);
+
+        body.append(
+          createElement("tr", {
+            children: [
+              createElement("td", {
+                children: [
+                  createElement("div", {
+                    className: "person-cell",
+                    children: [
+                      createElement("span", {
+                        className: "avatar",
+                        text: initials(student.name),
+                        attrs: {
+                          "aria-hidden": "true"
+                        }
+                      }),
+                      createElement("div", {
+                        children: [
+                          createElement("strong", {
+                            text: student.name
+                          }),
+                          createElement("span", {
+                            text: student.matric
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+              createElement("td", {
+                text: localized(programme?.title)
+              }),
+              createElement("td", {
+                text: level?.level || "—"
+              }),
+              createElement("td", {
+                text: formatNumber(student.cgpa, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })
+              }),
+              createElement("td", {
+                children: [
+                  makeBadge(student.status)
+                ]
+              }),
+              createElement("td", {
+                children: [
+                  createElement("div", {
+                    className: "inline",
+                    children: [
+                      makeButton(t("edit"), () => openStudentEditor(student), "btn secondary small"),
+                      makeButton(t("delete"), () => deleteRecord("students", student.id, renderStudents), "btn danger small")
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        makeTable(
+          t("students"),
+          ["name", "programme", "level", "cgpa", "status", "actions"],
+          body
+        )
+      );
+    }
+
+    function openStudentEditor(existing = null) {
+      const nameInput = createElement("input", {
+        attrs: {
+          id: "student-name",
+          type: "text",
+          maxlength: "180",
+          required: true,
+          value: existing?.name || ""
+        }
+      });
+
+      const matricInput = createElement("input", {
+        attrs: {
+          id: "student-matric",
+          type: "text",
+          maxlength: "60",
+          required: true,
+          value: existing?.matric || ""
+        }
+      });
+
+      const programmeSelect = createProgrammeSelect(
+        "student-programme",
+        existing?.programmeId || state.scopeProgrammeId
+      );
+
+      const levelSelect = createElement("select", {
+        attrs: {
+          id: "student-level",
+          required: true
+        }
+      });
+
+      function refreshLevels(selected = "") {
+        levelSelect.replaceChildren();
+
+        state.data.levels
+          .filter(level => level.programmeId === programmeSelect.value)
+          .forEach(level => {
+            levelSelect.append(
+              createElement("option", {
+                text: level.level,
+                attrs: {
+                  value: level.id
+                }
+              })
+            );
+          });
+
+        if (selected) {
+          levelSelect.value = selected;
+        }
+      }
+
+      programmeSelect.addEventListener("change", () => refreshLevels());
+      refreshLevels(existing?.levelId || "");
+
+      const cgpaInput = createElement("input", {
+        attrs: {
+          id: "student-cgpa",
+          type: "number",
+          min: "0",
+          max: "5",
+          step: ".01",
+          value: existing?.cgpa ?? "0"
+        }
+      });
+
+      const statusSelect = createStatusSelect(
+        "student-status",
+        existing?.status || "good",
+        ["good", "at_risk", "probation"]
+      );
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("students")}` : t("addStudent"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("name", nameInput, "", true),
+            makeField("matricNumber", matricInput, "", true),
+            makeField("programme", programmeSelect),
+            makeField("level", levelSelect),
+            makeField("cgpa", cgpaInput),
+            makeField("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const cgpa = Number(cgpaInput.value);
+
+          if (
+            !normalize(nameInput.value) ||
+            !normalize(matricInput.value) ||
+            !programmeSelect.value ||
+            !levelSelect.value ||
+            !Number.isFinite(cgpa) ||
+            cgpa < 0 ||
+            cgpa > 5
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `student-${crypto.randomUUID()}`,
+            name: normalize(nameInput.value),
+            matric: normalize(matricInput.value).toUpperCase(),
+            programmeId: programmeSelect.value,
+            levelId: levelSelect.value,
+            cgpa,
+            status: statusSelect.value
+          };
+
+          if (existing) {
+            const index = state.data.students.findIndex(item => item.id === existing.id);
+            state.data.students[index] = record;
+          } else {
+            state.data.students.push(record);
+          }
+
+          persistData();
+          addActivity(`${record.matric} student record updated`);
+          showToast(t("students"), t("sampleSaved"), "success");
+          renderStudents();
+
+          return true;
+        }
+      });
+    }
+
+    function exportStudents() {
+      const rows = [["matric", "name", "programme", "level", "cgpa", "status"]];
+
+      scopedStudents().forEach(student => {
+        rows.push([
+          student.matric,
+          student.name,
+          localized(programmeById(student.programmeId)?.title),
+          levelById(student.levelId)?.level,
+          student.cgpa,
+          student.status
+        ]);
+      });
+
+      downloadCsv("department-students.csv", rows);
+    }
+
+    function renderApprovals() {
+      $("#page-actions").append(
+        makeButton(
+          t("batchApprove"),
+          () => openApprovalAction([...state.approvalSelection], "approved"),
+          "btn success"
+        ),
+        makeButton(
+          t("batchReject"),
+          () => openApprovalAction([...state.approvalSelection], "rejected"),
+          "btn danger"
+        )
+      );
+
+      $("#view").replaceChildren(
+        createElement("div", {
+          className: "validation-summary",
+          text: t("approvalNotice")
+        }),
+        makeSearchToolbar("approvals", "searchApprovals", renderApprovalResults),
+        createElement("div", {
+          attrs: {
+            id: "approval-results"
+          }
+        })
+      );
+
+      renderApprovalResults();
+    }
+
+    function renderApprovalResults() {
+      const container = $("#approval-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.approvals.toLocaleLowerCase(LOCALES[state.language]);
+
+      const approvals = scopedApprovals().filter(approval => {
+        const course = courseById(approval.courseId);
+        const lecturer = lecturerById(approval.lecturerId);
+
+        const searchable = [
+          course?.code,
+          localized(course?.title),
+          lecturer?.name,
+          localized(approval.anomalies),
+          approval.status
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || approval.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!approvals.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "✓"));
+        return;
+      }
+
+      const selectAll = createElement("input", {
+        attrs: {
+          type: "checkbox",
+          "aria-label": t("selectAll")
+        }
+      });
+
+      selectAll.addEventListener("change", () => {
+        approvals.forEach(approval => {
+          if (selectAll.checked) {
+            state.approvalSelection.add(approval.id);
+          } else {
+            state.approvalSelection.delete(approval.id);
+          }
+        });
+
+        renderApprovalResults();
+      });
+
+      selectAll.checked =
+        approvals.length > 0 &&
+        approvals.every(approval => state.approvalSelection.has(approval.id));
+
+      const header = createElement("tr", {
+        children: [
+          createElement("th", {
+            attrs: {
+              scope: "col"
+            },
+            children: [
+              selectAll
+            ]
+          }),
+          tableHeader("courses"),
+          tableHeader("lecturer"),
+          tableHeader("anomalies"),
+          tableHeader("submitted"),
+          tableHeader("status"),
+          tableHeader("comment"),
+          tableHeader("actions")
+        ]
+      });
+
+      const body = createElement("tbody");
+
+      approvals.forEach(approval => {
+        const checkbox = createElement("input", {
+          attrs: {
+            type: "checkbox",
+            "aria-label": `${t("selectAll")}: ${approval.id}`
+          }
+        });
+
+        checkbox.checked = state.approvalSelection.has(approval.id);
+
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            state.approvalSelection.add(approval.id);
+          } else {
+            state.approvalSelection.delete(approval.id);
+          }
+        });
+
+        const course = courseById(approval.courseId);
+        const lecturer = lecturerById(approval.lecturerId);
+
+        body.append(
+          createElement("tr", {
+            children: [
+              createElement("td", {
+                children: [
+                  checkbox
+                ]
+              }),
+              createElement("td", {
+                text: `${course?.code || "—"} · ${localized(course?.title)}`
+              }),
+              createElement("td", {
+                text: lecturer?.name || "—"
+              }),
+              createElement("td", {
+                text: localized(approval.anomalies)
+              }),
+              createElement("td", {
+                text: formatDate(approval.submittedAt)
+              }),
+              createElement("td", {
+                children: [
+                  makeBadge(approval.status)
+                ]
+              }),
+              createElement("td", {
+                text: approval.comment || "—"
+              }),
+              createElement("td", {
+                children: [
+                  createElement("div", {
+                    className: "inline",
+                    children: [
+                      makeButton(
+                        t("approve"),
+                        () => openApprovalAction([approval.id], "approved"),
+                        "btn success small"
+                      ),
+                      makeButton(
+                        t("returnCorrection"),
+                        () => openApprovalAction([approval.id], "returned"),
+                        "btn secondary small"
+                      ),
+                      makeButton(
+                        t("reject"),
+                        () => openApprovalAction([approval.id], "rejected"),
+                        "btn danger small"
+                      )
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(
+        createElement("div", {
+          className: "table-wrap",
+          children: [
+            createElement("table", {
+              children: [
+                createElement("caption", {
+                  text: `${t("approvals")} · ${formatNumber(approvals.length)}`
+                }),
+                createElement("thead", {
+                  children: [
+                    header
+                  ]
+                }),
+                body
+              ]
+            })
+          ]
+        })
+      );
+    }
+
+    function openApprovalAction(ids, nextStatus) {
+      if (!ids.length) {
+        showToast(t("validationFailed"), t("noData"), "warning");
+        return;
+      }
+
+      const commentInput = createElement("textarea", {
+        attrs: {
+          id: "approval-comment",
+          minlength: "10",
+          maxlength: "2000",
+          required: true
+        }
+      });
+
+      openModal({
+        title: formatStatus(nextStatus),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("comment", commentInput, t("reasonRequired"), true)
+          ]
+        }),
+        submitLabel: formatStatus(nextStatus),
+        onSubmit: () => {
+          const comment = normalize(commentInput.value);
+
+          if (comment.length < 10) {
+            showModalError(t("reasonRequired"));
+            return false;
+          }
+
+          ids.forEach(id => {
+            const approval = state.data.approvals.find(item => item.id === id);
+
+            if (approval) {
+              approval.status = nextStatus;
+              approval.comment = comment;
+            }
+          });
+
+          state.approvalSelection.clear();
+          persistData();
+          addActivity(`${ids.length} approval record(s) updated`);
+          showToast(t("approvals"), t("sampleSaved"), "success");
+          renderApprovals();
+
+          return true;
+        }
+      });
+    }
+
+    function renderResearch() {
+      $("#page-actions").append(
+        makeButton(t("addResearch"), () => openResearchEditor())
+      );
+
+      $("#view").replaceChildren(
+        makeSearchToolbar("research", "searchResearch", renderResearchResults),
+        createElement("div", {
+          attrs: {
+            id: "research-results"
+          }
+        })
+      );
+
+      renderResearchResults();
+    }
+
+    function renderResearchResults() {
+      const container = $("#research-results");
+
+      if (!container) {
+        return;
+      }
+
+      const search = state.filters.research.toLocaleLowerCase(LOCALES[state.language]);
+
+      const projects = scopedResearch().filter(project => {
+        const lead = lecturerById(project.leadId);
+
+        const searchable = [
+          localized(project.title),
+          lead?.name,
+          project.status
+        ]
+          .join(" ")
+          .toLocaleLowerCase(LOCALES[state.language]);
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!state.filters.status || project.status === state.filters.status)
+        );
+      });
+
+      container.replaceChildren();
+
+      if (!projects.length) {
+        container.append(emptyState(t("noMatches"), t("noMatchesBody"), "◆"));
+        return;
+      }
+
+      const grid = createElement("div", {
+        className: "grid three"
+      });
+
+      projects.forEach(project => {
+        grid.append(
+          createElement("article", {
+            className: "entity-card",
+            children: [
+              createElement("strong", {
+                text: localized(project.title)
+              }),
+              createElement("span", {
+                text: lecturerById(project.leadId)?.name || "—"
+              }),
+              createElement("div", {
+                className: "meta-row",
+                children: [
+                  createElement("span", {
+                    text: `${t("milestones")}: ${formatNumber(project.milestones)}`
+                  }),
+                  createElement("span", {
+                    text: formatDate(project.submittedAt)
+                  })
+                ]
+              }),
+              createElement("progress", {
+                attrs: {
+                  max: "100",
+                  value: project.progress,
+                  "aria-label": `${t("progress")}: ${project.progress}%`
+                }
+              }),
+              createElement("div", {
+                className: "status-line",
+                attrs: {
+                  style: "margin-top:.75rem;"
+                },
+                children: [
+                  makeBadge(project.status),
+                  createElement("span", {
+                    text: `${formatNumber(project.progress)}%`
+                  }),
+                  makeButton(t("edit"), () => openResearchEditor(project), "btn secondary small"),
+                  makeButton(
+                    t("delete"),
+                    () => deleteRecord("research", project.id, renderResearch),
+                    "btn danger small"
+                  )
+                ]
+              })
+            ]
+          })
+        );
+      });
+
+      container.append(grid);
+    }
+
+    function openResearchEditor(existing = null) {
+      const titleInput = createElement("input", {
+        attrs: {
+          id: "research-title",
+          type: "text",
+          maxlength: "240",
+          required: true,
+          value: localized(existing?.title)
+        }
+      });
+
+      const leadSelect = createLecturerSelect(
+        "research-lead",
+        existing?.leadId
+      );
+
+      const milestonesInput = createElement("input", {
+        attrs: {
+          id: "research-milestones",
+          type: "number",
+          min: "0",
+          max: "100",
+          value: existing?.milestones ?? "0"
+        }
+      });
+
+      const progressInput = createElement("input", {
+        attrs: {
+          id: "research-progress",
+          type: "number",
+          min: "0",
+          max: "100",
+          value: existing?.progress ?? "0"
+        }
+      });
+
+      const statusSelect = createStatusSelect(
+        "research-status",
+        existing?.status || "draft",
+        ["draft", "in_progress", "completed"]
+      );
+
+      openModal({
+        title: existing ? `${t("edit")} · ${t("research")}` : t("addResearch"),
+        content: createElement("div", {
+          className: "form-grid",
+          children: [
+            makeField("title", titleInput, "", true),
+            makeField("lead", leadSelect, "", true),
+            makeField("milestones", milestonesInput),
+            makeField("progress", progressInput),
+            makeField("status", statusSelect)
+          ]
+        }),
+        submitLabel: existing ? t("update") : t("create"),
+        onSubmit: () => {
+          const milestones = Number(milestonesInput.value);
+          const progress = Number(progressInput.value);
+
+          if (
+            !normalize(titleInput.value) ||
+            !leadSelect.value ||
+            !Number.isFinite(milestones) ||
+            milestones < 0 ||
+            !Number.isFinite(progress) ||
+            progress < 0 ||
+            progress > 100
+          ) {
+            showModalError(t("correctErrors"));
+            return false;
+          }
+
+          const record = {
+            id: existing?.id || `research-${crypto.randomUUID()}`,
+            title: makeLocalized(normalize(titleInput.value)),
+            leadId: leadSelect.value,
+            milestones,
+            progress,
+            status: statusSelect.value,
+            submittedAt: existing?.submittedAt || new Date().toISOString()
+          };
+
+          if (existing) {
+            const index = state.data.research.findIndex(item => item.id === existing.id);
+            state.data.research[index] = record;
+          } else {
+            state.data.research.push(record);
+          }
+
+          persistData();
+          addActivity(`${localized(record.title)} research project updated`);
+          showToast(t("research"), t("sampleSaved"), "success");
+          renderResearch();
+
+          return true;
+        }
+      });
+    }
+
+    function renderAnalytics() {
+      $("#page-actions").append(
+        makeButton(t("print"), () => print(), "btn secondary")
+      );
+
+      const programmeDistribution = scopedProgrammes().map(programme => ({
+        label: programme.code,
+        count: state.data.students.filter(student => student.programmeId === programme.id).length
+      }));
+
+      const studentStanding = ["good", "at_risk", "probation"].map(status => ({
+        label: formatStatus(status),
+        count: scopedStudents().filter(student => student.status === status).length
+      }));
+
+      const lecturerWorkload = ["full", "part_time"].map(workload => ({
+        label: formatStatus(workload),
+        count: state.data.lecturers.filter(lecturer => lecturer.workload === workload).length
+      }));
+
+      const approvalStatus = ["pending", "approved", "returned", "rejected"].map(status => ({
+        label: formatStatus(status),
+        count: scopedApprovals().filter(approval => approval.status === status).length
+      }));
+
+      $("#view").replaceChildren(
+        createElement("div", {
+          className: "grid two",
+          children: [
+            chartPanel(t("distributionByProgramme"), programmeDistribution),
+            chartPanel(t("studentStanding"), studentStanding),
+            chartPanel(t("lecturerWorkload"), lecturerWorkload),
+            chartPanel(t("approvalStatus"), approvalStatus)
+          ]
+        })
+      );
+    }
+
+    function chartPanel(title, items) {
+      const maximum = Math.max(
+        1,
+        ...items.map(item => Number(item.count || 0))
+      );
+
+      const chart = createElement("div", {
+        className: "chart",
+        attrs: {
+          role: "img",
+          "aria-label": title
+        }
+      });
+
+      items.forEach(item => {
+        const width = Math.max(
+          0,
+          Math.min(100, Number(item.count || 0) / maximum * 100)
+        );
+
+        chart.append(
+          createElement("div", {
+            className: "chart-row",
+            children: [
+              createElement("span", {
+                className: "chart-label",
+                text: item.label
+              }),
+              createElement("div", {
+                className: "chart-track",
+                children: [
+                  createElement("div", {
+                    className: "chart-bar",
+                    attrs: {
+                      style: `width:${width}%`
+                    }
+                  })
+                ]
+              }),
+              createElement("strong", {
+                className: "chart-value",
+                text: formatNumber(item.count)
+              })
+            ]
+          })
+        );
+      });
+
+      return createElement("section", {
+        className: "panel",
+        children: [
+          createElement("div", {
+            className: "panel-header",
+            children: [
+              createElement("h2", {
+                text: title
+              })
+            ]
+          }),
+          chart
+        ]
+      });
+    }
+
+    function renderHelp() {
+      const panel = createElement("section", {
+        className: "panel"
+      });
+
+      [
+        ["helpSecurity", "helpSecurityBody"],
+        ["helpApprovals", "helpApprovalsBody"],
+        ["helpLanguage", "helpLanguageBody"],
+        ["helpSample", "helpSampleBody"]
+      ].forEach(([titleKey, bodyKey]) => {
+        panel.append(
+          createElement("details", {
+            children: [
+              createElement("summary", {
+                text: t(titleKey)
+              }),
+              createElement("p", {
+                text: t(bodyKey)
+              })
+            ]
+          })
+        );
+      });
+
+      $("#view").replaceChildren(panel);
+    }
+
+    function tableHeader(key) {
+      return createElement("th", {
+        text: t(key),
+        attrs: {
+          scope: "col"
+        }
+      });
+    }
+
+    function makeTable(caption, headers, body) {
+      return createElement("div", {
+        className: "table-wrap",
+        children: [
+          createElement("table", {
+            children: [
+              createElement("caption", {
+                text: caption
+              }),
+              createElement("thead", {
+                children: [
+                  createElement("tr", {
+                    children: headers.map(tableHeader)
+                  })
+                ]
+              }),
+              body
+            ]
+          })
+        ]
+      });
+    }
+
+    function createStatusSelect(id, value, statuses) {
+      const select = createElement("select", {
+        attrs: {
+          id
+        }
+      });
+
+      statuses.forEach(status => {
+        select.append(
+          createElement("option", {
+            text: formatStatus(status),
+            attrs: {
+              value: status
+            }
+          })
+        );
+      });
+
+      select.value = value;
+      return select;
+    }
+
+    function createProgrammeSelect(id, selected = "") {
+      const select = createElement("select", {
+        attrs: {
+          id,
+          required: true
+        }
+      });
+
+      state.data.programmes.forEach(programme => {
+        select.append(
+          createElement("option", {
+            text: `${programme.code} · ${localized(programme.title)}`,
+            attrs: {
+              value: programme.id
+            }
+          })
+        );
+      });
+
+      select.value =
+        selected ||
+        state.data.programmes[0]?.id ||
+        "";
+
+      return select;
+    }
+
+    function createLecturerSelect(id, selected = "") {
+      const select = createElement("select", {
+        attrs: {
+          id,
+          required: true
+        }
+      });
+
+      state.data.lecturers
+        .filter(lecturer => lecturer.status === "active" || lecturer.id === selected)
+        .forEach(lecturer => {
+          select.append(
+            createElement("option", {
+              text: lecturer.name,
+              attrs: {
+                value: lecturer.id
+              }
+            })
+          );
+        });
+
+      select.value =
+        selected ||
+        state.data.lecturers.find(item => item.status === "active")?.id ||
+        "";
+
+      return select;
+    }
+
+    function deleteRecord(collectionName, id, rerender) {
+      if (!confirm(t("confirmDelete"))) {
+        return;
+      }
+
+      state.data[collectionName] = state.data[collectionName].filter(
+        item => item.id !== id
+      );
+
+      persistData();
+      showToast(t("delete"), t("sampleDeleted"), "success");
+      rerender();
+    }
+
+    function openModal({
+      title,
+      content,
+      submitLabel = t("save"),
+      onSubmit = null
+    }) {
+      $("#modal-title").textContent = title;
+      $("#modal-body").replaceChildren(content);
+      $("#modal-error").hidden = true;
+      $("#modal-error").textContent = "";
+
+      state.modalSubmit = onSubmit;
+      $("#modal-submit").hidden = !onSubmit;
+      $("#modal-submit").textContent = submitLabel;
+
+      if (!$("#modal").open) {
+        $("#modal").showModal();
+      }
+    }
+
+    function closeModal() {
+      if ($("#modal").open) {
+        $("#modal").close();
+      }
+
+      state.modalSubmit = null;
+      $("#modal-body").replaceChildren();
+      $("#modal-error").hidden = true;
+    }
+
+    function showModalError(message) {
+      $("#modal-error").hidden = false;
+      $("#modal-error").textContent = message;
+    }
+
+    function renderNotifications() {
+      const container = $("#notification-list");
+      const unread = state.data.notifications.filter(item => !item.readAt).length;
+
+      container.replaceChildren();
+
+      $("#notification-count").textContent = formatNumber(unread);
+      $("#notification-count").hidden = unread === 0;
+
+      $("#notification-toggle").setAttribute(
+        "aria-label",
+        `${t("notifications")}: ${formatNumber(unread)}`
+      );
+
+      if (!state.data.notifications.length) {
+        container.append(emptyState(t("noNotifications"), t("noData"), "♢"));
+        return;
+      }
+
+      const list = createElement("ul", {
+        className: "list"
+      });
+
+      state.data.notifications.forEach(notification => {
+        const actions = createElement("div", {
+          className: "inline",
+          attrs: {
+            style: "margin-top:.55rem;"
+          }
+        });
+
+        if (!notification.readAt) {
+          actions.append(
+            makeButton(
+              t("markRead"),
+              () => {
+                notification.readAt = new Date().toISOString();
+                persistData();
+                renderNotifications();
+              },
+              "btn secondary small"
+            )
+          );
+        }
+
+        actions.append(
+          makeButton(
+            t("remove"),
+            () => {
+              state.data.notifications = state.data.notifications.filter(
+                item => item.id !== notification.id
+              );
+
+              persistData();
+              renderNotifications();
+              showToast(t("notifications"), t("sampleDeleted"), "success");
+            },
+            "btn danger small"
+          )
+        );
+
+        list.append(
+          createElement("li", {
+            className: "list-item",
+            children: [
+              createElement("strong", {
+                text: localized(notification.title)
+              }),
+              createElement("span", {
+                text: localized(notification.body)
+              }),
+              createElement("time", {
+                text: formatDateTime(notification.createdAt),
+                attrs: {
+                  datetime: notification.createdAt
+                }
+              }),
+              actions
+            ]
+          })
+        );
+      });
+
+      container.append(list);
+    }
+
+    function performGlobalSearch(query) {
+      const search = normalize(query).toLocaleLowerCase(LOCALES[state.language]);
+      const container = $("#search-results");
+
+      if (search.length < 2) {
+        closeSearch();
+        return;
+      }
+
+      const results = [];
+
+      state.data.programmes.forEach(programme => {
+        if (
+          [programme.code, localized(programme.title)]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "programmes",
+            programmeId: programme.id,
+            title: `${programme.code} · ${localized(programme.title)}`,
+            subtitle: t("programmes")
+          });
+        }
+      });
+
+      state.data.courses.forEach(course => {
+        if (
+          [course.code, localized(course.title)]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "courses",
+            programmeId: course.programmeId,
+            title: `${course.code} · ${localized(course.title)}`,
+            subtitle: lecturerById(course.lecturerId)?.name || ""
+          });
+        }
+      });
+
+      state.data.lecturers.forEach(lecturer => {
+        if (
+          [lecturer.name, lecturer.email]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "lecturers",
+            title: lecturer.name,
+            subtitle: lecturer.email
+          });
+        }
+      });
+
+      state.data.students.forEach(student => {
+        if (
+          [student.name, student.matric]
+            .join(" ")
+            .toLocaleLowerCase(LOCALES[state.language])
+            .includes(search)
+        ) {
+          results.push({
+            route: "students",
+            programmeId: student.programmeId,
+            title: student.name,
+            subtitle: student.matric
+          });
+        }
+      });
+
+      container.replaceChildren();
+
+      results.slice(0, 12).forEach(result => {
+        container.append(
+          createElement("button", {
+            attrs: {
+              type: "button"
+            },
+            children: [
+              createElement("strong", {
+                text: result.title
+              }),
+              createElement("small", {
+                text: result.subtitle
+              })
+            ],
+            events: {
+              click: () => {
+                if (result.programmeId) {
+                  state.scopeProgrammeId = result.programmeId;
+                  populateScopeSwitcher();
+                }
+
+                closeSearch();
+                $("#global-search-input").value = "";
+                navigate(result.route);
+              }
+            }
+          })
+        );
+      });
+
+      if (!results.length) {
+        container.append(
+          createElement("div", {
+            className: "list-item",
+            text: t("noMatches")
+          })
+        );
+      }
+
+      container.hidden = false;
+    }
+
+    function closeSearch() {
+      $("#search-results").hidden = true;
+      $("#search-results").replaceChildren();
+    }
+
+    function openSidebar() {
+      $("#sidebar").dataset.open = "true";
+      $("#sidebar-toggle").setAttribute("aria-expanded", "true");
+      $("#sidebar-backdrop").dataset.open = "true";
+      $("#sidebar-backdrop").setAttribute("aria-hidden", "false");
+      document.body.dataset.scrollLock = "true";
+    }
+
+    function closeSidebar() {
+      $("#sidebar").dataset.open = "false";
+      $("#sidebar-toggle").setAttribute("aria-expanded", "false");
+      $("#sidebar-backdrop").dataset.open = "false";
+      $("#sidebar-backdrop").setAttribute("aria-hidden", "true");
+
+      if ($("#notification-drawer").dataset.open !== "true") {
+        document.body.dataset.scrollLock = "false";
+      }
+    }
+
+    function openNotifications() {
+      $("#notification-drawer").dataset.open = "true";
+      $("#notification-drawer").setAttribute("aria-hidden", "false");
+      $("#notification-toggle").setAttribute("aria-expanded", "true");
+      $("#notification-backdrop").dataset.open = "true";
+      $("#notification-backdrop").setAttribute("aria-hidden", "false");
+      document.body.dataset.scrollLock = "true";
+      $("#notification-close").focus();
+    }
+
+    function closeNotifications() {
+      $("#notification-drawer").dataset.open = "false";
+      $("#notification-drawer").setAttribute("aria-hidden", "true");
+      $("#notification-toggle").setAttribute("aria-expanded", "false");
+      $("#notification-backdrop").dataset.open = "false";
+      $("#notification-backdrop").setAttribute("aria-hidden", "true");
+      document.body.dataset.scrollLock = "false";
+    }
+
+    function closeProfileMenu() {
+      $("#profile-menu").hidden = true;
+      $("#profile-toggle").setAttribute("aria-expanded", "false");
+    }
+
+    function resetSampleData() {
+      if (!confirm(t("resetConfirm"))) {
+        return;
+      }
+
+      state.data = createInitialData();
+      state.scopeProgrammeId = "";
+      state.approvalSelection.clear();
+
+      persistData();
+      populateScopeSwitcher();
+      renderIdentity();
+      renderNotifications();
+      renderRoute();
+
+      showToast(t("resetSample"), t("resetComplete"), "success");
+    }
+
+    function bindEvents() {
+      $("#sidebar-toggle").addEventListener("click", () => {
+        if ($("#sidebar").dataset.open === "true") {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+
+      $("#sidebar-backdrop").addEventListener("click", closeSidebar);
+
+      $("#notification-toggle").addEventListener("click", openNotifications);
+      $("#notification-close").addEventListener("click", closeNotifications);
+      $("#notification-backdrop").addEventListener("click", closeNotifications);
+
+      $("#profile-toggle").addEventListener("click", event => {
+        event.stopPropagation();
+
+        const menu = $("#profile-menu");
+        menu.hidden = !menu.hidden;
+
+        $("#profile-toggle").setAttribute(
+          "aria-expanded",
+          String(!menu.hidden)
+        );
+      });
+
+      document.addEventListener("click", event => {
+        if (
+          !$("#profile-menu").hidden &&
+          !$("#profile-menu").contains(event.target) &&
+          !$("#profile-toggle").contains(event.target)
+        ) {
+          closeProfileMenu();
+        }
+
+        if (
+          !$("#search-results").contains(event.target) &&
+          !$(".global-search").contains(event.target)
+        ) {
+          closeSearch();
+        }
+      });
+
+      $("#scope-switch").addEventListener("change", event => {
+        state.scopeProgrammeId = event.target.value;
+
+        try {
+          localStorage.setItem(SCOPE_KEY, state.scopeProgrammeId);
+        } catch {
+          // Storage may be unavailable.
+        }
+
+        state.approvalSelection.clear();
+        renderRoute();
+        navigate(state.route);
+      });
+
+      $$("[data-language]", $("#language-switcher")).forEach(buttonNode => {
+        buttonNode.addEventListener("click", () => {
+          applyLanguage(buttonNode.dataset.language);
+        });
+      });
+
+      $("#theme-toggle").addEventListener("click", () => {
+        applyTheme(state.theme === "dark" ? "light" : "dark");
+      });
+
+      $("#global-search-input").addEventListener(
+        "input",
+        debounce(event => {
+          performGlobalSearch(event.target.value);
+        })
+      );
+
+      $("#modal-close").addEventListener("click", closeModal);
+      $("#modal-cancel").addEventListener("click", closeModal);
+
+      $("#modal-form").addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!state.modalSubmit) {
+          closeModal();
+          return;
+        }
+
+        try {
+          const shouldClose = await state.modalSubmit();
+
+          if (shouldClose !== false) {
+            closeModal();
+          }
+        } catch (error) {
+          showModalError(error?.message || t("correctErrors"));
+        }
+      });
+
+      $$("[data-profile-action]").forEach(buttonNode => {
+        buttonNode.addEventListener("click", () => {
+          closeProfileMenu();
+
+          switch (buttonNode.dataset.profileAction) {
+            case "print":
+              print();
+              break;
+            case "help":
+              navigate("help");
+              break;
+            case "reset":
+              resetSampleData();
+              break;
+            case "signout":
+              showToast(t("signOut"), t("signOutSample"), "info");
+              break;
+          }
+        });
+      });
+
+      document.addEventListener("keydown", event => {
+        const target = event.target;
+
+        const editable =
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement ||
+          target?.isContentEditable;
+
+        if (event.key === "/" && !editable) {
+          event.preventDefault();
+          $("#global-search-input").focus();
+        }
+
+        if (event.key === "Escape") {
+          closeSidebar();
+          closeNotifications();
+          closeProfileMenu();
+          closeSearch();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (innerWidth > 1088) {
+          closeSidebar();
+        }
+      });
+    }
+
+    function runSelfChecks() {
+      const tests = [];
+
+      function test(name, callback) {
+        try {
+          callback();
+          tests.push({
+            test: name,
+            status: "PASS"
+          });
+        } catch (error) {
+          tests.push({
+            test: name,
+            status: "FAIL",
+            message: error.message
+          });
+        }
+      }
+
+      test("Every route has metadata", () => {
+        ROUTES.forEach(([route]) => {
+          if (!ROUTE_META[route]) {
+            throw new Error(`Missing route metadata: ${route}`);
+          }
+        });
+      });
+
+      test("Every route label exists in three languages", () => {
+        ["en", "fr", "ar"].forEach(language => {
+          ROUTES.forEach(([, , labelKey]) => {
+            if (!I18N[language][labelKey]) {
+              throw new Error(`${language} missing ${labelKey}`);
+            }
+          });
+        });
+      });
+
+      test("All course programmes exist", () => {
+        state.data.courses.forEach(course => {
+          if (!programmeById(course.programmeId)) {
+            throw new Error(`Missing programme for ${course.code}`);
+          }
+        });
+      });
+
+      test("All course lecturers exist", () => {
+        state.data.courses.forEach(course => {
+          if (!lecturerById(course.lecturerId)) {
+            throw new Error(`Missing lecturer for ${course.code}`);
+          }
+        });
+      });
+
+      test("Role remains Head of Department", () => {
+        if (state.data.context.role !== "Head of Department") {
+          throw new Error("Unexpected role scope.");
+        }
+      });
+
+      console.table(tests);
+    }
+
+    function initialize() {
+      state.data = loadData();
+
+      loadPreferences();
+      parseHash();
+      bindEvents();
+
+      renderNavigation();
+      renderIdentity();
+      populateScopeSwitcher();
+      renderBreadcrumbs();
+      renderPageMeta();
+      renderNotifications();
+      renderRoute();
+
+      runSelfChecks();
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
